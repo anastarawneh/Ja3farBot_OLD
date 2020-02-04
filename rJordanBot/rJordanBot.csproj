@@ -1,0 +1,61 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <ApplicationIcon>favicon.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\20191127185853_Migration.cs" />
+    <Compile Remove="Migrations\20191127185853_Migration.Designer.cs" />
+    <Compile Remove="Migrations\20191127190539_Migration.cs" />
+    <Compile Remove="Migrations\20191127190539_Migration.Designer.cs" />
+    <Compile Remove="Migrations\20191127211348_Migration.cs" />
+    <Compile Remove="Migrations\20191127211348_Migration.Designer.cs" />
+    <Compile Remove="Migrations\20191127211612_Migration.cs" />
+    <Compile Remove="Migrations\20191127211612_Migration.Designer.cs" />
+    <Compile Remove="Migrations\20191127212013_Migration.cs" />
+    <Compile Remove="Migrations\20191127212013_Migration.Designer.cs" />
+    <Compile Remove="Migrations\20191127212701_Migration.cs" />
+    <Compile Remove="Migrations\20191127212701_Migration.Designer.cs" />
+    <Compile Remove="Migrations\20191127213405_Migration.cs" />
+    <Compile Remove="Migrations\20191127213405_Migration.Designer.cs" />
+    <Compile Remove="Migrations\20191201111757_Migration.cs" />
+    <Compile Remove="Migrations\20191201111757_Migration.Designer.cs" />
+    <Compile Remove="Migrations\20191201112049_Migration.cs" />
+    <Compile Remove="Migrations\20191201112049_Migration.Designer.cs" />
+    <Compile Remove="Migrations\20191201113300_Migration.cs" />
+    <Compile Remove="Migrations\20191201113300_Migration.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Discord.Addons.Interactive" Version="1.0.1" />
+    <PackageReference Include="Discord.Net" Version="2.1.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Design" Version="1.1.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.NETCore.App" Version="2.2.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+    <Folder Include="Resources\Extensions\" />
+  </ItemGroup>
+
+</Project>
