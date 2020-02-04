@@ -40,7 +40,7 @@ namespace rJordanBot.Core.Commands
 
             await ReplyAsync(":exclamation: Welcome to the report system. We're sorry for the problem you are dealing with. You can reply with `cancel` at any time to cancel your report.");
             await ReplyAsync(":exclamation: NOTE: Misusing or spamming the report system will get you banned from using it.");
-            //Ask if anonymous
+        //Ask if anonymous
         anonymous:
             await ReplyAsync("Do you wish to remain anonymous? Your User ID will be recorded regardless for security reasons. (`Y`/`N`)");
             SocketMessage msg = await NextMessageAsync(true, true, TimeSpan.FromSeconds(120));

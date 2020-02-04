@@ -2,11 +2,8 @@
 using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.WebSocket;
-using Newtonsoft.Json;
-using rJordanBot.Resources.Datatypes;
 using rJordanBot.Resources.Settings;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 

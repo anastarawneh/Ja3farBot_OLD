@@ -4,7 +4,6 @@ using Discord.Commands;
 using Discord.Rest;
 using Discord.WebSocket;
 using rJordanBot.Resources.Event_Verified;
-using rJordanBot.Resources.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;

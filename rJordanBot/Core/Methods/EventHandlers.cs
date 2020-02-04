@@ -1,8 +1,5 @@
 ﻿using Discord;
-using Discord.Commands;
-using Discord.Rest;
 using Discord.WebSocket;
-using rJordanBot.Resources.Database;
 using rJordanBot.Resources.Datatypes;
 using rJordanBot.Resources.Event_Verified;
 using rJordanBot.Resources.Settings;

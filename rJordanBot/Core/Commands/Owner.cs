@@ -1,7 +1,6 @@
 ﻿using Discord;
 using Discord.Addons.Interactive;
 using Discord.Commands;
-using Discord.Rest;
 using Discord.WebSocket;
 using rJordanBot.Resources.Datatypes;
 using rJordanBot.Resources.Settings;
@@ -286,17 +285,17 @@ namespace rJordanBot.Core.Commands
                 return;
             }
             else switch (reply.Content)
-            {
-                case "confirm":
-                    await testmsg.DeleteAsync();
-                    SocketTextChannel AnnouncementChannel = Context.Guild.Channels.FirstOrDefault(x => x.Id == Data.Data.GetChnlId("announcements")) as SocketTextChannel;
-                    await AnnouncementChannel.SendMessageAsync("@everyone", false, embed.Build());
-                    break;
-                default:
-                    await testmsg.DeleteAsync();
-                    await confirmationmessage.AddReactionAsync(new Emoji("❌"));
-                    return;
-            }
+                {
+                    case "confirm":
+                        await testmsg.DeleteAsync();
+                        SocketTextChannel AnnouncementChannel = Context.Guild.Channels.FirstOrDefault(x => x.Id == Data.Data.GetChnlId("announcements")) as SocketTextChannel;
+                        await AnnouncementChannel.SendMessageAsync("@everyone", false, embed.Build());
+                        break;
+                    default:
+                        await testmsg.DeleteAsync();
+                        await confirmationmessage.AddReactionAsync(new Emoji("❌"));
+                        return;
+                }
         }
     }
 }

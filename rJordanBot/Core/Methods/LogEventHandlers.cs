@@ -378,7 +378,7 @@ namespace rJordanBot.Core.Data
         // Emoji Deleted
         public static async Task EmojiDeleted(SocketGuild guildBefore, SocketGuild guildAfter)
         {
-            if (guildBefore.Emotes.Count !> guildAfter.Emotes.Count) return;
+            if (guildBefore.Emotes.Count! > guildAfter.Emotes.Count) return;
 
             GuildEmote emote;
             foreach (IEmote Emote in guildBefore.Emotes)

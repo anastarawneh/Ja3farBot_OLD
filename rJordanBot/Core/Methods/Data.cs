@@ -196,7 +196,7 @@ namespace rJordanBot.Core.Data
 
                 return 0;
 
-                cont:
+            cont:
                 ulong id = DbContext.Channels.Where(x => x.Name == Name).FirstOrDefault().ID;
                 return id;
             }
