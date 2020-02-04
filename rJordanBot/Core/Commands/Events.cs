@@ -103,7 +103,6 @@ namespace rJordanBot.Core.Commands
             [Command("edit")]
             public async Task Edit(int id = 0, string section = "empty", [Remainder]string message = "none")
             {
-                //Checks
                 if (id == 0 || id >= 100000)
                 {
                     await Context.Channel.SendMessageAsync(":x: Please provide a valid ID.");

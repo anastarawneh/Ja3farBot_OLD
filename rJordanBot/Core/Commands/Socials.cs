@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace rJordanBot.Core.Commands
 {
-    public class SocialsCommands : InteractiveBase<SocketCommandContext>
+    public class Socials : InteractiveBase<SocketCommandContext>
     {
         [Group("socials"), Alias("social")]
         public class SocialsGroup : InteractiveBase<SocketCommandContext>
@@ -23,15 +23,14 @@ namespace rJordanBot.Core.Commands
             [Command("set"), Alias("add")]
             public async Task Set(string site = null, string link = null)
             {
-                //Checks
                 if (site == null)
                 {
                     await ReplyAsync(":x: Please specify a vaild site. Available sites are (Twitter/Instagram/Snapchat).");
                     return;
                 }
-                //Execution
+
                 await ReplyAsync(":white_check_mark: Your socials have been updated.");
-                //Saving
+
                 try
                 {
                     await Data.Data.SetSocials(Context.User.Id, site, link, Context);

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace rJordanBot.Core.Commands
 {
-    public class Base : InteractiveBase<SocketCommandContext>
+    public class User : InteractiveBase<SocketCommandContext>
     {
         [Command("help")]
         public async Task Help()
@@ -37,6 +37,7 @@ namespace rJordanBot.Core.Commands
                 await ReplyAsync(":x: Please only use the report system in DMs.");
                 return;
             }
+
             await ReplyAsync(":exclamation: Welcome to the report system. We're sorry for the problem you are dealing with. You can reply with `cancel` at any time to cancel your report.");
             await ReplyAsync(":exclamation: NOTE: Misusing or spamming the report system will get you banned from using it.");
             //Ask if anonymous

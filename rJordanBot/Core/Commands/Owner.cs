@@ -14,18 +14,29 @@ namespace rJordanBot.Core.Commands
 {
     public class Owner : InteractiveBase<SocketCommandContext>
     {
-        [Command("deldm")]
-        public async Task DelDM(ulong id)
+        [Command("test")]
+        public async Task Test()
         {
             if (Context.User.Id != ESettings.Owner) return;
-            IDMChannel dm = await Context.User.GetOrCreateDMChannelAsync();
-            await dm.DeleteMessageAsync(id);
-            IEmote emote = new Emoji("✅");
-            await Context.Message.AddReactionAsync(emote);
+            try
+            {
+                // Test code starts here.
+
+                // Test code ends here.
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkBlue;
+                Console.WriteLine($"[{DateTime.Now} at Test] {ex.ToString()}");
+                Console.ResetColor();
+            }
+
+            IEmote emoji = new Emoji("✅");
+            await Context.Message.AddReactionAsync(emoji);
         }
 
-        [Command("deldmc")]
-        public async Task DelDMc(int msgcount)
+        [Command("deldm")]
+        public async Task DelDM(int msgcount)
         {
             if (Context.User.Id != ESettings.Owner) return;
             IDMChannel dm = await Context.User.GetOrCreateDMChannelAsync();
@@ -53,49 +64,14 @@ namespace rJordanBot.Core.Commands
             Console.ResetColor();
         }
 
-        [Command("test")]
-        public async Task Test()
-        {
-            if (Context.User.Id != ESettings.Owner) return;
-            try
-            {
-                // Test code starts here.
-                Console.WriteLine(ESettings.StarboardMin);
-                // Test code ends here.
-            }
-            catch (Exception ex)
-            {
-                Console.ForegroundColor = ConsoleColor.DarkBlue;
-                Console.WriteLine($"[{DateTime.Now} at Test] {ex.ToString()}");
-                Console.ResetColor();
-            }
-
-            IEmote emoji = new Emoji("✅");
-            await Context.Message.AddReactionAsync(emoji);
-        }
-
         [Command("resetchannels"), Alias("rc")]
         public async Task ResetChannels()
         {
-            try
-            {
-                if (Context.User.Id != ESettings.Owner && Context.User.Id != Context.Client.CurrentUser.Id) return;
-                await Data.Data.ResetChannels(Context);
+            if (Context.User.Id != ESettings.Owner && Context.User.Id != Context.Client.CurrentUser.Id) return;
+            await Data.Data.ResetChannels(Context);
 
-                IEmote emote = new Emoji("✅");
-                await Context.Message.AddReactionAsync(emote);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
-        }
-
-        [Command("getchannelid"), Alias("cid")]
-        public async Task GetChnlID(SocketTextChannel chnl)
-        {
-            if (Context.User.Id != ESettings.Owner) return;
-            await ReplyAsync(Data.Data.GetChnlId(chnl.Name).ToString());
+            IEmote emote = new Emoji("✅");
+            await Context.Message.AddReactionAsync(emote);
         }
 
         [Group("roleembed"), Alias("re")]
