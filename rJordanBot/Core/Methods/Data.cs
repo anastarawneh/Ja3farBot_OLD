@@ -153,9 +153,33 @@ namespace rJordanBot.Core.Data
 
             await DbContext.SaveChangesAsync();
 
-            ForContext lol = new ForContext();
-            await lol.EmbedBuild(Context);
+            EmbedBuilder embed = new EmbedBuilder();
+            embed.WithAuthor(Context.User.ToString(), Context.User.GetAvatarUrl());
+            embed.WithColor(114, 137, 218);
+            if (GetSocial(Context.User.Id, "twitter") == null || GetSocial(Context.User.Id, "twitter") == "None") embed.AddField("Twitter", "None");
+            else if (GetSocial(Context.User.Id, "twitter") == "None") embed.AddField("Twitter", $"[{GetSocial(Context.User.Id, "twitter")}](https://twitter.com/" + GetSocial(Context.User.Id, "twitter") + ")");
+            else embed.AddField("Twitter", $"[@{GetSocial(Context.User.Id, "twitter")}](https://twitter.com/" + GetSocial(Context.User.Id, "twitter") + ")");
+            if (GetSocial(Context.User.Id, "instagram") == null || GetSocial(Context.User.Id, "instagram") == "None") embed.AddField("Instagram", "None");
+            else if (GetSocial(Context.User.Id, "instagram") == "None") embed.AddField("Instagram", $"[{GetSocial(Context.User.Id, "instagram")}](https://instagram.com/" + GetSocial(Context.User.Id, "instagram") + ")");
+            else embed.AddField("Instagram", $"[@{GetSocial(Context.User.Id, "instagram")}](https://instagram.com/" + GetSocial(Context.User.Id, "instagram") + ")");
+            if (GetSocial(Context.User.Id, "snapchat") == null) embed.AddField("Snapchat", "None");
+            else embed.AddField("Snapchat", $"{GetSocial(Context.User.Id, "snapchat")}");
 
+            ulong chnlid = GetChnlId("bot-testing"); ;
+            SocketTextChannel socialchnl = Context.Guild.Channels.Where(x => x.Id == chnlid).FirstOrDefault() as SocketTextChannel;
+            IEnumerable<IMessage> msgs = await socialchnl.GetMessagesAsync(100).FlattenAsync();
+            foreach (IMessage msg in msgs)
+            {
+                if (msg.Id == GetMsgId(Context.User.Id))
+                {
+                    await (msg as IUserMessage).ModifyAsync(x => x.Embed = embed.Build());
+                    return;
+                }
+            }
+
+            RestUserMessage msg_ = await socialchnl.SendMessageAsync("", false, embed.Build());
+            Social Current_ = DbContext.Socials.Where(x => x.UserId == Context.User.Id).FirstOrDefault();
+            Current_.MsgId = msg_.Id;
             await DbContext.SaveChangesAsync();
         }
 
@@ -228,43 +252,6 @@ namespace rJordanBot.Core.Data
             }
 
             await DbContext.SaveChangesAsync();
-        }
-
-        public class ForContext
-        {
-            public async Task EmbedBuild(SocketCommandContext Context)
-            {
-                EmbedBuilder embed = new EmbedBuilder();
-                embed.WithAuthor(Context.User.ToString(), Context.User.GetAvatarUrl());
-                embed.WithColor(114, 137, 218);
-                if (GetSocial(Context.User.Id, "twitter") == null || GetSocial(Context.User.Id, "twitter") == "None") embed.AddField("Twitter", "None");
-                else if (GetSocial(Context.User.Id, "twitter") == "None") embed.AddField("Twitter", $"[{GetSocial(Context.User.Id, "twitter")}](https://twitter.com/" + GetSocial(Context.User.Id, "twitter") + ")");
-                else embed.AddField("Twitter", $"[@{GetSocial(Context.User.Id, "twitter")}](https://twitter.com/" + GetSocial(Context.User.Id, "twitter") + ")");
-                if (GetSocial(Context.User.Id, "instagram") == null || GetSocial(Context.User.Id, "instagram") == "None") embed.AddField("Instagram", "None");
-                else if (GetSocial(Context.User.Id, "instagram") == "None") embed.AddField("Instagram", $"[{GetSocial(Context.User.Id, "instagram")}](https://instagram.com/" + GetSocial(Context.User.Id, "instagram") + ")");
-                else embed.AddField("Instagram", $"[@{GetSocial(Context.User.Id, "instagram")}](https://instagram.com/" + GetSocial(Context.User.Id, "instagram") + ")");
-                if (GetSocial(Context.User.Id, "snapchat") == null) embed.AddField("Snapchat", "None");
-                else embed.AddField("Snapchat", $"{GetSocial(Context.User.Id, "snapchat")}");
-
-                ulong chnlid = GetChnlId("socials"); ;
-                SocketTextChannel socialchnl = Context.Guild.Channels.Where(x => x.Id == chnlid).FirstOrDefault() as SocketTextChannel;
-                IEnumerable<IMessage> msgs = await socialchnl.GetMessagesAsync(100).FlattenAsync();
-                foreach (IMessage msg in msgs)
-                {
-                    if (msg.Id == GetMsgId(Context.User.Id))
-                    {
-                        await (msg as IUserMessage).ModifyAsync(x => x.Embed = embed.Build());
-                        return;
-                    }
-                }
-                using (SqliteDbContext DbContext = new SqliteDbContext())
-                {
-                    RestUserMessage msg = await socialchnl.SendMessageAsync("", false, embed.Build());
-                    Social Current = DbContext.Socials.Where(x => x.UserId == Context.User.Id).FirstOrDefault();
-                    Current.MsgId = msg.Id;
-                    await DbContext.SaveChangesAsync();
-                }
-            }
         }
 
         public static RoleSetting GetRoleSetting(string role)
