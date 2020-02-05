@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Addons.Interactive;
 using Discord.Commands;
+using Discord.Rest;
 using Discord.WebSocket;
 using rJordanBot.Resources.Settings;
 using System;
@@ -149,6 +150,101 @@ namespace rJordanBot.Core.Commands
         cancel:
             IEmote emote_ = new Emoji("❌");
             await (msg as IUserMessage).AddReactionAsync(emote_);
+            return;
+        }
+
+        [Command("apply")]
+        public async Task Apply()
+        {
+            if (Context.User.IsBot) return;
+            if (!(Context.Channel is IDMChannel))
+            {
+                await ReplyAsync(":x: To apply for the moderator position, please use this command in a DM channel with the bot.");
+                return;
+            }
+
+            SocketGuild guild = Context.Guild;
+            SocketTextChannel moderationchannel = (SocketTextChannel) guild.Channels.First(x => x.Id == Data.Data.GetChnlId("moderation-log"));
+
+            EmbedBuilder moderationembed = new EmbedBuilder();
+            moderationembed.WithAuthor(Context.User);
+            moderationembed.WithColor(114, 137, 218);
+            moderationembed.WithTitle("Moderation Application");
+            moderationembed.WithFooter($"Started at {DateTime.Now.ToString("h:mm")}");
+
+            RestUserMessage moderationmsg = await moderationchannel.SendMessageAsync("", false, moderationembed.Build());
+
+            await ReplyAsync("Thank you for applying to moderate the r/Jordan Discord! We are going to ask you a few questions to make sure you are fit for the job. You can reply with `cancel` at any time to cancel the application. Waiting for more than 5 minutes to answer a question will cancel the application. Troll applications are not tolerated.");
+            IUserMessage response;
+
+            // Questions
+            {
+                await ReplyAsync("First of all, how old are you?");
+                response = (IUserMessage)await NextMessageAsync(true, true, TimeSpan.FromMinutes(5));
+                if (response == null || response.Content.ToLower() == "cancel")
+                {
+                    goto cancel;
+                }
+                moderationembed.AddField("First of all, how old are you?", response.Content);
+                await moderationmsg.ModifyAsync(x => x.Embed = moderationembed.Build());
+
+                await ReplyAsync("What is the timezone of your current place of residence?");
+                response = (IUserMessage)await NextMessageAsync(true, true, TimeSpan.FromMinutes(5));
+                if (response == null || response.Content.ToLower() == "cancel")
+                {
+                    goto cancel;
+                }
+                moderationembed.AddField("What is the timezone of your current place of residence?", response.Content);
+                await moderationmsg.ModifyAsync(x => x.Embed = moderationembed.Build());
+
+                await ReplyAsync("Tell us a little about yourself.");
+                response = (IUserMessage)await NextMessageAsync(true, true, TimeSpan.FromMinutes(5));
+                if (response == null || response.Content.ToLower() == "cancel")
+                {
+                    goto cancel;
+                }
+                moderationembed.AddField("Tell us a little about yourself.", response.Content);
+                await moderationmsg.ModifyAsync(x => x.Embed = moderationembed.Build());
+
+                await ReplyAsync("How many hours a day do you average on Discord?");
+                response = (IUserMessage)await NextMessageAsync(true, true, TimeSpan.FromMinutes(5));
+                if (response == null || response.Content.ToLower() == "cancel")
+                {
+                    goto cancel;
+                }
+                moderationembed.AddField("How many hours a day do you average on Discord?", response.Content);
+                await moderationmsg.ModifyAsync(x => x.Embed = moderationembed.Build());
+
+                await ReplyAsync("What do you think you could bring to the server as a moderator?");
+                response = (IUserMessage)await NextMessageAsync(true, true, TimeSpan.FromMinutes(5));
+                if (response == null || response.Content.ToLower() == "cancel")
+                {
+                    goto cancel;
+                }
+                moderationembed.AddField("What do you think you could bring to the server as a moderator?", response.Content);
+                await moderationmsg.ModifyAsync(x => x.Embed = moderationembed.Build());
+
+                await ReplyAsync("Do you have any previous moderation experiences on or off Discord?");
+                response = (IUserMessage)await NextMessageAsync(true, true, TimeSpan.FromMinutes(5));
+                if (response == null || response.Content.ToLower() == "cancel")
+                {
+                    goto cancel;
+                }
+                moderationembed.AddField("Do you have any previous moderation experiences on or off Discord?", response.Content);
+                await moderationmsg.ModifyAsync(x => x.Embed = moderationembed.Build());
+            }
+
+            await ReplyAsync("Your application has been recorded. Thank you for your time.");
+            moderationembed.WithFooter(moderationembed.Footer.Text + $" | Finished at {DateTime.Now.ToString("h:mm")}");
+            await moderationmsg.ModifyAsync(x => x.Embed = moderationembed.Build());
+            return;
+
+            cancel:
+            IEmote x = new Emoji("❌");
+            await response.AddReactionAsync(x);
+
+            moderationembed.WithFooter(moderationembed.Footer.Text + $" | Canceled at {DateTime.Now.ToString("h:mm")}");
+            await moderationmsg.ModifyAsync(x => x.Embed = moderationembed.Build());
             return;
         }
     }
