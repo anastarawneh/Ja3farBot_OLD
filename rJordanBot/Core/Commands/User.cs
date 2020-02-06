@@ -163,7 +163,7 @@ namespace rJordanBot.Core.Commands
                 return;
             }
 
-            SocketGuild guild = Context.Guild;
+            SocketGuild guild = Context.Client.Guilds.First();
             SocketTextChannel moderationchannel = (SocketTextChannel) guild.Channels.First(x => x.Id == Data.Data.GetChnlId("moderation-log"));
 
             EmbedBuilder moderationembed = new EmbedBuilder();
@@ -239,9 +239,10 @@ namespace rJordanBot.Core.Commands
             await moderationmsg.ModifyAsync(x => x.Embed = moderationembed.Build());
             return;
 
-            cancel:
+        cancel:
             IEmote x = new Emoji("❌");
-            await response.AddReactionAsync(x);
+            if (response != null) await response.AddReactionAsync(x);
+            else await ReplyAndDeleteAsync("Moderation application canceled.", false, null, TimeSpan.FromSeconds(30));
 
             moderationembed.WithFooter(moderationembed.Footer.Text + $" | Canceled at {DateTime.Now.ToString("h:mm")}");
             await moderationmsg.ModifyAsync(x => x.Embed = moderationembed.Build());
