@@ -267,10 +267,8 @@ namespace rJordanBot.Core.Commands
         public async Task Announce()
         {
             EmbedBuilder embed = new EmbedBuilder();
-            embed.WithTitle("Server updates!");
-            embed.WithDescription("Good evening everyone, we hope your day has been going well so far. We have a few server updates we would like to share with you.");
-            embed.AddField("Introducing the Starboard system!", $"You showed your approval of this idea, so we implemented it! The Starboard system is going to replace our channel pins system by introducing a new channel ({MentionUtils.MentionChannel(Data.Data.GetChnlId("starboard"))}), which will archive any message you deem star-worthy. To do so, all you have to do is react to a message with a minimum of 5 :star2: reactions, which will post the message there, along with a link to make it easier for you to find the original message.");
-            embed.AddField("Moderator Applications!", "Many of you have been asking about our moderator applications, so here's your answer. Applications will start sometime during the next week, and will last for a full week after. As for when the results will be announced, that is going to depend on the number of applications we receive. More info will be available when the application period starts.");
+            embed.WithTitle("Moderation applications!");
+            embed.WithDescription("Good evening everyone, we hope you had fun at the event today! Today we're launching server moderation applications! You can use `^apply` in a DM channel with the jordanian boi to get started. Applications will remain open until 11:59 PM of Friday the 14th. Good luck!");
             embed.WithFooter("Please leave any feedback about this update in #feedback.");
             embed.WithColor(114, 137, 218);
 
