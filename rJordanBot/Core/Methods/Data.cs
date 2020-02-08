@@ -165,7 +165,7 @@ namespace rJordanBot.Core.Data
             if (GetSocial(Context.User.Id, "snapchat") == null) embed.AddField("Snapchat", "None");
             else embed.AddField("Snapchat", $"{GetSocial(Context.User.Id, "snapchat")}");
 
-            ulong chnlid = GetChnlId("bot-testing"); ;
+            ulong chnlid = GetChnlId("socials"); ;
             SocketTextChannel socialchnl = Context.Guild.Channels.Where(x => x.Id == chnlid).FirstOrDefault() as SocketTextChannel;
             IEnumerable<IMessage> msgs = await socialchnl.GetMessagesAsync(100).FlattenAsync();
             foreach (IMessage msg in msgs)
