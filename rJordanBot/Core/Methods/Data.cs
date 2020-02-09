@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using rJordanBot.Resources.Database;
 using rJordanBot.Resources.Datatypes;
 using rJordanBot.Resources.Event_Verified;
+using rJordanBot.Resources.GeneralJSON;
 using rJordanBot.Resources.Settings;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,7 @@ namespace rJordanBot.Core.Data
         {
             string JSON = "";
             string JSON2 = "";
+            string GeneralJSON = "";
             //Assembly.GetEntryAssembly().Location = /home/ubuntu/linux-x64/publish/rJordanBot.dll; (ON AWS)
 
             string SettingsLocation = "";
@@ -62,6 +64,26 @@ namespace rJordanBot.Core.Data
             e_Verified eVerified_ = JsonConvert.DeserializeObject<e_Verified>(JSON2);
             eVerified.Allowed = eVerified_.allowed;
             eVerified.Denied = eVerified_.denied;
+
+            using (FileStream Stream = new FileStream(SettingsLocation.Replace("Settings", "GeneralJSON"), FileMode.Open, FileAccess.Read))
+            using (StreamReader Reader = new StreamReader(Stream))
+            {
+                GeneralJSON = Reader.ReadToEnd();
+            }
+
+            GeneralJsonInitializer generalJsonInit = JsonConvert.DeserializeObject<GeneralJsonInitializer>(GeneralJSON);
+            GeneralJson.users = new List<User>();
+            foreach (UserInitializer userinit in generalJsonInit.users)
+            {
+                GeneralJson.users.Add(new User
+                {
+                    ID = userinit.id,
+                    Username = userinit.username,
+                    Discriminator = userinit.discrim,
+                    Verified = userinit.verified,
+                    Roles = userinit.roles
+                });
+            }
 
             return Task.CompletedTask;
         }
@@ -611,6 +633,22 @@ namespace rJordanBot.Core.Data
 
                 await starboardMessage.Save();
             }
+        }
+
+        public static Task SaveGeneralJSON()
+        {
+            GeneralJsonInitializer generalJsonInitializer = GeneralJson.ToInitForm();
+
+            string FileLocation = Environment.GetEnvironmentVariable("SettingsLocation").Replace("Settings", "GeneralJSON");
+            using FileStream Stream = new FileStream(FileLocation, FileMode.Truncate, FileAccess.ReadWrite);
+            using StreamWriter Writer = new StreamWriter(Stream);
+            JsonSerializer Serializer = new JsonSerializer
+            {
+                Formatting = Newtonsoft.Json.Formatting.Indented
+            };
+            Serializer.Serialize(Writer, generalJsonInitializer);
+
+            return Task.CompletedTask;
         }
     }
 }

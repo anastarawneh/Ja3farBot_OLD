@@ -1,4 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using Discord;
+using Discord.WebSocket;
+using rJordanBot.Core.Data;
+using rJordanBot.Resources.GeneralJSON;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace rJordanBot.Resources.Datatypes
 {
@@ -23,5 +29,19 @@ namespace rJordanBot.Resources.Datatypes
         public string emote { get; set; }
         public string group { get; set; }
         public string emoji { get; set; }
+    }
+
+    public class GeneralJsonInitializer
+    {
+        public List<UserInitializer> users { get; set; }
+    }
+
+    public class UserInitializer
+    {
+        public ulong id { get; set; }
+        public string username { get; set; }
+        public string discrim { get; set; }
+        public bool verified { get; set; }
+        public List<ulong> roles { get; set; }
     }
 }

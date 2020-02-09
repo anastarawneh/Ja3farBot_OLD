@@ -3,6 +3,7 @@ using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.WebSocket;
 using rJordanBot.Resources.Event_Verified;
+using rJordanBot.Resources.GeneralJSON;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,6 +38,8 @@ namespace rJordanBot.Core.Moderation
                 eVerified.Allowed.Add(id);
                 eVerified.Denied.Remove(id);
                 Data.Data.UpdateVerified();
+
+                await GeneralJson.UpdateUser(user as SocketGuildUser);
 
                 await ReplyAsync($"{user.Mention} is now verified.");
 
