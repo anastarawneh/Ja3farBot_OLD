@@ -3,6 +3,7 @@ using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.WebSocket;
 using rJordanBot.Resources.Datatypes;
+using rJordanBot.Resources.GeneralJSON;
 using rJordanBot.Resources.Settings;
 using System;
 using System.Collections.Generic;
@@ -20,18 +21,21 @@ namespace rJordanBot.Core.Commands
             try
             {
                 // Test code starts here.
-
+                await GeneralJson.RemoveUser((SocketGuildUser) Context.User);
                 // Test code ends here.
+
+                IEmote emoji = new Emoji("✅");
+                await Context.Message.AddReactionAsync(emoji);
             }
             catch (Exception ex)
             {
                 Console.ForegroundColor = ConsoleColor.DarkBlue;
                 Console.WriteLine($"[{DateTime.Now} at Test] {ex.ToString()}");
                 Console.ResetColor();
-            }
 
-            IEmote emoji = new Emoji("✅");
-            await Context.Message.AddReactionAsync(emoji);
+                IEmote emoji = new Emoji("❌");
+                await Context.Message.AddReactionAsync(emoji);
+            }
         }
 
         [Command("deldm")]
@@ -294,6 +298,47 @@ namespace rJordanBot.Core.Commands
                         await confirmationmessage.AddReactionAsync(new Emoji("❌"));
                         return;
                 }
+        }
+
+        [Command("say")]
+        public async Task Say(SocketTextChannel channel, [Remainder] string message)
+        {
+            if (Context.User.Id != ESettings.Owner) return;
+            
+            await channel.SendMessageAsync(message);
+            await Context.Message.DeleteAsync();
+        }
+
+        [Group("json")]
+        public class JSON : InteractiveBase<SocketCommandContext>
+        {
+            [Group("user")]
+            public class User : InteractiveBase<SocketCommandContext>
+            {
+                [Command("add")]
+                public async Task Add(SocketGuildUser user)
+                {
+                    await GeneralJson.AddUser(user);
+
+                    await ReplyAsync($":white_check_mark: User {user.Mention} was added to the JSON file.");
+                }
+
+                [Command("remove")]
+                public async Task Remove(SocketGuildUser user)
+                {
+                    await GeneralJson.RemoveUser(user);
+
+                    await ReplyAsync($":white_check_mark: User {user.Mention} was removed from the JSON file.");
+                }
+
+                [Command("update")]
+                public async Task Update(SocketGuildUser user)
+                {
+                    await GeneralJson.UpdateUser(user);
+
+                    await ReplyAsync($":white_check_mark: User {user.Mention} was updated in the JSON file.");
+                }
+            }
         }
     }
 }
