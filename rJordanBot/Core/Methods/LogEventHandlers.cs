@@ -403,5 +403,30 @@ namespace rJordanBot.Core.Data
                 }
             }
         }
+
+        public static async Task ChannelNameChanged(SocketChannel channelBefore, SocketChannel channelAfter)
+        {
+            SocketGuildChannel channelBefore_ = channelBefore as SocketGuildChannel;
+            SocketGuildChannel channelAfter_ = channelAfter as SocketGuildChannel;
+
+            if (channelBefore_.Name == channelAfter_.Name) return;
+
+            string type = "Unknown";
+            if (channelAfter is ITextChannel) type = "Text";
+            else if (channelAfter is IVoiceChannel) type = "Voice";
+            else return;
+
+            EmbedBuilder embed = new EmbedBuilder();
+            embed.WithTitle($"{type} Channel changed");
+            embed.AddField("Before:", channelBefore_.Name);
+            embed.AddField("After:", channelAfter_.Name);
+            embed.WithCurrentTimestamp();
+            embed.WithColor(66, 134, 244);
+            embed.WithFooter($"ChannelID: {channelAfter.Id}");
+
+            SocketGuild guild = channelAfter_.Guild;
+            SocketTextChannel LogChannel = (SocketTextChannel)guild.Channels.First(x => x.Id == LogID);
+            await LogChannel.SendMessageAsync("", false, embed.Build());
+        }
     }
 }
