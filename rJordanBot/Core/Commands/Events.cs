@@ -3,7 +3,7 @@ using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.Rest;
 using Discord.WebSocket;
-using rJordanBot.Resources.Event_Verified;
+using rJordanBot.Resources.GeneralJSON;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,9 +41,9 @@ namespace rJordanBot.Core.Commands
                 int id;
                 string user;
 
-                if (eVerified.Denied.Contains(Context.User.Id))
+                if (!(Context.User as SocketGuildUser).ToUser().Verified)
                 {
-                    await ReplyAsync(":x: You are denied from using the Events system.");
+                    await ReplyAsync(":x: You need to be verified to be able to use the Events system.");
                     return;
                 }
 
@@ -208,7 +208,7 @@ namespace rJordanBot.Core.Commands
                     await ReplyAsync(":x: For your own privacy, please use the event verification system in DMs.");
                     return;
                 }
-                if (eVerified.Allowed.Contains(Context.User.Id))
+                if ((Context.User as SocketGuildUser).ToUser().Verified)
                 {
                     await ReplyAsync(":x: You are already verified.");
                     return;

@@ -1,7 +1,6 @@
 ﻿using Discord.WebSocket;
 using rJordanBot.Core.Data;
 using rJordanBot.Resources.Datatypes;
-using rJordanBot.Resources.Event_Verified;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,9 +26,17 @@ namespace rJordanBot.Resources.GeneralJSON
                 roles.Add(role.Id);
             }
 
-            bool verified;
-            if (eVerified.Allowed.Contains(user.Id)) verified = true;
-            else verified = false;
+            bool verified = false;
+            foreach (User item in users)
+            {
+                if (item.ID == user.Id)
+                {
+                    verified = item.Verified;
+                    break;
+                }
+            }
+            /*if (eVerified.Allowed.Contains(user.Id)) verified = true;
+            else verified = false;*/
 
             users.Add(new User
             {
@@ -46,26 +53,21 @@ namespace rJordanBot.Resources.GeneralJSON
         }
         public static Task RemoveUser(SocketGuildUser user)
         {
-            int i = 0;
             foreach (User item in users)
             {
-                if (item.ID != user.Id) i++;
-                if (i == users.Count) return Task.CompletedTask;
+                if (item.ID == user.Id)
+                {
+                    users.Remove(users.First(x => x.ID == user.Id));
+
+                    Data.SaveGeneralJSON();
+
+                    return Task.CompletedTask;
+                }
             }
-
-            users.Remove(users.First(x => x.ID == user.Id));
-
-            Data.SaveGeneralJSON();
 
             return Task.CompletedTask;
         }
-        public static Task UpdateUser(SocketGuildUser user)
-        {
-            RemoveUser(user);
-            AddUser(user);
-
-            return Data.SaveGeneralJSON();
-        }
+        
         public static GeneralJsonInitializer ToInitForm()
         {
             List<UserInitializer> usersinit = new List<UserInitializer>();
@@ -106,9 +108,14 @@ namespace rJordanBot.Resources.GeneralJSON
     {
         public static User ToUser(this SocketGuildUser user)
         {
+            foreach (User item in GeneralJson.users)
+            {
+                if (user.Id == item.ID) return item;
+            }
+
             bool verified;
-            if (eVerified.Allowed.Contains(user.Id)) verified = true;
-            else if (GeneralJson.users.First(x => x.ID == user.Id).Verified == true) verified = true;
+            /*if (eVerified.Allowed.Contains(user.Id)) verified = true;
+            else*/ if (GeneralJson.users.First(x => x.ID == user.Id).Verified) verified = true;
             else verified = false;
             List<ulong> roles = new List<ulong>();
             foreach (SocketRole role in user.Roles) roles.Add(role.Id);

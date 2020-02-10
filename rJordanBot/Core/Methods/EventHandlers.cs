@@ -1,7 +1,7 @@
 ﻿using Discord;
 using Discord.WebSocket;
 using rJordanBot.Resources.Datatypes;
-using rJordanBot.Resources.Event_Verified;
+using rJordanBot.Resources.GeneralJSON;
 using rJordanBot.Resources.Settings;
 using System;
 using System.Collections.Generic;
@@ -60,12 +60,12 @@ namespace rJordanBot.Core.Data
             if ((channel as SocketTextChannel).Name != "events") return;
             if (reaction.User.Value.IsBot) return;
 
-            if (eVerified.Allowed.Contains(reaction.User.Value.Id))
+            if ((reaction.User.Value as SocketGuildUser).ToUser().Verified)
             {
                 // User is allowed.
                 return;
             }
-            else if (eVerified.Denied.Contains(reaction.User.Value.Id))
+            /*else if (eVerified.Denied.Contains(reaction.User.Value.Id))
             {
                 // User is denied.
 
@@ -75,7 +75,7 @@ namespace rJordanBot.Core.Data
                 IDMChannel dm = reaction.User.Value.GetOrCreateDMChannelAsync().Result;
                 await dm.SendMessageAsync(":x: You are denied from using the events system.");
                 return;
-            }
+            }*/
             else
             {
                 // User is not verified.
@@ -180,12 +180,12 @@ namespace rJordanBot.Core.Data
             }
         }
 
-        public static async Task Events_UserLeft(SocketGuildUser user)
+        public static async Task JSON_UserLeft(SocketGuildUser user)
         {
             SocketGuild guild = user.Guild;
             SocketTextChannel channel = guild.Channels.FirstOrDefault(x => x.Id == Data.GetChnlId("bot-log")) as SocketTextChannel;
 
-            if (eVerified.Allowed.Contains(user.Id))
+            /*if (eVerified.Allowed.Contains(user.Id))
             {
                 eVerified.Allowed.Remove(user.Id);
                 Data.UpdateVerified();
@@ -198,6 +198,14 @@ namespace rJordanBot.Core.Data
                 Data.UpdateVerified();
 
                 await channel.SendMessageAsync($"[{DateTime.Now} at Events] {user.Mention} was removed from the event denied list for leaving.");
+            }*/
+
+            foreach (User item in GeneralJson.users)
+            {
+                if (item.ID == user.Id)
+                {
+                    await GeneralJson.RemoveUser(user);
+                }
             }
         }
     }

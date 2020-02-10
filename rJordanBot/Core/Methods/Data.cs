@@ -5,7 +5,6 @@ using Discord.WebSocket;
 using Newtonsoft.Json;
 using rJordanBot.Resources.Database;
 using rJordanBot.Resources.Datatypes;
-using rJordanBot.Resources.Event_Verified;
 using rJordanBot.Resources.GeneralJSON;
 using rJordanBot.Resources.Settings;
 using System;
@@ -23,7 +22,6 @@ namespace rJordanBot.Core.Data
         public static Task InitJSON()
         {
             string JSON = "";
-            string JSON2 = "";
             string GeneralJSON = "";
             //Assembly.GetEntryAssembly().Location = /home/ubuntu/linux-x64/publish/rJordanBot.dll; (ON AWS)
 
@@ -54,16 +52,6 @@ namespace rJordanBot.Core.Data
             ESettings.Owner = Settings.owner;
             ESettings.ReportBanned = Settings.reportbanned;
             ESettings.StarboardMin = Settings.starboardmin;
-
-            using (FileStream Stream = new FileStream(SettingsLocation.Replace("Settings", "Event_Verified"), FileMode.Open, FileAccess.ReadWrite))
-            using (StreamReader ReadSettings = new StreamReader(Stream))
-            {
-                JSON2 = ReadSettings.ReadToEnd();
-            }
-
-            e_Verified eVerified_ = JsonConvert.DeserializeObject<e_Verified>(JSON2);
-            eVerified.Allowed = eVerified_.allowed;
-            eVerified.Denied = eVerified_.denied;
 
             using (FileStream Stream = new FileStream(SettingsLocation.Replace("Settings", "GeneralJSON"), FileMode.Open, FileAccess.Read))
             using (StreamReader Reader = new StreamReader(Stream))
@@ -379,21 +367,6 @@ namespace rJordanBot.Core.Data
             }
             Console.WriteLine("NULL 3");
             return null;
-        }
-
-        public static void UpdateVerified()
-        {
-            e_Verified eVerified_ = new e_Verified
-            {
-                allowed = eVerified.Allowed,
-                denied = eVerified.Denied
-            };
-
-            string SettingsLocation = Environment.GetEnvironmentVariable("SettingsLocation");
-            using FileStream Stream = new FileStream(SettingsLocation.Replace("Settings", "Event_Verified"), FileMode.Truncate, FileAccess.ReadWrite);
-            using StreamWriter WriteSettings = new StreamWriter(Stream);
-            JsonSerializer serializer = new JsonSerializer();
-            serializer.Serialize(WriteSettings, eVerified_);
         }
 
         public static async Task SetInvitesBefore(SocketGuildUser user)

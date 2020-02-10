@@ -16,12 +16,6 @@ namespace rJordanBot.Resources.Datatypes
         public int starboardmin { get; set; }
     }
 
-    public class e_Verified
-    {
-        public List<ulong> allowed { get; set; }
-        public List<ulong> denied { get; set; }
-    }
-
     public class RoleSetting
     {
         public ulong id { get; set; }

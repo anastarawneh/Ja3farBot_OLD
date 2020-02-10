@@ -56,7 +56,7 @@ namespace rJordanBot
                 Client.ReactionAdded += EventHandlers.Starboard_ReactionAddedOrRemoved;
                 Client.ReactionRemoved += EventHandlers.Starboard_ReactionAddedOrRemoved;
                 Client.MessageReceived += Bot_CommandHandler;
-                Client.UserLeft += EventHandlers.Events_UserLeft;
+                Client.UserLeft += EventHandlers.JSON_UserLeft;
             }
 
             // Log Handlers

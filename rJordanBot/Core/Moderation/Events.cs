@@ -2,7 +2,6 @@
 using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.WebSocket;
-using rJordanBot.Resources.Event_Verified;
 using rJordanBot.Resources.GeneralJSON;
 using System;
 using System.Collections.Generic;
@@ -19,32 +18,40 @@ namespace rJordanBot.Core.Moderation
             [Command("verify"), Alias("v")]
             public async Task Verify([Remainder]IUser user = null)
             {
-                if (Context.User != Context.Guild.Owner) return;
-
-                ulong id = user.Id;
-
-                if (user is null)
+                try
                 {
-                    await ReplyAsync(":x: Please enter a user.");
-                    return;
-                }
+                    if (Context.User != Context.Guild.Owner) return;
 
-                if (eVerified.Allowed.Contains(id))
-                {
-                    await ReplyAsync(":x: User is already verified.");
-                    return;
-                }
+                    ulong id = user.Id;
 
-                eVerified.Allowed.Add(id);
+                    if (user is null)
+                    {
+                        await ReplyAsync(":x: Please enter a user.");
+                        return;
+                    }
+
+                    if ((user as SocketGuildUser).ToUser().Verified)
+                    {
+                        await ReplyAsync(":x: User is already verified.");
+                        return;
+                    }
+
+                /*eVerified.Allowed.Add(id);
                 eVerified.Denied.Remove(id);
-                Data.Data.UpdateVerified();
+                Data.Data.UpdateVerified();*/
 
-                await GeneralJson.UpdateUser(user as SocketGuildUser);
+                    (user as SocketGuildUser).ToUser().Verified = true;
+                    await Data.Data.SaveGeneralJSON();
 
-                await ReplyAsync($"{user.Mention} is now verified.");
+                    await ReplyAsync($"{user.Mention} is now verified.");
 
-                IDMChannel channel = user.GetOrCreateDMChannelAsync().Result;
-                await channel.SendMessageAsync(":white_check_mark: You have been verified.");
+                    IDMChannel channel = user.GetOrCreateDMChannelAsync().Result;
+                    await channel.SendMessageAsync(":white_check_mark: You have been verified.");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
             }
 
             [Command("unverify"), Alias("uv", "deny")]
@@ -59,15 +66,18 @@ namespace rJordanBot.Core.Moderation
                     return;
                 }
 
-                if (eVerified.Denied.Contains(id))
+                if (!(user as SocketGuildUser).ToUser().Verified)
                 {
                     await ReplyAsync(":x: User is already denied.");
                     return;
                 }
 
-                eVerified.Denied.Add(id);
+                /*eVerified.Denied.Add(id);
                 eVerified.Allowed.Remove(id);
-                Data.Data.UpdateVerified();
+                Data.Data.UpdateVerified();*/
+
+                (user as SocketGuildUser).ToUser().Verified = false;
+                await Data.Data.SaveGeneralJSON();
 
                 await ReplyAsync($"{user.Mention} is now denied.");
 
@@ -85,15 +95,18 @@ namespace rJordanBot.Core.Moderation
                     return;
                 }
 
-                if (eVerified.Allowed.Contains(user.Id)) await ReplyAsync($":white_check_mark: {user.Mention} is verified.");
-                else if (eVerified.Denied.Contains(user.Id)) await ReplyAsync($":white_check_mark: {user.Mention} is denied.");
+                if ((user as SocketGuildUser).ToUser().Verified) await ReplyAsync($":white_check_mark: {user.Mention} is verified.");
+                //else if (eVerified.Denied.Contains(user.Id)) await ReplyAsync($":white_check_mark: {user.Mention} is denied.");
                 else await ReplyAsync($":x: {user.Mention} is not verified.");
             }
 
             [Command("delete"), Alias("del", "d")]
             public async Task Delete([Remainder]IUser user = null)
             {
-                if (Context.User != Context.Guild.Owner) return;
+                await ReplyAsync(":x: This command doesn't work anymore. See `^eventsmod unverify`.");
+                return;
+
+                /*if (Context.User != Context.Guild.Owner) return;
                 if (user is null)
                 {
                     await ReplyAsync(":x: Please enter a user.");
@@ -115,10 +128,10 @@ namespace rJordanBot.Core.Moderation
                 else
                 {
                     await ReplyAsync($":x: {user.Mention} is not verified.");
-                }
+                }*/
             }
 
-            [Group("list"), Alias("l")]
+            /*[Group("list"), Alias("l")]
             public class List : InteractiveBase
             {
                 [Command("verified"), Alias("v")]
@@ -166,6 +179,29 @@ namespace rJordanBot.Core.Moderation
 
                     await ReplyAsync("", false, embed.Build());
                 }
+            }*/
+
+            [Command("list"), Alias("l")]
+            public async Task List()
+            {
+                SocketRole modrole = Context.Guild.Roles.FirstOrDefault(x => x.Name == "Discord Mods");
+                if (!(Context.User as SocketGuildUser).Roles.Contains(modrole)) return;
+
+                //List<ulong> list = eVerified.Allowed;
+                string userlist = "None";
+
+                if (GeneralJson.users.Count > 1) userlist = "";
+                foreach (User user in GeneralJson.users)
+                {
+                    if (user.Verified) userlist = userlist + Context.Guild.Users.FirstOrDefault(x => x.Id == user.ID) + "\n";
+                }
+
+                EmbedBuilder embed = new EmbedBuilder();
+                embed.WithTitle("List of Verified Users");
+                embed.WithDescription(userlist);
+                embed.WithColor(0, 255, 0);
+
+                await ReplyAsync("", false, embed.Build());
             }
         }
     }

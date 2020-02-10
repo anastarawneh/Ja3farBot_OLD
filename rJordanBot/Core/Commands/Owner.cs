@@ -21,7 +21,7 @@ namespace rJordanBot.Core.Commands
             try
             {
                 // Test code starts here.
-                await GeneralJson.RemoveUser((SocketGuildUser) Context.User);
+                
                 // Test code ends here.
 
                 IEmote emoji = new Emoji("✅");
@@ -329,14 +329,6 @@ namespace rJordanBot.Core.Commands
                     await GeneralJson.RemoveUser(user);
 
                     await ReplyAsync($":white_check_mark: User {user.Mention} was removed from the JSON file.");
-                }
-
-                [Command("update")]
-                public async Task Update(SocketGuildUser user)
-                {
-                    await GeneralJson.UpdateUser(user);
-
-                    await ReplyAsync($":white_check_mark: User {user.Mention} was updated in the JSON file.");
                 }
             }
         }
