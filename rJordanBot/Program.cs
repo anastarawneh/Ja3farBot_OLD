@@ -183,7 +183,7 @@ namespace rJordanBot
 
         public async Task ExceptionLog(Exception ex, bool Verbose = true)
         {
-            string errormsg = $"[{DateTime.Now} at ExceptionHandler] {ex.Message}\n" +
+            string errormsg = $"[{DateTime.Now} at ExceptionHandler]\n" +
                 $"```{ex}```";
             if (Verbose == false) errormsg = $"[{DateTime.Now} at ExceptionHandler] {ex.Message}";
 
@@ -198,7 +198,7 @@ namespace rJordanBot
 
         public async Task Command_Log_Message(SocketUserMessage message, string result)
         {
-            string errormsg = $"[{DateTime.Now} at Commands] Command error: | Command: {message.Content} | Error: {result}";
+            string errormsg = $"[{DateTime.Now} at Commands] Command error: | Command: {message.Content} | User: {message.Author} | Error: {result}";
 
             Console.ForegroundColor = ConsoleColor.DarkRed;
             Console.WriteLine(errormsg);
@@ -211,7 +211,7 @@ namespace rJordanBot
         }
         public async Task Command_Log_Message(SocketUserMessage message, IResult result)
         {
-            string errormsg = $"[{DateTime.Now} at Commands] Command error: | Command: {message.Content} | Reason: {result.ErrorReason}\nError: {result.Error}";
+            string errormsg = $"[{DateTime.Now} at Commands] Command error: | Command: {message.Content} | User: {message.Author} | Reason: {result.ErrorReason}\nError: {result.Error}";
 
             Console.ForegroundColor = ConsoleColor.DarkRed;
             Console.WriteLine(errormsg);
@@ -241,7 +241,7 @@ namespace rJordanBot
             IResult Result = await Commands.ExecuteAsync(Context, ArgPos, Services);
             if (!Result.IsSuccess)
             {
-                await Command_Log_Message(Message, Result.ErrorReason);
+                await Command_Log_Message(Message, Result);
             }
         }
     }

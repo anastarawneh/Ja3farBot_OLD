@@ -339,6 +339,22 @@ namespace rJordanBot.Core.Commands
 
                     await ReplyAsync($":white_check_mark: User {user.Mention} was removed from the JSON file.");
                 }
+
+                [Command("list"), Alias("l")]
+                public async Task List()
+                {
+                    string list = "";
+                    EmbedBuilder embed = new EmbedBuilder();
+                    embed.WithColor(0, 255, 0);
+                    embed.WithTitle("List of users in JSON file");
+                    foreach (Resources.GeneralJSON.User user in GeneralJson.users)
+                    {
+                        list += $"{user.Username}#{user.Discriminator}\n";
+                    }
+                    embed.WithDescription(list);
+
+                    await ReplyAsync("", false, embed.Build());
+                }
             }
         }
     }

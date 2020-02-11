@@ -113,6 +113,7 @@ namespace rJordanBot.Resources.GeneralJSON
                 if (user.Id == item.ID) return item;
             }
 
+            GeneralJson.AddUser(user);
             bool verified;
             /*if (eVerified.Allowed.Contains(user.Id)) verified = true;
             else*/ if (GeneralJson.users.First(x => x.ID == user.Id).Verified) verified = true;
