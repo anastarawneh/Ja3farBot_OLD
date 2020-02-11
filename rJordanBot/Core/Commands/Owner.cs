@@ -21,7 +21,16 @@ namespace rJordanBot.Core.Commands
             try
             {
                 // Test code starts here.
-                
+                SocketGuild Guild = Context.Guild;
+                ulong brythmid = 252128902418268161;
+                SocketRole botrole = Guild.Roles.FirstOrDefault(x => x.Name == "Bot");
+                SocketGuildUser brythm = Guild.Users.FirstOrDefault(x => x.Id == brythmid);
+
+                await (brythm as IGuildUser).AddRoleAsync(botrole);
+                await (brythm as IGuildUser).ModifyAsync(x =>
+                {
+                    x.Nickname = "backup music boi";
+                });
                 // Test code ends here.
 
                 IEmote emoji = new Emoji("✅");

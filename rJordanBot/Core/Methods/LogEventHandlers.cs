@@ -404,6 +404,7 @@ namespace rJordanBot.Core.Data
             }
         }
 
+        // Channel Name Changed
         public static async Task ChannelNameChanged(SocketChannel channelBefore, SocketChannel channelAfter)
         {
             SocketGuildChannel channelBefore_ = channelBefore as SocketGuildChannel;

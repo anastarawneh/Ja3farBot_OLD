@@ -105,7 +105,7 @@ namespace rJordanBot.Core.Data
             {
                 if (e.Status == UserStatus.Online)
                 {
-                    await cmdchannel.SendMessageAsync($"{MentionUtils.MentionUser(ESettings.Owner)}, Rythm is Online! Change its prefix.");
+                    await cmdchannel.SendMessageAsync($"{MentionUtils.MentionUser(ESettings.Owner)}, Rythm is Online! Change the backup bot's prefix.\n`>settings prefix >!`");
                     await (brythm as IGuildUser).RemoveRoleAsync(botrole);
                     await (brythm as IGuildUser).ModifyAsync(x =>
                     {
@@ -114,7 +114,7 @@ namespace rJordanBot.Core.Data
                 }
                 else
                 {
-                    await cmdchannel.SendMessageAsync($"{MentionUtils.MentionUser(ESettings.Owner)}, Rythm is Offline! Change its prefix.");
+                    await cmdchannel.SendMessageAsync($"{MentionUtils.MentionUser(ESettings.Owner)}, Rythm is Offline! Change the backup bot's prefix.\n>!settings prefix >");
                     await (brythm as IGuildUser).AddRoleAsync(botrole);
                     await (brythm as IGuildUser).ModifyAsync(x =>
                     {
