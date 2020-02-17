@@ -156,12 +156,16 @@ namespace rJordanBot.Core.Commands
         [Command("apply")]
         public async Task Apply()
         {
+            await ReplyAsync(":x: Thank you, but we closed moderator applications for now.");
+            return;
+
             if (Context.User.IsBot) return;
             if (!(Context.Channel is IDMChannel))
             {
                 await ReplyAsync(":x: To apply for the moderator position, please use this command in a DM channel with the bot.");
                 return;
             }
+            if (Context.Message.Timestamp.AddHours(2).Day == 17) return;
 
             SocketGuild guild = Context.Client.Guilds.First();
             SocketTextChannel moderationchannel = (SocketTextChannel) guild.Channels.First(x => x.Id == Data.Data.GetChnlId("moderation-log"));

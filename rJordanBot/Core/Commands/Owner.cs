@@ -20,17 +20,9 @@ namespace rJordanBot.Core.Commands
             if (Context.User.Id != ESettings.Owner) return;
             try
             {
-                // Test code starts here.
                 SocketGuild Guild = Context.Guild;
-                ulong brythmid = 252128902418268161;
-                SocketRole botrole = Guild.Roles.FirstOrDefault(x => x.Name == "Bot");
-                SocketGuildUser brythm = Guild.Users.FirstOrDefault(x => x.Id == brythmid);
-
-                await (brythm as IGuildUser).AddRoleAsync(botrole);
-                await (brythm as IGuildUser).ModifyAsync(x =>
-                {
-                    x.Nickname = "backup music boi";
-                });
+                // Test code starts here.
+                Console.WriteLine(Context.Message.Timestamp.AddHours(2));
                 // Test code ends here.
 
                 IEmote emoji = new Emoji("✅");
@@ -281,7 +273,7 @@ namespace rJordanBot.Core.Commands
         {
             EmbedBuilder embed = new EmbedBuilder();
             embed.WithTitle("Moderation applications!");
-            embed.WithDescription("Good evening everyone, we hope you had fun at the event today! Today we're launching server moderation applications! You can use `^apply` in a DM channel with the jordanian boi to get started. Applications will remain open until 11:59 PM of Friday the 14th. Good luck!");
+            embed.WithDescription("Good evening everyone. We just stopped accepting moderator applications. Thank you to everyone who applied, we're going to take a look at the applications, and announce the results in a few days.");
             embed.WithFooter("Please leave any feedback about this update in #feedback.");
             embed.WithColor(114, 137, 218);
 
@@ -300,7 +292,8 @@ namespace rJordanBot.Core.Commands
                     case "confirm":
                         await testmsg.DeleteAsync();
                         SocketTextChannel AnnouncementChannel = Context.Guild.Channels.FirstOrDefault(x => x.Id == Data.Data.GetChnlId("announcements")) as SocketTextChannel;
-                        await AnnouncementChannel.SendMessageAsync("@everyone", false, embed.Build());
+                        //await AnnouncementChannel.SendMessageAsync("@everyone", false, embed.Build());
+                        await AnnouncementChannel.SendMessageAsync("", false, embed.Build());
                         break;
                     default:
                         await testmsg.DeleteAsync();
