@@ -14,15 +14,16 @@ namespace rJordanBot.Core.Commands
 {
     public class Owner : InteractiveBase<SocketCommandContext>
     {
-        [Command("test")]
+        [Command("test", RunMode = RunMode.Async)]
         public async Task Test()
         {
             if (Context.User.Id != ESettings.Owner) return;
             try
             {
                 SocketGuild Guild = Context.Guild;
+                SocketTextChannel Channel = Context.Channel as SocketTextChannel;
                 // Test code starts here.
-                Console.WriteLine(Context.Message.Timestamp.AddHours(2));
+                
                 // Test code ends here.
 
                 IEmote emoji = new Emoji("✅");
