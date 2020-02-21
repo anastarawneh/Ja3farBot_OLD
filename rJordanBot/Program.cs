@@ -4,8 +4,10 @@ using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using rJordanBot.Core.Data;
+using rJordanBot.Resources.GeneralJSON;
 using rJordanBot.Resources.Settings;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -92,13 +94,13 @@ namespace rJordanBot
 
         private async Task Client_CommandHandler(SocketMessage MessageParam)
         {
-            if (MessageParam == null) return;
+            if (MessageParam is SocketSystemMessage) return;
             SocketUserMessage Message = MessageParam as SocketUserMessage;
             SocketCommandContext Context = new SocketCommandContext(Client, Message);
 
             if (Context.Message == null || Context.Message.Content == "") return;
             if (Context.User.IsBot) return;
-            if (!(Context.Channel.Id == Data.GetChnlId("bot-commands")) && !(Context.User.Id == ESettings.Owner) && !(Context.User.Id == 362299141587599360) && !(Context.User.Id == 234014840350310401) && !(Context.Channel is IDMChannel)) return;
+            if (!(Context.Channel.Id == Data.GetChnlId("bot-commands")) && !(Context.User.Id == ESettings.Owner) && !(Context.User.Id == 362299141587599360) && !(Context.User as SocketGuildUser).IsModerator() && !(Context.Channel is IDMChannel)) return;
             if (Environment.GetEnvironmentVariable("SystemType") == "win" && Context.User != Context.Guild.Owner) return;
 
             int ArgPos = 0;
@@ -122,6 +124,21 @@ namespace rJordanBot
             };
 
             await Data.SetInvitesBefore(Client.Guilds.First().Users.FirstOrDefault(x => x.Id == Client.CurrentUser.Id));
+
+            if (Client.Guilds.First().Roles.First(x => x.Name == "Muted").Members.Count() > 0)
+            {
+                IEnumerable<SocketGuildUser> muteds = Client.Guilds.First().Roles.First(x => x.Name == "Muted").Members;
+                if (muteds.Count() == 1) await (Client.Guilds.First().Channels.First(x => x.Id == Data.GetChnlId("mod-commands")) as SocketTextChannel).SendMessageAsync($"{Client.Guilds.First().Owner.Mention}, there is a muted user right now, and I've lost track of the time: {muteds.First().Mention}");
+                else
+                {
+                    string users = "";
+                    foreach (SocketGuildUser muted in muteds)
+                    {
+                        users += $"{muted.Mention} ";
+                    }
+                    await (Client.Guilds.First().Channels.First(x => x.Id == Data.GetChnlId("mod-commands")) as SocketTextChannel).SendMessageAsync($"{Client.Guilds.First().Owner.Mention}, there are muted users right now, and I've lost track of the time: {users}");
+                }
+            }
             /*
 #if !DEBUG
             Console.WriteLine("RELEASE");
@@ -226,7 +243,7 @@ namespace rJordanBot
 
         public async Task Bot_CommandHandler(SocketMessage message)
         {
-            if (message == null) return;
+            if (message is SocketSystemMessage) return;
             SocketUserMessage Message = message as SocketUserMessage;
             SocketCommandContext Context = new SocketCommandContext(Client, Message);
             string[] commands = { "resetchannels" };

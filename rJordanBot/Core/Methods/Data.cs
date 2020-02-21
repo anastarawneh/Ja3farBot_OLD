@@ -61,6 +61,7 @@ namespace rJordanBot.Core.Data
 
             GeneralJsonInitializer generalJsonInit = JsonConvert.DeserializeObject<GeneralJsonInitializer>(GeneralJSON);
             GeneralJson.users = new List<User>();
+            GeneralJson.moderators = new List<Moderator>();
             foreach (UserInitializer userinit in generalJsonInit.users)
             {
                 GeneralJson.users.Add(new User
@@ -70,6 +71,14 @@ namespace rJordanBot.Core.Data
                     Discriminator = userinit.discrim,
                     Verified = userinit.verified,
                     Roles = userinit.roles
+                });
+            }
+            foreach (ModeratorInitializer modinit in generalJsonInit.moderators)
+            {
+                GeneralJson.moderators.Add(new Moderator
+                {
+                    ID = modinit.id,
+                    Timezone = modinit.timezone
                 });
             }
 

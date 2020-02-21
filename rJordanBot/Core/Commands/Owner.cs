@@ -9,21 +9,32 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace rJordanBot.Core.Commands
 {
     public class Owner : InteractiveBase<SocketCommandContext>
     {
         [Command("test", RunMode = RunMode.Async)]
-        public async Task Test()
+        public async Task Test(string time, string giveaway)
         {
             if (Context.User.Id != ESettings.Owner) return;
             try
             {
                 SocketGuild Guild = Context.Guild;
                 SocketTextChannel Channel = Context.Channel as SocketTextChannel;
+                SocketUserMessage Message = Context.Message;
+                EmbedBuilder Embed = new EmbedBuilder();
+                Random Random = new Random();
+
                 // Test code starts here.
-                
+                int seconds = 10;
+                while (seconds > 0)
+                {
+                    await Task.Delay(1000);
+                    Console.WriteLine(seconds);
+                    seconds--;
+                }
                 // Test code ends here.
 
                 IEmote emoji = new Emoji("✅");
@@ -273,8 +284,8 @@ namespace rJordanBot.Core.Commands
         public async Task Announce()
         {
             EmbedBuilder embed = new EmbedBuilder();
-            embed.WithTitle("Moderation applications!");
-            embed.WithDescription("Good evening everyone. We just stopped accepting moderator applications. Thank you to everyone who applied, we're going to take a look at the applications, and announce the results in a few days.");
+            embed.WithTitle("The new Mod Team!");
+            embed.WithDescription($"Good evening everyone. We are proud to announce the new moderation team, {Context.Guild.Users.First(x => x.Id == 321275495218020362).Mention} and {Context.Guild.Users.First(x => x.Id == 252526202982498305).Mention}! Let's welcome them with a warm round of applause! :clap:\nThank you to everyone else who applied, there will be many opportunities for you in the future to try again.");
             embed.WithFooter("Please leave any feedback about this update in #feedback.");
             embed.WithColor(114, 137, 218);
 
@@ -293,8 +304,8 @@ namespace rJordanBot.Core.Commands
                     case "confirm":
                         await testmsg.DeleteAsync();
                         SocketTextChannel AnnouncementChannel = Context.Guild.Channels.FirstOrDefault(x => x.Id == Data.Data.GetChnlId("announcements")) as SocketTextChannel;
-                        //await AnnouncementChannel.SendMessageAsync("@everyone", false, embed.Build());
-                        await AnnouncementChannel.SendMessageAsync("", false, embed.Build());
+                        await AnnouncementChannel.SendMessageAsync("@everyone", false, embed.Build());
+                        //await AnnouncementChannel.SendMessageAsync("", false, embed.Build());
                         break;
                     default:
                         await testmsg.DeleteAsync();

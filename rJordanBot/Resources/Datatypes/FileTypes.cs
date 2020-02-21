@@ -28,6 +28,7 @@ namespace rJordanBot.Resources.Datatypes
     public class GeneralJsonInitializer
     {
         public List<UserInitializer> users { get; set; }
+        public List<ModeratorInitializer> moderators { get; set; }
     }
 
     public class UserInitializer
@@ -37,5 +38,11 @@ namespace rJordanBot.Resources.Datatypes
         public string discrim { get; set; }
         public bool verified { get; set; }
         public List<ulong> roles { get; set; }
+    }
+
+    public class ModeratorInitializer
+    {
+        public ulong id { get; set; }
+        public string timezone { get; set; }
     }
 }

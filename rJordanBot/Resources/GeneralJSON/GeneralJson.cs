@@ -12,6 +12,7 @@ namespace rJordanBot.Resources.GeneralJSON
     public static class GeneralJson
     {
         public static List<User> users;
+        public static List<Moderator> moderators;
 
         public static Task AddUser(SocketGuildUser user)
         {
@@ -67,7 +68,7 @@ namespace rJordanBot.Resources.GeneralJSON
 
             return Task.CompletedTask;
         }
-        
+
         public static GeneralJsonInitializer ToInitForm()
         {
             List<UserInitializer> usersinit = new List<UserInitializer>();
@@ -104,6 +105,12 @@ namespace rJordanBot.Resources.GeneralJSON
         }
     }
 
+    public class Moderator
+    {
+        public ulong ID;
+        public string Timezone;
+    }
+
     public static class Extensions
     {
         public static User ToUser(this SocketGuildUser user)
@@ -128,6 +135,18 @@ namespace rJordanBot.Resources.GeneralJSON
                 Verified = verified,
                 Roles = roles
             };
+        }
+
+        public static bool IsModerator(this SocketGuildUser user)
+        {
+            ulong id = user.Id;
+            
+            foreach (Moderator mod in GeneralJson.moderators)
+            {
+                if (mod.ID == id) return true;
+            }
+
+            return false;
         }
     }
 }
