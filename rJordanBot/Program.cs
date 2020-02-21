@@ -92,8 +92,8 @@ namespace rJordanBot
 
         private async Task Client_CommandHandler(SocketMessage MessageParam)
         {
+            if (MessageParam == null) return;
             SocketUserMessage Message = MessageParam as SocketUserMessage;
-            if (Message is null) return;
             SocketCommandContext Context = new SocketCommandContext(Client, Message);
 
             if (Context.Message == null || Context.Message.Content == "") return;
@@ -226,6 +226,7 @@ namespace rJordanBot
 
         public async Task Bot_CommandHandler(SocketMessage message)
         {
+            if (message == null) return;
             SocketUserMessage Message = message as SocketUserMessage;
             SocketCommandContext Context = new SocketCommandContext(Client, Message);
             string[] commands = { "resetchannels" };
