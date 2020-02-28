@@ -1,7 +1,10 @@
 ﻿using Discord;
 using Discord.Addons.Interactive;
 using Discord.Commands;
+using Discord.Rest;
 using Discord.WebSocket;
+using rJordanBot.Core.Data;
+using rJordanBot.Core.Methods;
 using rJordanBot.Resources.Datatypes;
 using rJordanBot.Resources.GeneralJSON;
 using rJordanBot.Resources.Settings;
@@ -16,7 +19,7 @@ namespace rJordanBot.Core.Commands
     public class Owner : InteractiveBase<SocketCommandContext>
     {
         [Command("test", RunMode = RunMode.Async)]
-        public async Task Test(string time, string giveaway)
+        public async Task Test()
         {
             if (Context.User.Id != ESettings.Owner) return;
             try
@@ -28,13 +31,27 @@ namespace rJordanBot.Core.Commands
                 Random Random = new Random();
 
                 // Test code starts here.
-                int seconds = 10;
-                while (seconds > 0)
-                {
-                    await Task.Delay(1000);
-                    Console.WriteLine(seconds);
-                    seconds--;
-                }
+                SocketTextChannel RulesChannel = Guild.Channels.First(x => x.Id == Data.Data.GetChnlId("rules")) as SocketTextChannel;
+
+                Embed.WithTitle("Server Rules");
+                Embed.AddField("1. Be civil.", "Treat people the way you would like to be treated. Let's show our fellow neighbors a good image of Jordan.");
+                Embed.AddField("2. No offensive content.", "This includes, but is not limited to: Offensive slurs, hate speech of any kind, NSFW content outside of its designated channel, doxxing, and targeting, bullying or harassing fellow users. This rule is going to be enforced a lot more than before.");
+                Embed.AddField("3. No spamming.", "This includes, but is not limited to: Excessive use of emotes in text or in reactions, excessive mentions of moderators or users in general, and general spamming in text channels.");
+                Embed.AddField("4. No self promotion.", "This includes, but is not limited to: advertisements of any links outside of the designated social media sharing channel, and unsolicited advertising in direct messages.");
+                Embed.AddField("5. Language guidelines.", "Unless appropriate in context of a general conversation, this server communicates in English and Arabic only.");
+                Embed.AddField("6. Channel topics.", "Each channel has info on how to use it in its topic, and you are expected to post your content to the appropriate channels.");
+                Embed.AddField("7. Common sense.", "This means that trying to use loopholes to get out of abiding by these rules is also not allowed. In addition, moderators can and will take any action at their own discretion, in a way that benefits the server, even if said content does not \"technically\" break the server rules.");
+                Embed.AddField("8. Illegal content.", "We as a community are expected to follow the law of the country, so discussion of illegal content is not allowed.");
+                Embed.AddField("9. Direct Messages", "These rules also apply to direct messages including members of this server, as long as all parties involved are in explicit agreement otherwise.");
+                Embed.AddField("10. Discord's Terms of Service.", "We're using the Discord platform to host this community, and we are expected to abide by its ToS. That means that you have to be over the age of 13 to use the service, and you are not allowed to use client modifications.");
+
+                Embed.WithFooter("These rules are not up for debate. Failing to comply with them, or arguing a moderator's judgement, will lead to punitive action.\nNote: Edited and deleted messages are logged for security reasons.");
+
+                Embed.WithColor(Constants.Colors.Blurple);
+
+                //await RulesChannel.SendMessageAsync("", false, Embed.Build());
+                RestUserMessage NewMessage = (RestUserMessage)RulesChannel.GetMessagesAsync(1).FlattenAsync().Result.First();
+                await NewMessage.ModifyAsync(x => x.Embed = Embed.Build());
                 // Test code ends here.
 
                 IEmote emoji = new Emoji("✅");
@@ -258,22 +275,13 @@ namespace rJordanBot.Core.Commands
         {
             if (Context.User.Id != ESettings.Owner) return;
             ActivityType activity = new ActivityType();
-            switch (state)
+            activity = state switch
             {
-                case "-l":
-                    activity = ActivityType.Listening;
-                    break;
-                default:
-                case "-p":
-                    activity = ActivityType.Playing;
-                    break;
-                case "-s":
-                    activity = ActivityType.Streaming;
-                    break;
-                case "-q":
-                    activity = ActivityType.Watching;
-                    break;
-            }
+                "-l" => ActivityType.Listening,
+                "-s" => ActivityType.Streaming,
+                "-q" => ActivityType.Watching,
+                _ => ActivityType.Playing,
+            };
             await Context.Client.SetGameAsync(game, null, activity);
 
             IEmote emote = new Emoji("✅");
@@ -284,8 +292,8 @@ namespace rJordanBot.Core.Commands
         public async Task Announce()
         {
             EmbedBuilder embed = new EmbedBuilder();
-            embed.WithTitle("The new Mod Team!");
-            embed.WithDescription($"Good evening everyone. We are proud to announce the new moderation team, {Context.Guild.Users.First(x => x.Id == 321275495218020362).Mention} and {Context.Guild.Users.First(x => x.Id == 252526202982498305).Mention}! Let's welcome them with a warm round of applause! :clap:\nThank you to everyone else who applied, there will be many opportunities for you in the future to try again.");
+            embed.WithTitle("We're rebranding!");
+            embed.WithDescription($"Good evening everyone. It's been long overdue, but as of today, this Discord server and the r/jordan subreddit are going in separate ways. We would like to thank the subreddit team for allowing this community to grow as it did, and we're looking forward to what the future holds for this server. There will be some slight changes in {MentionUtils.MentionChannel(Data.Data.GetChnlId("welcome"))} and {MentionUtils.MentionChannel(Data.Data.GetChnlId("rules"))}, so please make sure to reread them to stay up to date on our guidelines.");
             embed.WithFooter("Please leave any feedback about this update in #feedback.");
             embed.WithColor(114, 137, 218);
 

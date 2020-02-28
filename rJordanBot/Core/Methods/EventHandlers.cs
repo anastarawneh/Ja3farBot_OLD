@@ -164,7 +164,7 @@ namespace rJordanBot.Core.Data
                 stars = message.Reactions.FirstOrDefault(x => x.Key.Name == "🌟").Value.ReactionCount
             };
 
-            if (message.Attachments.Count > 1)
+            if (message.Attachments.Count > 1 || message.Author == reaction.User.Value)
             {
                 await message.RemoveReactionAsync(reaction.Emote, reaction.User.Value);
                 return;
