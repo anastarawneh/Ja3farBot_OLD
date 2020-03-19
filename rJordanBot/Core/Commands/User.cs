@@ -159,6 +159,7 @@ namespace rJordanBot.Core.Commands
             await ReplyAsync(":x: Thank you, but we closed moderator applications for now.");
             return;
 
+            /*
             if (Context.User.IsBot) return;
             if (!(Context.Channel is IDMChannel))
             {
@@ -251,6 +252,7 @@ namespace rJordanBot.Core.Commands
             moderationembed.WithFooter(moderationembed.Footer.Text + $" | Canceled at {DateTime.Now.ToString("h:mm")}");
             await moderationmsg.ModifyAsync(x => x.Embed = moderationembed.Build());
             return;
+            */
         }
     }
 }
