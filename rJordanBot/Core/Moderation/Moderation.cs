@@ -3,6 +3,7 @@ using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.Rest;
 using Discord.WebSocket;
+using rJordanBot.Core.Methods;
 using rJordanBot.Resources.GeneralJSON;
 using rJordanBot.Resources.Settings;
 using System;
@@ -25,7 +26,15 @@ namespace rJordanBot.Core.Moderation
             }
 
             //Execution
-            await Data.Data.ReloadJSON();
+            try
+            {
+                await Data.Data.ReloadJSON();
+                await Context.Message.AddReactionAsync(Constants.Emojis.Tick);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
 
         [Command("userinfo")]

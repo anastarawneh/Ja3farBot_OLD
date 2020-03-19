@@ -13,5 +13,10 @@ namespace rJordanBot.Core.Methods
             public static readonly Color Red = new Color(221, 95, 83);
             public static readonly Color Green = new Color(83, 221, 172);
         }
+
+        public interface Emojis
+        {
+            public static readonly Emoji Tick = new Emoji("✅");
+        }
     }
 }

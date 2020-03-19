@@ -91,7 +91,7 @@ namespace rJordanBot.Core.Data
         {
             string JSON = "";
 
-            string SettingsLocation = @"C:\Users\anast\Desktop\VS\C#\rJordanBot\rJordanBot\Data\Settings.json";
+            string SettingsLocation = Environment.GetEnvironmentVariable("SettingsLocation");
             using (FileStream Stream = new FileStream(SettingsLocation, FileMode.Open, FileAccess.Read))
             using (StreamReader ReadSettings = new StreamReader(Stream))
             {
