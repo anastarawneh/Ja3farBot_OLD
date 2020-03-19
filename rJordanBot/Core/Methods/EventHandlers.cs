@@ -114,7 +114,7 @@ namespace rJordanBot.Core.Data
                 }
                 else
                 {
-                    await cmdchannel.SendMessageAsync($"{MentionUtils.MentionUser(ESettings.Owner)}, Rythm is Offline! Change the backup bot's prefix.\n>!settings prefix >");
+                    await cmdchannel.SendMessageAsync($"{MentionUtils.MentionUser(ESettings.Owner)}, Rythm is Offline! Change the backup bot's prefix.\n`>!settings prefix >`");
                     await (brythm as IGuildUser).AddRoleAsync(botrole);
                     await (brythm as IGuildUser).ModifyAsync(x =>
                     {
@@ -206,6 +206,18 @@ namespace rJordanBot.Core.Data
                 {
                     await GeneralJson.RemoveUser(user);
                 }
+            }
+        }
+
+        public static async Task InviteDeletion(SocketMessage message)
+        {
+            if (message.Author.IsBot) return;
+            if (message.Content.Contains("cdn.discordapp.com")) return;
+            if (message.Content.Contains("ksyBda2")) return;
+            if (message.Content.Contains("discord.gg") || message.Content.Contains("discordapp.com"))
+            {
+                await message.DeleteAsync();
+                await message.Channel.SendMessageAsync(":x: Please don't send Discord server invites in this server.");
             }
         }
     }

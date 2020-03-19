@@ -59,6 +59,7 @@ namespace rJordanBot
                 Client.ReactionRemoved += EventHandlers.Starboard_ReactionAddedOrRemoved;
                 Client.MessageReceived += Bot_CommandHandler;
                 Client.UserLeft += EventHandlers.JSON_UserLeft;
+                Client.MessageReceived += EventHandlers.InviteDeletion;
             }
 
             // Log Handlers
@@ -125,7 +126,7 @@ namespace rJordanBot
 
             await Data.SetInvitesBefore(Client.Guilds.First().Users.FirstOrDefault(x => x.Id == Client.CurrentUser.Id));
 
-            if (Client.Guilds.First().Roles.First(x => x.Name == "Muted").Members.Count() > 0)
+            /*if (Client.Guilds.First().Roles.First(x => x.Name == "Muted").Members.Count() > 0)
             {
                 IEnumerable<SocketGuildUser> muteds = Client.Guilds.First().Roles.First(x => x.Name == "Muted").Members;
                 if (muteds.Count() == 1) await (Client.Guilds.First().Channels.First(x => x.Id == Data.GetChnlId("mod-commands")) as SocketTextChannel).SendMessageAsync($"{Client.Guilds.First().Owner.Mention}, there is a muted user right now, and I've lost track of the time: {muteds.First().Mention}");
@@ -138,7 +139,7 @@ namespace rJordanBot
                     }
                     await (Client.Guilds.First().Channels.First(x => x.Id == Data.GetChnlId("mod-commands")) as SocketTextChannel).SendMessageAsync($"{Client.Guilds.First().Owner.Mention}, there are muted users right now, and I've lost track of the time: {users}");
                 }
-            }
+            }*/
             /*
 #if !DEBUG
             Console.WriteLine("RELEASE");
