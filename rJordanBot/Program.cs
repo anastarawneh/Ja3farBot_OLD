@@ -185,7 +185,11 @@ namespace rJordanBot
         {
             string errormsg = $"[{DateTime.Now} at {message.Source}] {message.Message}";
             if (message.Severity == LogSeverity.Warning) errormsg = $"[{DateTime.Now} at {message.Source}] **{message.Message}**";
-            if (message.Exception != null) await ExceptionLog(message.Exception, true);
+            if (message.Exception != null)
+            {
+                await ExceptionLog(message.Exception, true);
+                return;
+            }
 
             Console.WriteLine(errormsg);
             Console.ResetColor();
