@@ -370,5 +370,115 @@ namespace rJordanBot.Core.Commands
                 }
             }
         }
+
+        [Command("giveaway", RunMode = RunMode.Async)]
+        public async Task Giveaway(string time, [Remainder] string prize)
+        {
+            if (Context.User.Id != ESettings.Owner) return;
+            try
+            {
+                int Seconds;
+                int Time = int.Parse(time.Replace("d", "").Replace("h", "").Replace("m", "").Replace("s", ""));
+                string remaining;
+                string field;
+                Random random = new Random();
+                int winner;
+                ulong winnerid;
+
+                switch (time[^1])
+                {
+                    case 'd':
+                        Seconds = Time * 24 * 60 * 60;
+                        break;
+                    case 'h':
+                        Seconds = Time * 60 * 60;
+                        break;
+                    case 'm':
+                        Seconds = Time * 60;
+                        break;
+                    case 's':
+                        Seconds = Time;
+                        break;
+                    default:
+                        await ReplyAsync(":x: Please choose a correct time format.");
+                        return;
+                }
+
+                if (Seconds >= 60)
+                {
+                    if (Seconds / 60 >= 60)
+                    {
+                        if (Seconds / 60 / 60 >= 24)
+                        {
+                            remaining = $"{Seconds / 60 / 60 / 24} days";
+                        }
+                        else remaining = $"{Seconds / 60 / 60} hours";
+                    }
+                    else remaining = $"{Seconds / 60} minutes";
+                }
+                else remaining = $"{Seconds} seconds";
+
+                field = $"\n{remaining} left.";
+
+                EmbedBuilder embed = new EmbedBuilder();
+                embed.WithTitle($"Giveaway: {prize}");
+                embed.WithColor(Constants.Colors.Blurple);
+                embed.WithDescription("React with 🎉 to enter!");
+                embed.AddField("Time Remaining", field);
+
+                SocketGuild Guild = Context.Guild;
+                SocketTextChannel Channel = Context.Channel as SocketTextChannel;
+                IUserMessage Message = await ReplyAsync("", false, embed.Build());
+
+                await Message.AddReactionAsync(new Emoji("🎉"));
+
+                while (true)
+                {
+                    await Task.Delay(1000);
+                    Seconds--;
+
+                    if (Seconds == 0) break;
+
+                    if (Seconds % 5 == 0)
+                    {
+                        if (Seconds >= 60)
+                        {
+                            if (Seconds / 60 >= 60)
+                            {
+                                if (Seconds / 60 / 60 >= 24)
+                                {
+                                    remaining = $"{Seconds / 60 / 60 / 24} days";
+                                }
+                                else remaining = $"{Seconds / 60 / 60} hours";
+                            }
+                            else remaining = $"{Seconds / 60} minutes";
+                        }
+                        else remaining = $"{Seconds} seconds";
+
+                        field = $"\n{remaining} left.";
+
+                        embed.Fields.First().Value = field;
+
+                        await Message.ModifyAsync(x => x.Embed = embed.Build());
+                    }
+                }
+
+                await Message.RemoveReactionAsync(new Emoji("🎉"), Context.Client.CurrentUser);
+
+                winner = random.Next(0, Message.GetReactionUsersAsync(new Emoji("🎉"), 100).FlattenAsync().Result.Count());
+
+                winnerid = Message.GetReactionUsersAsync(new Emoji("🎉"), 100).FlattenAsync().Result.ElementAt(winner).Id;
+
+                embed.Fields.First().Name = "Winner";
+                embed.Fields.First().Value = $"{MentionUtils.MentionUser(winnerid)}";
+                embed.WithColor(0, 255, 0);
+
+                await Message.ModifyAsync(x => x.Embed = embed.Build());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
     }
 }
