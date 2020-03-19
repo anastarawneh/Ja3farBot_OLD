@@ -4,6 +4,7 @@ using Discord.Commands;
 using Discord.Rest;
 using Discord.WebSocket;
 using rJordanBot.Resources.GeneralJSON;
+using rJordanBot.Resources.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,6 +42,12 @@ namespace rJordanBot.Core.Commands
                 int id;
                 string user;
 
+                if (ESettings.EventsActive == false)
+                {
+                    await ReplyAsync(":x: The event system is not available right now.");
+                    return;
+                }
+                
                 if (!(Context.User as SocketGuildUser).ToUser().Verified)
                 {
                     await ReplyAsync(":x: You need to be verified to be able to use the Events system.");
@@ -102,6 +109,12 @@ namespace rJordanBot.Core.Commands
             [Command("edit")]
             public async Task Edit(int id = 0, string section = "empty", [Remainder]string message = "none")
             {
+                if (ESettings.EventsActive == false)
+                {
+                    await ReplyAsync(":x: The event system is not available right now.");
+                    return;
+                }
+
                 if (id == 0 || id >= 100000)
                 {
                     await Context.Channel.SendMessageAsync(":x: Please provide a valid ID.");
@@ -168,6 +181,12 @@ namespace rJordanBot.Core.Commands
             public async Task Delete(int id = 0, [Remainder]string confirmation = null)
             {
                 //Checks
+
+                if (ESettings.EventsActive == false)
+                {
+                    await ReplyAsync(":x: The event system is not available right now.");
+                    return;
+                }
 
                 if (id == 0 || id >= 100000)
                 {

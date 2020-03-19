@@ -14,6 +14,8 @@ namespace rJordanBot.Resources.Datatypes
         public ulong owner { get; set; }
         public List<ulong> reportbanned { get; set; }
         public int starboardmin { get; set; }
+        public bool modappsactive { get; set; }
+        public bool eventsactive { get; set; }
     }
 
     public class RoleSetting
