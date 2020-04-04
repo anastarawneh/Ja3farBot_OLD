@@ -19,7 +19,7 @@ namespace rJordanBot.Core.Commands
     public class Owner : InteractiveBase<SocketCommandContext>
     {
         [Command("test", RunMode = RunMode.Async)]
-        public async Task Test()
+        public async Task Test(SocketGuildUser user)
         {
             if (Context.User.Id != ESettings.Owner) return;
             try
@@ -31,27 +31,7 @@ namespace rJordanBot.Core.Commands
                 Random Random = new Random();
 
                 // Test code starts here.
-                SocketTextChannel RulesChannel = Guild.Channels.First(x => x.Id == Data.Data.GetChnlId("rules")) as SocketTextChannel;
-
-                Embed.WithTitle("Server Rules");
-                Embed.AddField("1. Be civil.", "Treat people the way you would like to be treated. Let's show our fellow neighbors a good image of Jordan.");
-                Embed.AddField("2. No offensive content.", "This includes, but is not limited to: Offensive slurs, hate speech of any kind, NSFW content outside of its designated channel, doxxing, and targeting, bullying or harassing fellow users. This rule is going to be enforced a lot more than before.");
-                Embed.AddField("3. No spamming.", "This includes, but is not limited to: Excessive use of emotes in text or in reactions, excessive mentions of moderators or users in general, and general spamming in text channels.");
-                Embed.AddField("4. No self promotion.", "This includes, but is not limited to: advertisements of any links outside of the designated social media sharing channel, and unsolicited advertising in direct messages.");
-                Embed.AddField("5. Language guidelines.", "Unless appropriate in context of a general conversation, this server communicates in English and Arabic only.");
-                Embed.AddField("6. Channel topics.", "Each channel has info on how to use it in its topic, and you are expected to post your content to the appropriate channels.");
-                Embed.AddField("7. Common sense.", "This means that trying to use loopholes to get out of abiding by these rules is also not allowed. In addition, moderators can and will take any action at their own discretion, in a way that benefits the server, even if said content does not \"technically\" break the server rules.");
-                Embed.AddField("8. Illegal content.", "We as a community are expected to follow the law of the country, so discussion of illegal content is not allowed.");
-                Embed.AddField("9. Direct Messages", "These rules also apply to direct messages including members of this server, as long as all parties involved are in explicit agreement otherwise.");
-                Embed.AddField("10. Discord's Terms of Service.", "We're using the Discord platform to host this community, and we are expected to abide by its ToS. That means that you have to be over the age of 13 to use the service, and you are not allowed to use client modifications.");
-
-                Embed.WithFooter("These rules are not up for debate. Failing to comply with them, or arguing a moderator's judgement, will lead to punitive action.\nNote: Edited and deleted messages are logged for security reasons.");
-
-                Embed.WithColor(Constants.Colors.Blurple);
-
-                //await RulesChannel.SendMessageAsync("", false, Embed.Build());
-                RestUserMessage NewMessage = (RestUserMessage)RulesChannel.GetMessagesAsync(1).FlattenAsync().Result.First();
-                await NewMessage.ModifyAsync(x => x.Embed = Embed.Build());
+                await user.KickAsync();
                 // Test code ends here.
 
                 IEmote emoji = new Emoji("✅");
@@ -331,7 +311,7 @@ namespace rJordanBot.Core.Commands
             await Context.Message.DeleteAsync();
         }
 
-        [Group("json")]
+        [Group("json"), RequireOwner]
         public class JSON : InteractiveBase<SocketCommandContext>
         {
             [Group("user")]
@@ -362,6 +342,27 @@ namespace rJordanBot.Core.Commands
                     embed.WithTitle("List of users in JSON file");
                     foreach (Resources.GeneralJSON.User user in GeneralJson.users)
                     {
+                        list += $"{user.Username}#{user.Discriminator}\n";
+                    }
+                    embed.WithDescription(list);
+
+                    await ReplyAsync("", false, embed.Build());
+                }
+            }
+
+            [Group("moderator"), Alias("mod")]
+            public class Moderator : InteractiveBase<SocketCommandContext>
+            {
+                [Command("list"), Alias("l")]
+                public async Task List()
+                {
+                    string list = "";
+                    EmbedBuilder embed = new EmbedBuilder();
+                    embed.WithColor(0, 255, 0);
+                    embed.WithTitle("List of users in JSON file");
+                    foreach (Resources.GeneralJSON.Moderator mod in GeneralJson.moderators)
+                    {
+                        SocketGuildUser user = Context.Guild.Users.First(x => x.Id == mod.ID);
                         list += $"{user.Username}#{user.Discriminator}\n";
                     }
                     embed.WithDescription(list);

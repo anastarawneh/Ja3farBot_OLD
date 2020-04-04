@@ -301,7 +301,7 @@ namespace rJordanBot.Core.Data
             embed.AddField("Invited by:", inviter);
             embed.WithCurrentTimestamp();
             embed.WithColor(83, 221, 172);
-            embed.WithFooter($"UserID: {user.Id} | User count: {user.Guild.Users.Count}");
+            embed.WithFooter($"UserID: {user.Id} | User count: {user.Guild.MemberCount}");
 
             SocketTextChannel LogChannel = user.Guild.Channels.FirstOrDefault(x => x.Id == LogID) as SocketTextChannel;
             await LogChannel.SendMessageAsync("", false, embed.Build());
@@ -317,7 +317,7 @@ namespace rJordanBot.Core.Data
             else embed.AddField("User joined:", Data.GetDuration(user.JoinedAt.Value.DateTime.AddHours(2), DateTime.Now).Duration());
             embed.WithCurrentTimestamp();
             embed.WithColor(255, 245, 175);
-            embed.WithFooter($"UserID: {user.Id} | User count: {user.Guild.Users.Count}");
+            embed.WithFooter($"UserID: {user.Id} | User count: {user.Guild.MemberCount}");
 
             SocketTextChannel LogChannel = user.Guild.Channels.FirstOrDefault(x => x.Id == LogID) as SocketTextChannel;
             await LogChannel.SendMessageAsync("", false, embed.Build());
