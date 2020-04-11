@@ -89,41 +89,6 @@ namespace rJordanBot.Core.Data
             }
         }
 
-        public static async Task Rythm_GuildMemberUpdated(SocketGuildUser s, SocketGuildUser e)
-        {
-            SocketGuild Guild = s.Guild;
-            SocketTextChannel cmdchannel = Guild.Channels.Where(x => x.Id == 553926270417633281).FirstOrDefault() as SocketTextChannel;
-
-            //Rythm Status Detection:
-
-            ulong rythmid = 235088799074484224;
-            ulong brythmid = 252128902418268161;
-            SocketRole botrole = Guild.Roles.FirstOrDefault(x => x.Name == "Bot");
-            SocketGuildUser brythm = Guild.Users.FirstOrDefault(x => x.Id == brythmid);
-
-            if (e.Id == rythmid)
-            {
-                if (e.Status == UserStatus.Online)
-                {
-                    await cmdchannel.SendMessageAsync($"{MentionUtils.MentionUser(ESettings.Owner)}, Rythm is Online! Change the backup bot's prefix.\n`>settings prefix >!`");
-                    await (brythm as IGuildUser).RemoveRoleAsync(botrole);
-                    await (brythm as IGuildUser).ModifyAsync(x =>
-                    {
-                        x.Nickname = "inactive music boi";
-                    });
-                }
-                else
-                {
-                    await cmdchannel.SendMessageAsync($"{MentionUtils.MentionUser(ESettings.Owner)}, Rythm is Offline! Change the backup bot's prefix.\n`>!settings prefix >`");
-                    await (brythm as IGuildUser).AddRoleAsync(botrole);
-                    await (brythm as IGuildUser).ModifyAsync(x =>
-                    {
-                        x.Nickname = "backup music boi";
-                    });
-                }
-            }
-        }
-
         public static async Task Invites_UserJoined(SocketGuildUser user)
         {
             try

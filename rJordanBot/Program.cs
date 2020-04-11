@@ -53,7 +53,6 @@ namespace rJordanBot
             {
                 Client.ReactionAdded += EventHandlers.Roles_ReactionAdded;
                 Client.ReactionAdded += EventHandlers.Events_ReactionAdded;
-                Client.GuildMemberUpdated += EventHandlers.Rythm_GuildMemberUpdated;
                 Client.UserJoined += EventHandlers.Invites_UserJoined;
                 Client.ReactionAdded += EventHandlers.Starboard_ReactionAddedOrRemoved;
                 Client.ReactionRemoved += EventHandlers.Starboard_ReactionAddedOrRemoved;
