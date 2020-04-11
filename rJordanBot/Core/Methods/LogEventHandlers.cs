@@ -24,7 +24,8 @@ namespace rJordanBot.Core.Data
 
             List<SocketTextChannel> Blacklist = new List<SocketTextChannel>
             {
-                guild.Channels.FirstOrDefault(x => x.Id == Data.GetChnlId("suggestions")) as SocketTextChannel
+                guild.Channels.FirstOrDefault(x => x.Id == Data.GetChnlId("suggestions")) as SocketTextChannel,
+                guild.Channels.FirstOrDefault(x => x.Id == Data.GetChnlId("commands")) as SocketTextChannel
             };
 
             if (Blacklist.Contains(channel as SocketTextChannel)) return;
@@ -62,6 +63,7 @@ namespace rJordanBot.Core.Data
             if (channel is IDMChannel) return;
             if (cacheable.Value == null) return;
             if (cacheable.Value.Author.IsBot) return;
+            if (channel.Id == Data.GetChnlId("commands")) return;
 
             SocketGuild guild = (channel as SocketGuildChannel).Guild;
             SocketTextChannel LogChannel = guild.Channels.FirstOrDefault(x => x.Id == LogID) as SocketTextChannel;
