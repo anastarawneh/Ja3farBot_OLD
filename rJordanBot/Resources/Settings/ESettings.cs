@@ -10,5 +10,6 @@ namespace rJordanBot.Resources.Settings
         public static int StarboardMin;
         public static bool ModAppsActive;
         public static bool EventsActive;
+        public static List<string> InviteWhitelist;
     }
 }

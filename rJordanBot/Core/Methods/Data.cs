@@ -54,6 +54,7 @@ namespace rJordanBot.Core.Data
             ESettings.StarboardMin = Settings.starboardmin;
             ESettings.ModAppsActive = Settings.modappsactive;
             ESettings.EventsActive = Settings.eventsactive;
+            ESettings.InviteWhitelist = Settings.invitewhitelist;
 
             using (FileStream Stream = new FileStream(SettingsLocation.Replace("Settings", "GeneralJSON"), FileMode.Open, FileAccess.Read))
             using (StreamReader Reader = new StreamReader(Stream))
@@ -106,6 +107,7 @@ namespace rJordanBot.Core.Data
             ESettings.StarboardMin = Settings.starboardmin;
             ESettings.ModAppsActive = Settings.modappsactive;
             ESettings.EventsActive = Settings.eventsactive;
+            ESettings.InviteWhitelist = Settings.invitewhitelist;
 
             return Task.CompletedTask;
         }

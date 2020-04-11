@@ -16,6 +16,7 @@ namespace rJordanBot.Resources.Datatypes
         public int starboardmin { get; set; }
         public bool modappsactive { get; set; }
         public bool eventsactive { get; set; }
+        public List<string> invitewhitelist { get; set; }
     }
 
     public class RoleSetting

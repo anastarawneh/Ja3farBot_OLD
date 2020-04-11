@@ -212,8 +212,10 @@ namespace rJordanBot.Core.Data
         public static async Task InviteDeletion(SocketMessage message)
         {
             if (message.Author.IsBot) return;
-            if (message.Content.Contains("cdn.discordapp.com")) return;
-            if (message.Content.Contains("ksyBda2")) return;
+            foreach (string whitelist in ESettings.InviteWhitelist)
+            {
+                if (message.Content.Contains(whitelist)) return;
+            }
             if (message.Content.Contains("discord.gg") || message.Content.Contains("discordapp.com"))
             {
                 await message.DeleteAsync();
