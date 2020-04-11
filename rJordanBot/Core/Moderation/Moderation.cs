@@ -116,7 +116,8 @@ namespace rJordanBot.Core.Moderation
         [Command("ban")]
         public async Task Ban(SocketGuildUser user, [Remainder]string reason = "")
         {
-            if (!user.IsModerator() || user.Id != ESettings.Owner) return;
+            SocketGuildUser user_ = Context.User as SocketGuildUser;
+            if (!user_.IsModerator() && user_.Id != ESettings.Owner) return;
 
             await user.BanAsync();
 
@@ -140,6 +141,9 @@ namespace rJordanBot.Core.Moderation
         {
             try
             {
+                SocketGuildUser user_ = Context.User as SocketGuildUser;
+                if (!user_.IsModerator() && user_.Id != ESettings.Owner) return;
+
                 int seconds;
                 int time_ = int.Parse(time.Replace("h", "").Replace("m", ""));
                 SocketRole muted = Context.Guild.Roles.First(x => x.Name == "Muted");
