@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Rest;
 using Discord.WebSocket;
+using rJordanBot.Core.Methods;
 using rJordanBot.Resources.Database;
 using System;
 using System.Collections.Generic;
@@ -428,6 +429,26 @@ namespace rJordanBot.Core.Data
             SocketGuild guild = channelAfter_.Guild;
             SocketTextChannel LogChannel = (SocketTextChannel)guild.Channels.First(x => x.Id == LogID);
             await LogChannel.SendMessageAsync("", false, embed.Build());
+        }
+
+        // Messages Bulk Deleted
+        public static async Task MessagesBulkDeleted(IReadOnlyCollection<Cacheable<IMessage, ulong>> collection, ISocketMessageChannel channel)
+        {
+            string messages = "";
+            EmbedBuilder embed = new EmbedBuilder();
+            embed.WithTitle($"Messages bulk deleted in #{channel}");
+            embed.WithColor(Constants.Colors.Red);
+            embed.WithCurrentTimestamp();
+
+            foreach (Cacheable<IMessage, ulong> cacheable in collection)
+            {
+                IMessage message = cacheable.Value;
+                if (message.Content != null) messages += $"[<@{message.Author.Id}>]: {message.Content}\n";
+            }
+
+            embed.AddField("Messages", messages);
+
+            await ((channel as SocketGuildChannel).Guild.Channels.First(x => x.Id == LogID) as SocketTextChannel).SendMessageAsync("", false, embed.Build());
         }
     }
 }

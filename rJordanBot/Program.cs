@@ -78,6 +78,7 @@ namespace rJordanBot
                 Client.GuildUpdated += LogEventHandlers.EmojiCreated;
                 Client.GuildUpdated += LogEventHandlers.EmojiDeleted;
                 Client.ChannelUpdated += LogEventHandlers.ChannelNameChanged;
+                Client.MessagesBulkDeleted += LogEventHandlers.MessagesBulkDeleted;
             }
 
             await Client.LoginAsync(TokenType.Bot, ESettings.Token);
