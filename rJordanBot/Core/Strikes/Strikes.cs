@@ -79,7 +79,7 @@ namespace rJordanBot.Core.Strikes
                 await Context.Channel.SendMessageAsync($":white_check_mark: {User.Mention} has been given {Amount} strike(s).");
 
                 //Saving
-                await Data.Data.SaveStrikes(User.Id, Amount, User.ToString());
+                await Data.Data.SaveStrikes(User.Id, Amount);
 
             }
 

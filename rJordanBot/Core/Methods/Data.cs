@@ -122,7 +122,7 @@ namespace rJordanBot.Core.Data
             return DbContext.Strikes.Where(x => x.UserId == UserId).Select(x => x.Amount).FirstOrDefault();
         }
 
-        public static async Task SaveStrikes(ulong UserId, int Amount, string Username)
+        public static async Task SaveStrikes(ulong UserId, int Amount)
         {
             using SqliteDbContext DbContext = new SqliteDbContext();
             if (DbContext.Strikes.Where(x => x.UserId == UserId).Count() < 1)
@@ -130,8 +130,7 @@ namespace rJordanBot.Core.Data
                 DbContext.Strikes.Add(new Strike
                 {
                     UserId = UserId,
-                    Amount = Amount,
-                    Username = Username
+                    Amount = Amount
                 });
             }
             else

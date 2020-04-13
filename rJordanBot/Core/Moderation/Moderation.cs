@@ -4,6 +4,7 @@ using Discord.Commands;
 using Discord.Rest;
 using Discord.WebSocket;
 using rJordanBot.Core.Methods;
+using rJordanBot.Resources.Database;
 using rJordanBot.Resources.GeneralJSON;
 using rJordanBot.Resources.Settings;
 using System;
@@ -190,6 +191,48 @@ namespace rJordanBot.Core.Moderation
             {
                 Console.WriteLine(ex);
             }
+        }
+
+        [Command("warn")]
+        public async Task Warn(SocketGuildUser user = null, [Remainder] string reason = null)
+        {
+            // Checks
+            if (user == null)
+            {
+                await ReplyAsync(":x: Please mention a user to be warned. `^warn <user> <reason>`");
+                return;
+            }
+            if (reason == null)
+            {
+                await ReplyAsync(":x: Please mention a reason for the warning. `^warn <user> <reason>`");
+                return;
+            }
+
+            // Execution
+            using SqliteDbContext DbContext = new SqliteDbContext();
+            if (DbContext.Strikes.Where(x => x.UserId == user.Id).Count() == 0) DbContext.Strikes.Add(new Strike { 
+                UserId = user.Id,
+                Amount = 0
+            });
+            Strike strikeEntry = DbContext.Strikes.First(x => x.UserId == user.Id);
+            strikeEntry.Amount++;
+            DbContext.Update(strikeEntry);
+            await DbContext.SaveChangesAsync();
+
+            // Response
+            await ReplyAsync($":white_check_mark: User {user} has been warned for `{reason}`. Total warnings: `{strikeEntry.Amount}`.");
+            EmbedBuilder embed = new EmbedBuilder();
+            embed.WithTitle("Warning issued");
+            embed.WithAuthor(Context.User);
+            embed.WithColor(Constants.Colors.Blurple);
+            embed.AddField("User", user);
+            embed.AddField("Reason", reason);
+            embed.WithCurrentTimestamp();
+            embed.WithFooter($"UserID: {user.Id}");
+
+            SocketGuild guild = Context.Guild;
+            SocketTextChannel logChannel = guild.Channels.First(x => x.Id == Data.Data.GetChnlId("moderation-log")) as SocketTextChannel;
+            await logChannel.SendMessageAsync("", false, embed.Build());
         }
     }
 }

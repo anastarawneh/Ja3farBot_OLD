@@ -7,6 +7,5 @@ namespace rJordanBot.Resources.Database
         [Key]
         public ulong UserId { get; set; }
         public int Amount { get; set; }
-        public string Username { get; set; }
     }
 }
