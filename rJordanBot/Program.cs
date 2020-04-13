@@ -209,7 +209,7 @@ namespace rJordanBot
                 $"```{ex}```";
             if (Verbose == false) errormsg = $"[{DateTime.Now} at ExceptionHandler] {ex.Message}";
 
-            if (ex.Message.Contains("The remote party closed the WebSocket connection without completing the close handshake")) errormsg = $"[{DateTime.Now} at ExceptionHandler] ``WebSocket connection was closed``";
+            if (ex.ToString().Contains("Server requested a reconnect")) errormsg = $"[{DateTime.Now} at ExceptionHandler] Server requested a reconnect";
 
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine(errormsg);
