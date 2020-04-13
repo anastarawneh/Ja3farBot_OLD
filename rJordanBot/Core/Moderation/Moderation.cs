@@ -138,7 +138,7 @@ namespace rJordanBot.Core.Moderation
         }
 
         [Command("mute")]
-        public async Task Mute(SocketGuildUser user, string time)
+        public async Task Mute(SocketGuildUser user, string time, [Remainder] string reason = null)
         {
             try
             {
@@ -162,6 +162,7 @@ namespace rJordanBot.Core.Moderation
                 }
 
                 await user.AddRoleAsync(muted);
+                await Context.Message.AddReactionAsync(Constants.Emojis.Tick);
 
                 EmbedBuilder embed = new EmbedBuilder();
                 embed.WithTitle("User Muted");
@@ -169,6 +170,7 @@ namespace rJordanBot.Core.Moderation
                 embed.WithColor(255, 0, 0);
                 embed.AddField("User", user, true);
                 embed.AddField("Duration", time, true);
+                if (reason != null) embed.AddField("Reason", reason);
                 embed.WithFooter($"UserID: {user.Id}");
 
                 SocketTextChannel logChannel = (SocketTextChannel)Context.Guild.Channels.First(x => x.Id == Data.Data.GetChnlId("moderation-log"));
@@ -220,7 +222,8 @@ namespace rJordanBot.Core.Moderation
             await DbContext.SaveChangesAsync();
 
             // Response
-            await ReplyAsync($":white_check_mark: User {user} has been warned for `{reason}`. Total warnings: `{strikeEntry.Amount}`.");
+            await Context.Message.DeleteAsync();
+            await ReplyAsync($":white_check_mark: User {user.Mention} has been warned for `{reason}`. Total warnings: `{strikeEntry.Amount}`.");
             EmbedBuilder embed = new EmbedBuilder();
             embed.WithTitle("Warning issued");
             embed.WithAuthor(Context.User);
