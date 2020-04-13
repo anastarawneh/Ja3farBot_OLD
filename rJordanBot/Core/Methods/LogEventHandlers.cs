@@ -116,6 +116,7 @@ namespace rJordanBot.Core.Data
         public static async Task DiscriminatorChanged(SocketUser oldUser, SocketUser newUser)
         {
             if (oldUser.Discriminator == newUser.Discriminator) return;
+            if (oldUser.MutualGuilds.Count == 0) return;
 
             SocketGuildUser oldUser_ = oldUser as SocketGuildUser;
             SocketGuild guild = oldUser_.Guild;
