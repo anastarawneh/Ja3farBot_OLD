@@ -185,9 +185,9 @@ namespace rJordanBot
         {
             string errormsg = $"[{DateTime.Now} at {message.Source}] {message.Message}";
             if (message.Severity == LogSeverity.Warning) errormsg = $"[{DateTime.Now} at {message.Source}] **{message.Message}**";
-            if (message.Exception != null)
+            if (message.Exception is CommandException cmdException)
             {
-                await ExceptionLog(message.Exception, true);
+                await ExceptionHandler(cmdException);
                 return;
             }
 
@@ -203,21 +203,31 @@ namespace rJordanBot
             }
         }
 
-        public async Task ExceptionLog(Exception ex, bool Verbose = true)
+        public async Task ExceptionHandler(CommandException ex)
         {
-            string errormsg = $"[{DateTime.Now} at ExceptionHandler]\n" +
-                $"```{ex}```";
-            if (Verbose == false) errormsg = $"[{DateTime.Now} at ExceptionHandler] {ex.Message}";
+            try
+            {
+                await ex.Context.Channel.SendMessageAsync($":x: Catastrophic faliure! Pinging {ex.Context.Guild.GetOwnerAsync().Result.Mention}.");
 
-            if (ex.ToString().Contains("Server requested a reconnect")) errormsg = $"[{DateTime.Now} at ExceptionHandler] Server requested a reconnect";
+                string errormsg = $"[{DateTime.Now} at ExceptionHandler]\n" +
+                    $"```{ex}```";
 
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine(errormsg);
-            Console.ResetColor();
+                if (ex.ToString().Contains("Server requested a reconnect")) errormsg = $"[{DateTime.Now} at ExceptionHandler] Server requested a reconnect";
 
-            SocketGuild Guild = Client.Guilds.Where(x => x.Id == 550848068640309259).FirstOrDefault();
-            SocketTextChannel Channel = Guild.Channels.Where(x => x.Id == Data.GetChnlId("bot-log")).FirstOrDefault() as SocketTextChannel;
-            await Channel.SendMessageAsync(errormsg);
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine(errormsg);
+                Console.ResetColor();
+
+                SocketGuild Guild = Client.Guilds.Where(x => x.Id == 550848068640309259).FirstOrDefault();
+                SocketTextChannel Channel = Guild.Channels.Where(x => x.Id == Data.GetChnlId("bot-log")).FirstOrDefault() as SocketTextChannel;
+                await Channel.SendMessageAsync(errormsg);
+            }
+            catch (Exception ex2)
+            {
+                SocketGuild guild = ex.Context.Client.GetGuildsAsync().Result.First() as SocketGuild;
+                SocketTextChannel channel = guild.Channels.First(x => x.Id == Data.GetChnlId("commands")) as SocketTextChannel;
+                await channel.SendMessageAsync($"{guild.Owner.Mention}, we have a problem in `ExceptionHandler`.");
+            }
         }
 
         public async Task Command_Log_Message(SocketUserMessage message, string result)
