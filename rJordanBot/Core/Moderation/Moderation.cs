@@ -212,10 +212,15 @@ namespace rJordanBot.Core.Moderation
 
             // Execution
             using SqliteDbContext DbContext = new SqliteDbContext();
-            if (DbContext.Strikes.Where(x => x.UserId == user.Id).Count() == 0) DbContext.Strikes.Add(new Strike { 
-                UserId = user.Id,
-                Amount = 0
-            });
+            if (DbContext.Strikes.Where(x => x.UserId == user.Id).Count() < 1)
+            {
+                DbContext.Strikes.Add(new Strike
+                {
+                    UserId = user.Id,
+                    Amount = 0
+                });
+                await DbContext.SaveChangesAsync();
+            }
             Strike strikeEntry = DbContext.Strikes.First(x => x.UserId == user.Id);
             strikeEntry.Amount++;
             DbContext.Update(strikeEntry);
