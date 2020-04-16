@@ -75,8 +75,6 @@ namespace rJordanBot
                 Client.ChannelDestroyed += LogEventHandlers.ChannelDestroyed;
                 Client.UserJoined += LogEventHandlers.UserJoined;
                 Client.UserLeft += LogEventHandlers.UserLeft;
-                Client.GuildUpdated += LogEventHandlers.EmojiCreated;
-                Client.GuildUpdated += LogEventHandlers.EmojiDeleted;
                 Client.ChannelUpdated += LogEventHandlers.ChannelNameChanged;
                 Client.MessagesBulkDeleted += LogEventHandlers.MessagesBulkDeleted;
             }

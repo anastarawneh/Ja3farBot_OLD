@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Discord.Commands;
 using Discord.Rest;
 using Discord.WebSocket;
 using rJordanBot.Core.Methods;
@@ -342,71 +343,6 @@ namespace rJordanBot.Core.Data
                 if (Invite.Inviter.Id == user.Id) await Invite.DeleteAsync();
             }
             await Data.SetInvitesBefore(user);
-        }
-
-        // Emoji Created
-        public static async Task EmojiCreated(SocketGuild guildBefore, SocketGuild guildAfter)
-        {
-            try
-            {
-                if (guildBefore.Emotes.Count >= guildAfter.Emotes.Count) return;
-
-                GuildEmote emote;
-                foreach (IEmote Emote in guildAfter.Emotes)
-                {
-                    if (!guildBefore.Emotes.Contains(Emote))
-                    {
-                        emote = Emote as GuildEmote;
-
-                        EmbedBuilder embed = new EmbedBuilder();
-                        embed.WithTitle($"Emote Created");
-                        embed.WithAuthor(guildAfter.Users.FirstOrDefault(x => x.Id == emote.CreatorId));
-                        embed.AddField("Name:", emote.Name);
-                        embed.AddField("Animated:", emote.Animated);
-                        embed.WithCurrentTimestamp();
-                        embed.WithColor(83, 221, 172);
-                        embed.WithImageUrl(emote.Url);
-                        embed.WithFooter($"EmoteID: {emote.Id}");
-
-                        SocketTextChannel LogChannel = guildAfter.Channels.FirstOrDefault(x => x.Id == LogID) as SocketTextChannel;
-                        await LogChannel.SendMessageAsync("", false, embed.Build());
-                        return;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-        }
-
-        // Emoji Deleted
-        public static async Task EmojiDeleted(SocketGuild guildBefore, SocketGuild guildAfter)
-        {
-            if (guildBefore.Emotes.Count! > guildAfter.Emotes.Count) return;
-
-            GuildEmote emote;
-            foreach (IEmote Emote in guildBefore.Emotes)
-            {
-                if (!guildAfter.Emotes.Contains(Emote))
-                {
-                    emote = Emote as GuildEmote;
-
-                    EmbedBuilder embed = new EmbedBuilder();
-                    embed.WithTitle($"Emote Deleted");
-                    embed.WithAuthor(guildAfter.Users.FirstOrDefault(x => x.Id == emote.CreatorId));
-                    embed.AddField("Name:", emote.Name);
-                    embed.AddField("Animated:", emote.Animated);
-                    embed.WithCurrentTimestamp();
-                    embed.WithColor(255, 245, 175);
-                    embed.WithImageUrl(emote.Url);
-                    embed.WithFooter($"EmoteID: {emote.Id}");
-
-                    SocketTextChannel LogChannel = guildAfter.Channels.FirstOrDefault(x => x.Id == LogID) as SocketTextChannel;
-                    await LogChannel.SendMessageAsync("", false, embed.Build());
-                    return;
-                }
-            }
         }
 
         // Channel Name Changed
