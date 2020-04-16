@@ -18,40 +18,33 @@ namespace rJordanBot.Core.Moderation
             [Command("verify"), Alias("v")]
             public async Task Verify([Remainder]IUser user = null)
             {
-                try
+                if (Context.User != Context.Guild.Owner) return;
+
+                ulong id = user.Id;
+
+                if (user is null)
                 {
-                    if (Context.User != Context.Guild.Owner) return;
+                    await ReplyAsync(":x: Please enter a user.");
+                    return;
+                }
 
-                    ulong id = user.Id;
-
-                    if (user is null)
-                    {
-                        await ReplyAsync(":x: Please enter a user.");
-                        return;
-                    }
-
-                    if ((user as SocketGuildUser).ToUser().Verified)
-                    {
-                        await ReplyAsync(":x: User is already verified.");
-                        return;
-                    }
+                if ((user as SocketGuildUser).ToUser().Verified)
+                {
+                    await ReplyAsync(":x: User is already verified.");
+                    return;
+                }
 
                 /*eVerified.Allowed.Add(id);
                 eVerified.Denied.Remove(id);
                 Data.Data.UpdateVerified();*/
 
                     (user as SocketGuildUser).ToUser().Verified = true;
-                    await Data.Data.SaveGeneralJSON();
+                await Data.Data.SaveGeneralJSON();
 
-                    await ReplyAsync($"{user.Mention} is now verified.");
+                await ReplyAsync($"{user.Mention} is now verified.");
 
-                    IDMChannel channel = user.GetOrCreateDMChannelAsync().Result;
-                    await channel.SendMessageAsync(":white_check_mark: You have been verified.");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                }
+                IDMChannel channel = user.GetOrCreateDMChannelAsync().Result;
+                await channel.SendMessageAsync(":white_check_mark: You have been verified.");
             }
 
             [Command("unverify"), Alias("uv", "deny")]

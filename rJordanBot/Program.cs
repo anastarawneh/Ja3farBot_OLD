@@ -47,6 +47,7 @@ namespace rJordanBot
                 Client.MessageReceived += Client_CommandHandler;
                 Client.Ready += Client_Ready;
                 Client.Log += Client_Log;
+                Commands.CommandExecuted += ExceptionHandler;
             }
 
             // Secondary Handlers
@@ -185,12 +186,7 @@ namespace rJordanBot
         {
             string errormsg = $"[{DateTime.Now} at {message.Source}] {message.Message}";
             if (message.Severity == LogSeverity.Warning) errormsg = $"[{DateTime.Now} at {message.Source}] **{message.Message}**";
-            if (message.Exception is CommandException cmdException)
-            {
-                await ExceptionHandler(cmdException);
-                return;
-            }
-
+            
             Console.WriteLine(errormsg);
             Console.ResetColor();
 
@@ -203,14 +199,23 @@ namespace rJordanBot
             }
         }
 
-        public async Task ExceptionHandler(CommandException ex)
+        public async Task ExceptionHandler(Optional<CommandInfo> optional, ICommandContext context, IResult result)
         {
-            try
+            if (result is ExecuteResult Result)
             {
-                await ex.Context.Channel.SendMessageAsync($":x: Catastrophic faliure! Pinging {ex.Context.Guild.GetOwnerAsync().Result.Mention}.");
+                Exception ex = Result.Exception;
+                if (Result.Exception == null) return;
 
+                if (ex.Message == ":x: Please specify a vaild site. Available sites are (Twitter/Instagram/Snapchat).")
+                {
+                    await context.Channel.SendMessageAsync(ex.Message);
+                    return;
+                }
+
+                await context.Channel.SendMessageAsync($"Catastrophic faliure! Paging {context.Guild.GetOwnerAsync().Result.Mention}.");
+                
                 string errormsg = $"[{DateTime.Now} at ExceptionHandler]\n" +
-                    $"```{ex}```";
+                $"```{ex}```";
 
                 if (ex.ToString().Contains("Server requested a reconnect")) errormsg = $"[{DateTime.Now} at ExceptionHandler] Server requested a reconnect";
 
@@ -218,15 +223,10 @@ namespace rJordanBot
                 Console.WriteLine(errormsg);
                 Console.ResetColor();
 
-                SocketGuild Guild = Client.Guilds.Where(x => x.Id == 550848068640309259).FirstOrDefault();
-                SocketTextChannel Channel = Guild.Channels.Where(x => x.Id == Data.GetChnlId("bot-log")).FirstOrDefault() as SocketTextChannel;
+                DiscordSocketClient Client = context.Client as DiscordSocketClient;
+                SocketGuild Guild = Client.Guilds.First();
+                SocketTextChannel Channel = Guild.Channels.First(x => x.Id == Data.GetChnlId("bot-log")) as SocketTextChannel;
                 await Channel.SendMessageAsync(errormsg);
-            }
-            catch (Exception ex2)
-            {
-                SocketGuild guild = ex.Context.Client.GetGuildsAsync().Result.First() as SocketGuild;
-                SocketTextChannel channel = guild.Channels.First(x => x.Id == Data.GetChnlId("commands")) as SocketTextChannel;
-                await channel.SendMessageAsync($"{guild.Owner.Mention}, we have a problem in `ExceptionHandler`.");
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using Discord.Addons.Interactive;
+﻿using Discord;
+using Discord.Addons.Interactive;
 using Discord.Commands;
 using System;
 using System.Threading.Tasks;
@@ -31,22 +32,7 @@ namespace rJordanBot.Core.Commands
 
                 await ReplyAsync(":white_check_mark: Your socials have been updated.");
 
-                try
-                {
-                    await Data.Data.SetSocials(Context.User.Id, site, link, Context);
-                }
-                catch (Exception ex)
-                {
-                    if (ex.Message == ":x: Please specify a vaild site. Available sites are (Twitter/Instagram/Snapchat).")
-                    {
-                        await ReplyAsync(ex.Message);
-                    }
-                    else
-                    {
-                        Program program = new Program();
-                        await program.Command_Log_Message(Context.Message, ex.Message);
-                    }
-                }
+                await Data.Data.SetSocials(Context.User.Id, site, link, Context);
             }
         }
     }

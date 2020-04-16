@@ -27,15 +27,8 @@ namespace rJordanBot.Core.Moderation
             }
 
             //Execution
-            try
-            {
-                await Data.Data.ReloadJSON();
-                await Context.Message.AddReactionAsync(Constants.Emojis.Tick);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
+            await Data.Data.ReloadJSON();
+            await Context.Message.AddReactionAsync(Constants.Emojis.Tick);
         }
 
         [Command("userinfo")]
@@ -87,31 +80,24 @@ namespace rJordanBot.Core.Moderation
         [Command("kick")]
         public async Task Kick(SocketGuildUser user, [Remainder]string reason = "")
         {
-            try
-            {
-                SocketGuildUser user_ = Context.User as SocketGuildUser;
-                if (!user_.IsModerator() && user_.Id != ESettings.Owner) return;
+            SocketGuildUser user_ = Context.User as SocketGuildUser;
+            if (!user_.IsModerator() && user_.Id != ESettings.Owner) return;
 
-                await user.KickAsync();
+            await user.KickAsync();
 
-                if (reason == "") await ReplyAsync($":white_check_mark: {user.Mention} has been kicked.");
-                else await ReplyAsync($":white_check_mark: {user.Mention} has been kicked. | Reason: {reason}");
+            if (reason == "") await ReplyAsync($":white_check_mark: {user.Mention} has been kicked.");
+            else await ReplyAsync($":white_check_mark: {user.Mention} has been kicked. | Reason: {reason}");
 
-                EmbedBuilder embed = new EmbedBuilder();
-                embed.WithTitle("User Kicked");
-                embed.WithAuthor(Context.User);
-                embed.WithColor(255, 0, 0);
-                embed.AddField("User", user);
-                embed.WithFooter($"UserID: {user.Id}");
-                if (reason != "") embed.AddField("Reason", reason);
+            EmbedBuilder embed = new EmbedBuilder();
+            embed.WithTitle("User Kicked");
+            embed.WithAuthor(Context.User);
+            embed.WithColor(255, 0, 0);
+            embed.AddField("User", user);
+            embed.WithFooter($"UserID: {user.Id}");
+            if (reason != "") embed.AddField("Reason", reason);
 
-                SocketTextChannel logChannel = (SocketTextChannel)Context.Guild.Channels.First(x => x.Id == Data.Data.GetChnlId("moderation-log"));
-                await logChannel.SendMessageAsync("", false, embed.Build());
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
+            SocketTextChannel logChannel = (SocketTextChannel)Context.Guild.Channels.First(x => x.Id == Data.Data.GetChnlId("moderation-log"));
+            await logChannel.SendMessageAsync("", false, embed.Build());
         }
 
         [Command("ban")]
@@ -140,59 +126,52 @@ namespace rJordanBot.Core.Moderation
         [Command("mute")]
         public async Task Mute(SocketGuildUser user, string time, [Remainder] string reason = null)
         {
-            try
+            SocketGuildUser user_ = Context.User as SocketGuildUser;
+            if (!user_.IsModerator() && user_.Id != ESettings.Owner) return;
+
+            int seconds;
+            int time_ = int.Parse(time.Replace("h", "").Replace("m", ""));
+            SocketRole muted = Context.Guild.Roles.First(x => x.Name == "Muted");
+            switch (time[^1])
             {
-                SocketGuildUser user_ = Context.User as SocketGuildUser;
-                if (!user_.IsModerator() && user_.Id != ESettings.Owner) return;
-
-                int seconds;
-                int time_ = int.Parse(time.Replace("h", "").Replace("m", ""));
-                SocketRole muted = Context.Guild.Roles.First(x => x.Name == "Muted");
-                switch (time[^1])
-                {
-                    case 'h':
-                        seconds = time_ * 60 * 60;
-                        break;
-                    case 'm':
-                        seconds = time_ * 60;
-                        break;
-                    default:
-                        await ReplyAsync(":x: Please enter the time in this format: `_h` or `_m`");
-                        return;
-                }
-
-                await user.AddRoleAsync(muted);
-                await Context.Message.AddReactionAsync(Constants.Emojis.Tick);
-
-                EmbedBuilder embed = new EmbedBuilder();
-                embed.WithTitle("User Muted");
-                embed.WithAuthor(Context.User);
-                embed.WithColor(255, 0, 0);
-                embed.AddField("User", user, true);
-                embed.AddField("Duration", time, true);
-                if (reason != null) embed.AddField("Reason", reason);
-                embed.WithFooter($"UserID: {user.Id}");
-
-                SocketTextChannel logChannel = (SocketTextChannel)Context.Guild.Channels.First(x => x.Id == Data.Data.GetChnlId("moderation-log"));
-                RestUserMessage msg = logChannel.SendMessageAsync("", false, embed.Build()).Result;
-
-                while (seconds > 0)
-                {
-                    await Task.Delay(1000);
-                    seconds--;
-                }
-
-                await user.RemoveRoleAsync(muted);
-
-                embed.WithColor(0, 255, 0);
-                embed.WithTitle("User Muted => User Unmuted");
-
-                await msg.ModifyAsync(x => x.Embed = embed.Build());
+                case 'h':
+                    seconds = time_ * 60 * 60;
+                    break;
+                case 'm':
+                    seconds = time_ * 60;
+                    break;
+                default:
+                    await ReplyAsync(":x: Please enter the time in this format: `_h` or `_m`");
+                    return;
             }
-            catch (Exception ex)
+
+            await user.AddRoleAsync(muted);
+            await Context.Message.AddReactionAsync(Constants.Emojis.Tick);
+
+            EmbedBuilder embed = new EmbedBuilder();
+            embed.WithTitle("User Muted");
+            embed.WithAuthor(Context.User);
+            embed.WithColor(255, 0, 0);
+            embed.AddField("User", user, true);
+            embed.AddField("Duration", time, true);
+            if (reason != null) embed.AddField("Reason", reason);
+            embed.WithFooter($"UserID: {user.Id}");
+
+            SocketTextChannel logChannel = (SocketTextChannel)Context.Guild.Channels.First(x => x.Id == Data.Data.GetChnlId("moderation-log"));
+            RestUserMessage msg = logChannel.SendMessageAsync("", false, embed.Build()).Result;
+
+            while (seconds > 0)
             {
-                Console.WriteLine(ex);
+                await Task.Delay(1000);
+                seconds--;
             }
+
+            await user.RemoveRoleAsync(muted);
+
+            embed.WithColor(0, 255, 0);
+            embed.WithTitle("User Muted => User Unmuted");
+
+            await msg.ModifyAsync(x => x.Embed = embed.Build());
         }
 
         [Command("warn")]
