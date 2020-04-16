@@ -22,20 +22,11 @@ namespace rJordanBot.Core.Commands
         public async Task Test(SocketGuildUser user)
         {
             if (Context.User.Id != ESettings.Owner) return;
+            string test = "s";
+            int lel = int.Parse(test);
             try
             {
-                SocketGuild Guild = Context.Guild;
-                SocketTextChannel Channel = Context.Channel as SocketTextChannel;
-                SocketUserMessage Message = Context.Message;
-                EmbedBuilder Embed = new EmbedBuilder();
-                Random Random = new Random();
-
-                // Test code starts here.
-                await user.KickAsync();
-                // Test code ends here.
-
-                IEmote emoji = new Emoji("✅");
-                await Context.Message.AddReactionAsync(emoji);
+                
             }
             catch (Exception ex)
             {
