@@ -213,11 +213,12 @@ namespace rJordanBot.Core.Moderation
 
             // Response
             await Context.Message.DeleteAsync();
-            await ReplyAsync($":white_check_mark: User {user.Mention} has been warned for `{reason}`. Total warnings: `{strikeEntry.Amount}`.");
+            IUserMessage response = await ReplyAsync($":white_check_mark: User {user.Mention} has been warned for `{reason}`. Total warnings: `{strikeEntry.Amount}`.");
             EmbedBuilder embed = new EmbedBuilder();
             embed.WithTitle("Warning issued");
             embed.WithAuthor(Context.User);
             embed.WithColor(Constants.Colors.Blurple);
+            embed.WithDescription($"[Link to message]({response.GetJumpUrl()})");
             embed.AddField("User", user);
             embed.AddField("Reason", reason);
             embed.WithCurrentTimestamp();
