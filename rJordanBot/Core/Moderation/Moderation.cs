@@ -130,15 +130,21 @@ namespace rJordanBot.Core.Moderation
             if (!user_.IsModerator() && user_.Id != ESettings.Owner) return;
 
             int seconds;
-            int time_ = int.Parse(time.Replace("h", "").Replace("m", ""));
+            int time_ = int.Parse(time.Replace("d", "").Replace("h", "").Replace("m", "").Replace("s", ""));
             SocketRole muted = Context.Guild.Roles.First(x => x.Name == "Muted");
             switch (time[^1])
             {
+                case 'd':
+                    seconds = time_ * 60 * 60 * 24;
+                    break;
                 case 'h':
                     seconds = time_ * 60 * 60;
                     break;
                 case 'm':
                     seconds = time_ * 60;
+                    break;
+                case 's':
+                    seconds = time_;
                     break;
                 default:
                     await ReplyAsync(":x: Please enter the time in this format: `_h` or `_m`");
