@@ -2,6 +2,7 @@
 using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.WebSocket;
+using rJordanBot.Core.Methods;
 using rJordanBot.Resources.GeneralJSON;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ namespace rJordanBot.Core.Moderation
             [Command("verify"), Alias("v")]
             public async Task Verify([Remainder]IUser user = null)
             {
-                if (Context.User != Context.Guild.Owner) return;
+                if (Context.User != Constants.IGuilds.Jordan(Context).Owner) return;
 
                 ulong id = user.Id;
 
@@ -50,7 +51,7 @@ namespace rJordanBot.Core.Moderation
             [Command("unverify"), Alias("uv", "deny")]
             public async Task Unverify([Remainder]IUser user = null)
             {
-                if (Context.User != Context.Guild.Owner) return;
+                if (Context.User != Constants.IGuilds.Jordan(Context).Owner) return;
                 ulong id = user.Id;
 
                 if (user is null)
@@ -81,7 +82,7 @@ namespace rJordanBot.Core.Moderation
             [Command("get"), Alias("g", "is")]
             public async Task Get([Remainder]IUser user = null)
             {
-                if (Context.User != Context.Guild.Owner) return;
+                if (Context.User != Constants.IGuilds.Jordan(Context).Owner) return;
                 if (user is null)
                 {
                     await ReplyAsync(":x: Please enter a user.");
@@ -99,7 +100,7 @@ namespace rJordanBot.Core.Moderation
                 await ReplyAsync(":x: This command doesn't work anymore. See `^eventsmod unverify`.");
                 return;
 
-                /*if (Context.User != Context.Guild.Owner) return;
+                /*if (Context.User != Constants.IGuilds.Jordan(Context).Owner) return;
                 if (user is null)
                 {
                     await ReplyAsync(":x: Please enter a user.");
@@ -130,7 +131,7 @@ namespace rJordanBot.Core.Moderation
                 [Command("verified"), Alias("v")]
                 public async Task ListVerified()
                 {
-                    SocketRole modrole = Context.Guild.Roles.FirstOrDefault(x => x.Name == "Discord Mods");
+                    SocketRole modrole = Constants.IGuilds.Jordan(Context).Roles.FirstOrDefault(x => x.Name == "Discord Mods");
                     if (!(Context.User as SocketGuildUser).Roles.Contains(modrole)) return;
 
                     List<ulong> list = eVerified.Allowed;
@@ -139,7 +140,7 @@ namespace rJordanBot.Core.Moderation
                     if (list.Count > 1) userlist = "";
                     foreach (ulong user in list)
                     {
-                        userlist = userlist + Context.Guild.Users.FirstOrDefault(x => x.Id == user) + "\n";
+                        userlist = userlist + Constants.IGuilds.Jordan(Context).Users.FirstOrDefault(x => x.Id == user) + "\n";
                     }
 
                     EmbedBuilder embed = new EmbedBuilder();
@@ -153,7 +154,7 @@ namespace rJordanBot.Core.Moderation
                 [Command("denied"), Alias("d")]
                 public async Task ListDenied()
                 {
-                    SocketRole modrole = Context.Guild.Roles.FirstOrDefault(x => x.Name == "Discord Mods");
+                    SocketRole modrole = Constants.IGuilds.Jordan(Context).Roles.FirstOrDefault(x => x.Name == "Discord Mods");
                     if (!(Context.User as SocketGuildUser).Roles.Contains(modrole)) return;
 
                     List<ulong> list = eVerified.Denied;
@@ -162,7 +163,7 @@ namespace rJordanBot.Core.Moderation
                     if (list.Count > 1) userlist = "";
                     foreach (ulong user in list)
                     {
-                        userlist = userlist + Context.Guild.Users.FirstOrDefault(x => x.Id == user) + "\n";
+                        userlist = userlist + Constants.IGuilds.Jordan(Context).Users.FirstOrDefault(x => x.Id == user) + "\n";
                     }
 
                     EmbedBuilder embed = new EmbedBuilder();
@@ -177,7 +178,7 @@ namespace rJordanBot.Core.Moderation
             [Command("list"), Alias("l")]
             public async Task List()
             {
-                SocketRole modrole = Context.Guild.Roles.FirstOrDefault(x => x.Name == "Discord Mods");
+                SocketRole modrole = Constants.IGuilds.Jordan(Context).Roles.FirstOrDefault(x => x.Name == "Discord Mods");
                 if (!(Context.User as SocketGuildUser).Roles.Contains(modrole)) return;
 
                 //List<ulong> list = eVerified.Allowed;
@@ -186,7 +187,7 @@ namespace rJordanBot.Core.Moderation
                 if (GeneralJson.users.Count > 1) userlist = "";
                 foreach (User user in GeneralJson.users)
                 {
-                    if (user.Verified) userlist = userlist + Context.Guild.Users.FirstOrDefault(x => x.Id == user.ID) + "\n";
+                    if (user.Verified) userlist = userlist + Constants.IGuilds.Jordan(Context).Users.FirstOrDefault(x => x.Id == user.ID) + "\n";
                 }
 
                 EmbedBuilder embed = new EmbedBuilder();

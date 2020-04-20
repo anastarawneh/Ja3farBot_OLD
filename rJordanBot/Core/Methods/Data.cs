@@ -3,6 +3,7 @@ using Discord.Commands;
 using Discord.Rest;
 using Discord.WebSocket;
 using Newtonsoft.Json;
+using rJordanBot.Core.Methods;
 using rJordanBot.Resources.Database;
 using rJordanBot.Resources.Datatypes;
 using rJordanBot.Resources.GeneralJSON;
@@ -190,7 +191,7 @@ namespace rJordanBot.Core.Data
             else embed.AddField("Snapchat", $"{GetSocial(Context.User.Id, "snapchat")}");
 
             ulong chnlid = GetChnlId("socials"); ;
-            SocketTextChannel socialchnl = Context.Guild.Channels.Where(x => x.Id == chnlid).FirstOrDefault() as SocketTextChannel;
+            SocketTextChannel socialchnl = Constants.IGuilds.Jordan(Context).Channels.Where(x => x.Id == chnlid).FirstOrDefault() as SocketTextChannel;
             IEnumerable<IMessage> msgs = await socialchnl.GetMessagesAsync(100).FlattenAsync();
             foreach (IMessage msg in msgs)
             {
@@ -258,7 +259,7 @@ namespace rJordanBot.Core.Data
                 DbContext.Channels.Remove(channel);
             }
 
-            foreach (SocketGuildChannel channel in Context.Guild.Channels)
+            foreach (SocketGuildChannel channel in Constants.IGuilds.Jordan(Context).Channels)
             {
                 if (channel.GetType().ToString() == "Discord.WebSocket.SocketCategoryChannel")
                 {

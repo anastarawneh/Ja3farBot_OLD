@@ -28,7 +28,7 @@ namespace rJordanBot.Core.Moderation
 
             //Execution
             await Data.Data.ReloadJSON();
-            await Context.Message.AddReactionAsync(Constants.Emojis.Tick);
+            await Context.Message.AddReactionAsync(Constants.IEmojis.Tick);
         }
 
         [Command("userinfo")]
@@ -96,7 +96,7 @@ namespace rJordanBot.Core.Moderation
             embed.WithFooter($"UserID: {user.Id}");
             if (reason != "") embed.AddField("Reason", reason);
 
-            SocketTextChannel logChannel = (SocketTextChannel)Context.Guild.Channels.First(x => x.Id == Data.Data.GetChnlId("moderation-log"));
+            SocketTextChannel logChannel = (SocketTextChannel)Constants.IGuilds.Jordan(Context).Channels.First(x => x.Id == Data.Data.GetChnlId("moderation-log"));
             await logChannel.SendMessageAsync("", false, embed.Build());
         }
 
@@ -119,7 +119,7 @@ namespace rJordanBot.Core.Moderation
             embed.WithFooter($"UserID: {user.Id}");
             if (reason != "") embed.AddField("Reason", reason);
 
-            SocketTextChannel logChannel = (SocketTextChannel)Context.Guild.Channels.First(x => x.Id == Data.Data.GetChnlId("moderation-log"));
+            SocketTextChannel logChannel = (SocketTextChannel)Constants.IGuilds.Jordan(Context).Channels.First(x => x.Id == Data.Data.GetChnlId("moderation-log"));
             await logChannel.SendMessageAsync("", false, embed.Build());
         }
 
@@ -131,7 +131,7 @@ namespace rJordanBot.Core.Moderation
 
             int seconds;
             int time_ = int.Parse(time.Replace("d", "").Replace("h", "").Replace("m", "").Replace("s", ""));
-            SocketRole muted = Context.Guild.Roles.First(x => x.Name == "Muted");
+            SocketRole muted = Constants.IGuilds.Jordan(Context).Roles.First(x => x.Name == "Muted");
             switch (time[^1])
             {
                 case 'd':
@@ -152,7 +152,7 @@ namespace rJordanBot.Core.Moderation
             }
 
             await user.AddRoleAsync(muted);
-            await Context.Message.AddReactionAsync(Constants.Emojis.Tick);
+            await Context.Message.AddReactionAsync(Constants.IEmojis.Tick);
 
             EmbedBuilder embed = new EmbedBuilder();
             embed.WithTitle("User Muted");
@@ -163,7 +163,7 @@ namespace rJordanBot.Core.Moderation
             if (reason != null) embed.AddField("Reason", reason);
             embed.WithFooter($"UserID: {user.Id}");
 
-            SocketTextChannel logChannel = (SocketTextChannel)Context.Guild.Channels.First(x => x.Id == Data.Data.GetChnlId("moderation-log"));
+            SocketTextChannel logChannel = (SocketTextChannel)Constants.IGuilds.Jordan(Context).Channels.First(x => x.Id == Data.Data.GetChnlId("moderation-log"));
             RestUserMessage msg = logChannel.SendMessageAsync("", false, embed.Build()).Result;
 
             while (seconds > 0)
@@ -217,14 +217,14 @@ namespace rJordanBot.Core.Moderation
             EmbedBuilder embed = new EmbedBuilder();
             embed.WithTitle("Warning issued");
             embed.WithAuthor(Context.User);
-            embed.WithColor(Constants.Colors.Blurple);
+            embed.WithColor(Constants.IColors.Blurple);
             embed.WithDescription($"[Link to message]({response.GetJumpUrl()})");
             embed.AddField("User", user);
             embed.AddField("Reason", reason);
             embed.WithCurrentTimestamp();
             embed.WithFooter($"UserID: {user.Id}");
 
-            SocketGuild guild = Context.Guild;
+            SocketGuild guild = Constants.IGuilds.Jordan(Context);
             SocketTextChannel logChannel = guild.Channels.First(x => x.Id == Data.Data.GetChnlId("moderation-log")) as SocketTextChannel;
             await logChannel.SendMessageAsync("", false, embed.Build());
         }

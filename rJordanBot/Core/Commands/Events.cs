@@ -3,6 +3,7 @@ using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.Rest;
 using Discord.WebSocket;
+using rJordanBot.Core.Methods;
 using rJordanBot.Resources.GeneralJSON;
 using rJordanBot.Resources.Settings;
 using System;
@@ -94,9 +95,9 @@ namespace rJordanBot.Core.Commands
                 }
 
                 //Saving
-                SocketTextChannel channel = Context.Guild.Channels.Where(x => x.Id == Data.Data.GetChnlId("events")).FirstOrDefault() as SocketTextChannel;
+                SocketTextChannel channel = Constants.IGuilds.Jordan(Context).Channels.Where(x => x.Id == Data.Data.GetChnlId("events")).FirstOrDefault() as SocketTextChannel;
                 IEmote emote = new Emoji("✅");
-                SocketRole role = Context.Guild.Roles.First(x => x.Id == 644974763692785664);
+                SocketRole role = Constants.IGuilds.Jordan(Context).Roles.First(x => x.Id == 644974763692785664);
                 RestUserMessage msg_ = await channel.SendMessageAsync($"{role.Mention}", false, embed.Build());
                 await msg_.AddReactionAsync(emote);
                 await Context.Channel.SendMessageAsync($":white_check_mark: Your event has been posted in {channel.Mention} with ID {id}.");
@@ -128,7 +129,7 @@ namespace rJordanBot.Core.Commands
                 }
 
                 ulong eventschnlid = Data.Data.GetChnlId("events");
-                SocketTextChannel eventschnl = Context.Guild.Channels.Where(x => x.Id == eventschnlid).FirstOrDefault() as SocketTextChannel;
+                SocketTextChannel eventschnl = Constants.IGuilds.Jordan(Context).Channels.Where(x => x.Id == eventschnlid).FirstOrDefault() as SocketTextChannel;
                 IEnumerable<IMessage> msgs = await eventschnl.GetMessagesAsync(100).FlattenAsync();
                 foreach (IMessage msg in msgs)
                 {
@@ -199,7 +200,7 @@ namespace rJordanBot.Core.Commands
                     return;
                 }
 
-                SocketTextChannel eventschnl = Context.Guild.Channels.Where(x => x.Id == Data.Data.GetChnlId("events")).FirstOrDefault() as SocketTextChannel;
+                SocketTextChannel eventschnl = Constants.IGuilds.Jordan(Context).Channels.Where(x => x.Id == Data.Data.GetChnlId("events")).FirstOrDefault() as SocketTextChannel;
                 IEnumerable<IMessage> msgs = await eventschnl.GetMessagesAsync(5).FlattenAsync();
                 foreach (IMessage msg in msgs)
                 {
@@ -264,7 +265,7 @@ namespace rJordanBot.Core.Commands
                 embed.WithDescription($"User: {Context.User}");
                 embed.WithImageUrl(msg.Attachments.FirstOrDefault().Url);
 
-                SocketGuild guild = Context.Client.Guilds.FirstOrDefault();
+                SocketGuild guild = Constants.IGuilds.Jordan(Context);
                 SocketTextChannel channel = guild.Channels.FirstOrDefault(x => x.Id == Data.Data.GetChnlId("moderation-log")) as SocketTextChannel;
                 await channel.SendMessageAsync("", false, embed.Build());
 

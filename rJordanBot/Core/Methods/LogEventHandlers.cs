@@ -377,7 +377,7 @@ namespace rJordanBot.Core.Data
             string messages = "";
             EmbedBuilder embed = new EmbedBuilder();
             embed.WithTitle($"Messages bulk deleted in #{channel}");
-            embed.WithColor(Constants.Colors.Red);
+            embed.WithColor(Constants.IColors.Red);
             embed.WithCurrentTimestamp();
 
             foreach (Cacheable<IMessage, ulong> cacheable in collection)

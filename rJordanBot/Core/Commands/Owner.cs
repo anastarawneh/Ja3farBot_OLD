@@ -64,7 +64,7 @@ namespace rJordanBot.Core.Commands
             Console.ForegroundColor = ConsoleColor.Green;
             string msg = $"[{DateTime.Now} at Commands] A ping in {Context.Channel} by {Context.User}";
             Console.WriteLine(msg);
-            await (Context.Guild.Channels.Where(x => x.Id == 642475027123404811).FirstOrDefault() as SocketTextChannel).SendMessageAsync(msg);
+            await (Constants.IGuilds.Jordan(Context).Channels.Where(x => x.Id == 642475027123404811).FirstOrDefault() as SocketTextChannel).SendMessageAsync(msg);
             Console.ResetColor();
         }
 
@@ -87,7 +87,7 @@ namespace rJordanBot.Core.Commands
                 if (Context.User.Id != ESettings.Owner) return;
 
                 EmbedBuilder embed = new EmbedBuilder();
-                SocketTextChannel channel = Context.Guild.Channels.FirstOrDefault(x => x.Id == Data.Data.GetChnlId("role-selection")) as SocketTextChannel;
+                SocketTextChannel channel = Constants.IGuilds.Jordan(Context).Channels.FirstOrDefault(x => x.Id == Data.Data.GetChnlId("role-selection")) as SocketTextChannel;
 
                 embed.WithTitle("General Roles");
                 embed.WithColor(114, 137, 218);
@@ -114,7 +114,7 @@ namespace rJordanBot.Core.Commands
                 if (Context.User.Id != ESettings.Owner) return;
 
                 RoleSetting roleSetting = Data.Data.GetRoleSetting(role);
-                SocketTextChannel channel = Context.Guild.Channels.Where(x => x.Id == Data.Data.GetChnlId("role-selection")).FirstOrDefault() as SocketTextChannel;
+                SocketTextChannel channel = Constants.IGuilds.Jordan(Context).Channels.Where(x => x.Id == Data.Data.GetChnlId("role-selection")).FirstOrDefault() as SocketTextChannel;
                 IUserMessage msg = channel.GetMessageAsync(roleSetting.id).Result as IUserMessage;
                 Embed embed = msg.Embeds.FirstOrDefault() as Embed;
                 EmbedBuilder embedBuilder = embed.ToEmbedBuilder();
@@ -125,7 +125,7 @@ namespace rJordanBot.Core.Commands
                     embedBuilder.Fields = emptybuilder.Fields;
                 }
 
-                string rolename = Context.Guild.Roles.Where(x => x.Id == roleSetting.roleid).FirstOrDefault().Name;
+                string rolename = Constants.IGuilds.Jordan(Context).Roles.Where(x => x.Id == roleSetting.roleid).FirstOrDefault().Name;
                 foreach (EmbedField field in embed.Fields)
                 {
                     if (field.Name == rolename)
@@ -150,7 +150,7 @@ namespace rJordanBot.Core.Commands
                 if (Context.User.Id != ESettings.Owner) return;
 
                 RoleSetting roleSetting = Data.Data.GetRoleSetting(role);
-                SocketTextChannel channel = Context.Guild.Channels.Where(x => x.Id == Data.Data.GetChnlId("role-selection")).FirstOrDefault() as SocketTextChannel;
+                SocketTextChannel channel = Constants.IGuilds.Jordan(Context).Channels.Where(x => x.Id == Data.Data.GetChnlId("role-selection")).FirstOrDefault() as SocketTextChannel;
                 IUserMessage msg = channel.GetMessageAsync(roleSetting.id).Result as IUserMessage;
                 Embed embed = msg.Embeds.FirstOrDefault() as Embed;
 
@@ -160,7 +160,7 @@ namespace rJordanBot.Core.Commands
                     await ReplyAsync(":x: Role is not loaded.");
                 }
 
-                string rolename = Context.Guild.Roles.Where(x => x.Id == roleSetting.roleid).FirstOrDefault().Name;
+                string rolename = Constants.IGuilds.Jordan(Context).Roles.Where(x => x.Id == roleSetting.roleid).FirstOrDefault().Name;
                 foreach (EmbedField field in embed.Fields)
                 {
                     if (field.Name == rolename)
@@ -198,7 +198,7 @@ namespace rJordanBot.Core.Commands
             {
                 if (Context.User.Id != ESettings.Owner) return;
 
-                SocketGuild guild = user.Guild;
+                SocketGuild guild = Constants.IGuilds.Jordan(Context);
                 SocketRole role = guild.Roles.First(x => x.Name == "Role denied");
 
                 if (role.Members.Contains(user))
@@ -216,7 +216,7 @@ namespace rJordanBot.Core.Commands
             {
                 if (Context.User.Id != ESettings.Owner) return;
 
-                SocketGuild guild = user.Guild;
+                SocketGuild guild = Constants.IGuilds.Jordan(Context);
                 SocketRole role = guild.Roles.First(x => x.Name == "Role denied");
 
                 if (!role.Members.Contains(user))
@@ -234,7 +234,7 @@ namespace rJordanBot.Core.Commands
         public async Task Stop()
         {
             if (Context.User.Id != ESettings.Owner) return;
-            SocketTextChannel channel = Context.Guild.Channels.FirstOrDefault(x => x.Id == Data.Data.GetChnlId("bot-log")) as SocketTextChannel;
+            SocketTextChannel channel = Constants.IGuilds.Jordan(Context).Channels.FirstOrDefault(x => x.Id == Data.Data.GetChnlId("bot-log")) as SocketTextChannel;
             await channel.SendMessageAsync($"[{DateTime.Now} at Commands] Stopping [{Environment.GetEnvironmentVariable("SystemType").ToUpper()}] instance...");
             IEmote emote = new Emoji("✅");
             await Context.Message.AddReactionAsync(emote);
@@ -282,7 +282,7 @@ namespace rJordanBot.Core.Commands
                 {
                     case "confirm":
                         await testmsg.DeleteAsync();
-                        SocketTextChannel AnnouncementChannel = Context.Guild.Channels.FirstOrDefault(x => x.Id == Data.Data.GetChnlId("announcements")) as SocketTextChannel;
+                        SocketTextChannel AnnouncementChannel = Constants.IGuilds.Jordan(Context).Channels.FirstOrDefault(x => x.Id == Data.Data.GetChnlId("announcements")) as SocketTextChannel;
                         await AnnouncementChannel.SendMessageAsync("@everyone", false, embed.Build());
                         //await AnnouncementChannel.SendMessageAsync("", false, embed.Build());
                         break;
@@ -353,7 +353,7 @@ namespace rJordanBot.Core.Commands
                     embed.WithTitle("List of users in JSON file");
                     foreach (Resources.GeneralJSON.Moderator mod in GeneralJson.moderators)
                     {
-                        SocketGuildUser user = Context.Guild.Users.First(x => x.Id == mod.ID);
+                        SocketGuildUser user = Constants.IGuilds.Jordan(Context).Users.First(x => x.Id == mod.ID);
                         list += $"{user.Username}#{user.Discriminator}\n";
                     }
                     embed.WithDescription(list);
@@ -413,11 +413,11 @@ namespace rJordanBot.Core.Commands
 
             EmbedBuilder embed = new EmbedBuilder();
             embed.WithTitle($"Giveaway: {prize}");
-            embed.WithColor(Constants.Colors.Blurple);
+            embed.WithColor(Constants.IColors.Blurple);
             embed.WithDescription("React with 🎉 to enter!");
             embed.AddField("Time Remaining", field);
 
-            SocketGuild Guild = Context.Guild;
+            SocketGuild Guild = Constants.IGuilds.Jordan(Context);
             SocketTextChannel Channel = Context.Channel as SocketTextChannel;
             IUserMessage Message = await ReplyAsync("", false, embed.Build());
 

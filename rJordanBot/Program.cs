@@ -34,8 +34,6 @@ namespace rJordanBot
                 MessageCacheSize = 100
             });
 
-            SocketGuild Guild = Client.Guilds.Where(x => x.Id == 550848068640309259).FirstOrDefault();
-
             Commands = new CommandService(new CommandServiceConfig
             {
                 CaseSensitiveCommands = true,
@@ -102,7 +100,7 @@ namespace rJordanBot
             if (Context.Message == null || Context.Message.Content == "") return;
             if (Context.User.IsBot) return;
             if (!(Context.Channel.Id == Data.GetChnlId("bot-commands")) && !(Context.User.Id == ESettings.Owner) && !(Context.User.Id == 362299141587599360) && !(Context.User as SocketGuildUser).IsModerator() && !(Context.Channel is IDMChannel)) return;
-            if (Environment.GetEnvironmentVariable("SystemType") == "win" && Context.User != Context.Guild.Owner) return;
+            if (Environment.GetEnvironmentVariable("SystemType") == "win" && Context.User != Constants.IGuilds.Jordan(Context).Owner) return;
 
             int ArgPos = 0;
             if (!(Message.HasStringPrefix("^", ref ArgPos)/* || Message.HasMentionPrefix(Client.CurrentUser, ref ArgPos)*/)) return;
@@ -124,7 +122,7 @@ namespace rJordanBot
                 await Client.SetGameAsync("In Maintenance! Not listening.", null, ActivityType.Playing);
             };
 
-            await Data.SetInvitesBefore(Client.Guilds.First().Users.FirstOrDefault(x => x.Id == Client.CurrentUser.Id));
+            await Data.SetInvitesBefore(Constants.IGuilds.Jordan(Client).Users.FirstOrDefault(x => x.Id == Client.CurrentUser.Id));
 
             /*if (Client.Guilds.First().Roles.First(x => x.Name == "Muted").Members.Count() > 0)
             {
@@ -196,7 +194,7 @@ namespace rJordanBot
             Console.WriteLine(errormsg);
             Console.ResetColor();
 
-            SocketGuild Guild = Client.Guilds.Where(x => x.Id == 550848068640309259).FirstOrDefault();
+            SocketGuild Guild = Constants.IGuilds.Jordan(Client);
             SocketTextChannel Channel = Guild.Channels.Where(x => x.Id == 642475027123404811).FirstOrDefault() as SocketTextChannel;
 
             if (WithAsync == true)
@@ -230,7 +228,7 @@ namespace rJordanBot
                 Console.ResetColor();
 
                 DiscordSocketClient Client = context.Client as DiscordSocketClient;
-                SocketGuild Guild = Client.Guilds.First();
+                SocketGuild Guild = Constants.IGuilds.Jordan(Client);
                 SocketTextChannel Channel = Guild.Channels.First(x => x.Id == Data.GetChnlId("bot-log")) as SocketTextChannel;
                 await Channel.SendMessageAsync(errormsg);
             }
@@ -248,7 +246,7 @@ namespace rJordanBot
             Console.WriteLine(errormsg);
             Console.ResetColor();
 
-            SocketGuild Guild = Constants.Servers.Jordan(Client);
+            SocketGuild Guild = Constants.IGuilds.Jordan(Client);
             SocketTextChannel Channel = Guild.Channels.First(x => x.Id == Data.GetChnlId("bot-log")) as SocketTextChannel;
             await Channel.SendMessageAsync(errormsg);
         }
@@ -261,7 +259,7 @@ namespace rJordanBot
             Console.WriteLine(errormsg);
             Console.ResetColor();
 
-            SocketGuild Guild = Client.Guilds.FirstOrDefault();
+            SocketGuild Guild = Constants.IGuilds.Jordan(Client);
             SocketTextChannel Channel = Guild.Channels.Where(x => x.Id == Data.GetChnlId("bot-log")).FirstOrDefault() as SocketTextChannel;
 
             await Channel.SendMessageAsync(errormsg);
