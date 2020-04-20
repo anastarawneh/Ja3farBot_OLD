@@ -4,6 +4,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using rJordanBot.Core.Data;
+using rJordanBot.Core.Methods;
 using rJordanBot.Resources.GeneralJSON;
 using rJordanBot.Resources.Settings;
 using System;
@@ -47,7 +48,7 @@ namespace rJordanBot
                 Client.MessageReceived += Client_CommandHandler;
                 Client.Ready += Client_Ready;
                 Client.Log += Client_Log;
-                Commands.CommandExecuted += ExceptionHandler;
+                Commands.CommandExecuted += CommandExceptionHandler;
             }
 
             // Secondary Handlers
@@ -125,7 +126,7 @@ namespace rJordanBot
 
             await Data.SetInvitesBefore(Client.Guilds.First().Users.FirstOrDefault(x => x.Id == Client.CurrentUser.Id));
 
-            if (Client.Guilds.First().Roles.First(x => x.Name == "Muted").Members.Count() > 0)
+            /*if (Client.Guilds.First().Roles.First(x => x.Name == "Muted").Members.Count() > 0)
             {
                 IEnumerable<SocketGuildUser> muteds = Client.Guilds.First().Roles.First(x => x.Name == "Muted").Members;
                 if (muteds.Count() == 1) await (Client.Guilds.First().Channels.First(x => x.Id == Data.GetChnlId("mod-commands")) as SocketTextChannel).SendMessageAsync($"{Client.Guilds.First().Owner.Mention}, there is a muted user right now, and I've lost track of the time: {muteds.First().Mention}");
@@ -138,7 +139,7 @@ namespace rJordanBot
                     }
                     await (Client.Guilds.First().Channels.First(x => x.Id == Data.GetChnlId("mod-commands")) as SocketTextChannel).SendMessageAsync($"{Client.Guilds.First().Owner.Mention}, there are muted users right now, and I've lost track of the time: {users}");
                 }
-            }
+            }*/
             /*
 #if !DEBUG
             Console.WriteLine("RELEASE");
@@ -183,7 +184,14 @@ namespace rJordanBot
         public async Task Log_Message(LogMessage message, bool WithAsync)
         {
             string errormsg = $"[{DateTime.Now} at {message.Source}] {message.Message}";
-            if (message.Severity == LogSeverity.Warning) errormsg = $"[{DateTime.Now} at {message.Source}] **{message.Message}**";
+            string errormsg_ = $"[{DateTime.Now} at {message.Source}] {message.Message}";
+            if (message.Severity == LogSeverity.Warning) errormsg_ = $"[{DateTime.Now} at {message.Source}] **{message.Message}**";
+
+            if (message.Exception != null)
+            {
+                await LogExceptionHandler(message.Exception);
+                return;
+            }
             
             Console.WriteLine(errormsg);
             Console.ResetColor();
@@ -193,11 +201,11 @@ namespace rJordanBot
 
             if (WithAsync == true)
             {
-                await Channel.SendMessageAsync(errormsg);
+                await Channel.SendMessageAsync(errormsg_);
             }
         }
 
-        public async Task ExceptionHandler(Optional<CommandInfo> optional, ICommandContext context, IResult result)
+        public async Task CommandExceptionHandler(Optional<CommandInfo> optional, ICommandContext context, IResult result)
         {
             if (result is ExecuteResult Result)
             {
@@ -227,20 +235,24 @@ namespace rJordanBot
                 await Channel.SendMessageAsync(errormsg);
             }
         }
-
-        public async Task Command_Log_Message(SocketUserMessage message, string result)
+        public async Task LogExceptionHandler(Exception ex)
         {
-            string errormsg = $"[{DateTime.Now} at Commands] Command error: | Command: {message.Content} | User: {message.Author} | Error: {result}";
+            string errormsg = $"[{DateTime.Now} at ExecptionHandler] \n" +
+                $"```{ex}```";
+            if (ex.ToString().Contains("Server requested a reconnect"))
+            {
+                errormsg = $"[{DateTime.Now} at ExceptionHandler] Server requested a reconnect";
+            }
 
-            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine(errormsg);
             Console.ResetColor();
 
-            SocketGuild Guild = Client.Guilds.FirstOrDefault();
-            SocketTextChannel Channel = Guild.Channels.Where(x => x.Id == Data.GetChnlId("bot-log")).FirstOrDefault() as SocketTextChannel;
-
+            SocketGuild Guild = Constants.Servers.Jordan(Client);
+            SocketTextChannel Channel = Guild.Channels.First(x => x.Id == Data.GetChnlId("bot-log")) as SocketTextChannel;
             await Channel.SendMessageAsync(errormsg);
         }
+
         public async Task Command_Log_Message(SocketUserMessage message, IResult result)
         {
             string errormsg = $"[{DateTime.Now} at Commands] Command error: | Command: {message.Content} | User: {message.Author} | Reason: {result.ErrorReason}\nError: {result.Error}";
