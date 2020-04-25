@@ -37,5 +37,10 @@ namespace rJordanBot.Core.Methods
                 return (Context.Client as DiscordSocketClient).Guilds.First(x => x.Id == 550848068640309259);
             }
         }
+
+        public interface IMacros
+        {
+            public static readonly string NoPerms = ":x: Insufficient permissions.";
+        }
     }
 }
