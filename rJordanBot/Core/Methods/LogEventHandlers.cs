@@ -41,7 +41,8 @@ namespace rJordanBot.Core.Data
             embed.WithTitle($"Message edited in #{message.Channel}");
             embed.WithDescription($"[Link to message]({message.GetJumpUrl()})");
             embed.WithAuthor(message.Author);
-            embed.AddField("Before:", msgBefore.Content);
+            if (msgBefore.Content == null || msgBefore.Content == "") embed.AddField("Before:", "None");
+            else embed.AddField("Before:", msgBefore.Content);
             embed.AddField("After:", msgAfter.Content);
             embed.WithCurrentTimestamp();
             embed.WithColor(66, 134, 244);

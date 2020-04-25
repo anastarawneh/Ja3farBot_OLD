@@ -143,6 +143,26 @@ namespace rJordanBot.Core.Data
             await DbContext.SaveChangesAsync();
         }
 
+        public static async Task SetStrikes(ulong UserId, int Amount)
+        {
+            using SqliteDbContext DbContext = new SqliteDbContext();
+            if (DbContext.Strikes.Where(x => x.UserId == UserId).Count() < 1)
+            {
+                DbContext.Strikes.Add(new Strike
+                {
+                    UserId = UserId,
+                    Amount = Amount
+                });
+            }
+            else
+            {
+                Strike Current = DbContext.Strikes.First(x => x.UserId == UserId);
+                Current.Amount = Amount;
+                DbContext.Strikes.Update(Current);
+            }
+            await DbContext.SaveChangesAsync();
+        }
+
         public static async Task SetSocials(ulong UserId = 0, string site = null, string link = null, SocketCommandContext Context = null)
         {
             using SqliteDbContext DbContext = new SqliteDbContext();
@@ -591,7 +611,7 @@ namespace rJordanBot.Core.Data
                 EmbedBuilder embed = new EmbedBuilder();
                 embed.WithAuthor(starboardMessage.message.Author);
                 embed.WithColor(Color.Gold);
-                if (starboardMessage.message.Content != null) embed.AddField("Content", starboardMessage.message.Content);
+                if (starboardMessage.message.Content != null && starboardMessage.message.Content != "") embed.AddField("Content", starboardMessage.message.Content);
                 embed.AddField("Channel:", starboardMessage.channel.Mention);
                 if (starboardMessage.message.Attachments.Count == 1) embed.WithImageUrl(starboardMessage.message.Attachments.First().Url);
                 embed.WithDescription($"[Link to original message]({link})");
