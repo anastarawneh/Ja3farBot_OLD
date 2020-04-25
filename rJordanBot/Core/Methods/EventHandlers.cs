@@ -141,7 +141,8 @@ namespace rJordanBot.Core.Data
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                Program program = new Program();
+                await program.LogExceptionHandler(ex);
             }
         }
 
