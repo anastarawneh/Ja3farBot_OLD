@@ -172,12 +172,58 @@ namespace rJordanBot.Core.Moderation
                 seconds--;
             }
 
+            user = Context.Guild.GetUser(user.Id); // reload user roles if changed
+            IReadOnlyCollection<SocketRole> roles = user.Roles;
+            if (!roles.Contains(muted)) return;
+
             await user.RemoveRoleAsync(muted);
 
             embed.WithColor(0, 255, 0);
             embed.WithTitle("User Muted => User Unmuted");
 
             await msg.ModifyAsync(x => x.Embed = embed.Build());
+        }
+
+        [Command("unmute")]
+        public async Task Unmute(SocketGuildUser user)
+        {
+            SocketGuildUser user_ = Context.User as SocketGuildUser;
+            if (!user_.IsModerator() && user_.Id != ESettings.Owner)
+            {
+                await ReplyAsync(Constants.IMacros.NoPerms);
+                return;
+            }
+
+            IReadOnlyCollection<SocketRole> roles = user.Roles;
+            foreach (SocketRole role in roles)
+            {
+                if (role.Name == "Muted")
+                {
+                    goto cont;
+                }
+            }
+            await ReplyAsync($":x: User {user.Mention} isn't muted.");
+            return;
+
+        cont:
+            SocketRole muted = Constants.IGuilds.Jordan(Context).Roles.First(x => x.Name == "Muted");
+            await user.RemoveRoleAsync(muted);
+
+            SocketTextChannel channel = Context.Guild.Channels.First(x => x.Id == Data.Data.GetChnlId("moderation-log")) as SocketTextChannel;
+            IEnumerable<IMessage> messages = channel.GetMessagesAsync(10).FlattenAsync().Result;
+            foreach (IMessage message in messages)
+            {
+                if (message.Embeds.First().Title == "User Muted" &&
+                    message.Embeds.First().Fields.First(x => x.Name == "User").Value == user.Username + "#" + user.Discriminator)
+                {
+                    EmbedBuilder embed = message.Embeds.First().ToEmbedBuilder();
+
+                    embed.WithColor(0, 255, 0);
+                    embed.WithTitle("User Muted => User Unmuted");
+
+                    await (message as SocketUserMessage).ModifyAsync(x => x.Embed = embed.Build());
+                }
+            }
         }
 
         [Command("warn")]
