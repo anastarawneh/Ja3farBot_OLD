@@ -31,7 +31,8 @@ namespace rJordanBot
             Client = new DiscordSocketClient(new DiscordSocketConfig
             {
                 LogLevel = LogSeverity.Debug,
-                MessageCacheSize = 100
+                MessageCacheSize = 100,
+                AlwaysDownloadUsers = true
             });
 
             Commands = new CommandService(new CommandServiceConfig
