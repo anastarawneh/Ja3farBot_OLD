@@ -8,7 +8,7 @@ using System.Text;
 
 namespace rJordanBot.Core.Methods
 {
-    public class Constants
+    public struct Constants
     {
         public interface IColors
         {
