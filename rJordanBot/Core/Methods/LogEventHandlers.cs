@@ -95,11 +95,11 @@ namespace rJordanBot.Core.Data
             await LogChannel.SendMessageAsync("", false, embed.Build());
         }
 
-        // Name Changed
-        public async Task NameChanged(SocketUser oldUser, SocketUser newUser)
+        // Name or Discriminator Changed
+        public async Task NameOrDiscrimChanged(SocketUser oldUser, SocketUser newUser)
         {
-            if (oldUser.Username == newUser.Username) return;
-            if ((oldUser as SocketGuildUser) == null) return;
+            if (oldUser.Username == newUser.Username && oldUser.Discriminator == newUser.Discriminator) return;
+            if (oldUser.MutualGuilds.Count < 1) return;
 
             SocketGuild guild = Constants.IGuilds.Jordan(Client);
             SocketTextChannel LogChannel = guild.Channels.FirstOrDefault(x => x.Id == LogID) as SocketTextChannel;
@@ -107,29 +107,8 @@ namespace rJordanBot.Core.Data
             EmbedBuilder embed = new EmbedBuilder();
             embed.WithTitle($"Name changed");
             embed.WithAuthor(newUser);
-            embed.AddField("Before:", oldUser.Username);
-            embed.AddField("After:", newUser.Username);
-            embed.WithCurrentTimestamp();
-            embed.WithColor(66, 134, 244);
-            embed.WithFooter($"UserID: {newUser.Id}");
-
-            await LogChannel.SendMessageAsync("", false, embed.Build());
-        }
-
-        // Discriminator Changed
-        public async Task DiscriminatorChanged(SocketUser oldUser, SocketUser newUser)
-        {
-            if (oldUser.Discriminator == newUser.Discriminator) return;
-            if (oldUser.MutualGuilds.Count == 0) return;
-            
-            SocketGuild guild = Constants.IGuilds.Jordan(Client);
-            SocketTextChannel LogChannel = guild.Channels.FirstOrDefault(x => x.Id == LogID) as SocketTextChannel;
-
-            EmbedBuilder embed = new EmbedBuilder();
-            embed.WithTitle($"Name changed");
-            embed.WithAuthor(newUser);
-            embed.AddField("Before:", oldUser.Discriminator);
-            embed.AddField("After:", newUser.Discriminator);
+            embed.AddField("Before:", $"{oldUser.Username}#{oldUser.Discriminator}");
+            embed.AddField("After:", $"{newUser.Username}#{newUser.Discriminator}");
             embed.WithCurrentTimestamp();
             embed.WithColor(66, 134, 244);
             embed.WithFooter($"UserID: {newUser.Id}");

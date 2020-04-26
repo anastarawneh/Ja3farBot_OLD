@@ -69,8 +69,7 @@ namespace rJordanBot
 
                 Client.MessageUpdated += logEventHandlers.MessageEdited;
                 Client.MessageDeleted += logEventHandlers.MessageDeleted;
-                Client.UserUpdated += logEventHandlers.NameChanged;
-                Client.UserUpdated += logEventHandlers.DiscriminatorChanged;
+                Client.UserUpdated += logEventHandlers.NameOrDiscrimChanged;
                 Client.GuildMemberUpdated += logEventHandlers.RoleAdded;
                 Client.GuildMemberUpdated += logEventHandlers.RoleRemoved;
                 Client.GuildMemberUpdated += logEventHandlers.NicknameChanged;
