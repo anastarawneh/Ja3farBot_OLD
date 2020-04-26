@@ -32,7 +32,7 @@ namespace rJordanBot.Core.Strikes
                 }
 
                 SocketGuildUser User1 = Context.User as SocketGuildUser;
-                if (!User1.Roles.Contains(User1.Roles.FirstOrDefault(x => x.Name == "Moderator")) || User1.Id != ESettings.Owner)
+                if (!User1.Roles.Contains(User1.Roles.FirstOrDefault(x => x.Name == "Moderator")) && User1.Id != ESettings.Owner)
                 {
                     //No perms
                     await Context.Channel.SendMessageAsync(":x: You don't have sufficient permissions. ``^strike get <user>``");
@@ -69,7 +69,7 @@ namespace rJordanBot.Core.Strikes
                 }
 
                 SocketGuildUser User1 = Context.User as SocketGuildUser;
-                if (!User1.Roles.Contains(User1.Roles.FirstOrDefault(x => x.Name == "Moderator")) || User1.Id != ESettings.Owner)
+                if (!User1.Roles.Contains(User1.Roles.FirstOrDefault(x => x.Name == "Moderator")) && User1.Id != ESettings.Owner)
                 {
                     //No perms
                     await Context.Channel.SendMessageAsync(":x: You don't have sufficient permissions. ``^strike add <user> [amount]``");
@@ -103,7 +103,7 @@ namespace rJordanBot.Core.Strikes
                 }
 
                 SocketGuildUser User1 = Context.User as SocketGuildUser;
-                if (!User1.Roles.Contains(User1.Roles.FirstOrDefault(x => x.Name == "Moderator")) || User1.Id != ESettings.Owner)
+                if (!User1.Roles.Contains(User1.Roles.FirstOrDefault(x => x.Name == "Moderator")) && User1.Id != ESettings.Owner)
                 {
                     //No perms
                     await Context.Channel.SendMessageAsync(":x: You don't have sufficient permissions. ``^strike reset <user>``");
@@ -145,7 +145,7 @@ namespace rJordanBot.Core.Strikes
                 }
 
                 SocketGuildUser User1 = Context.User as SocketGuildUser;
-                if (!User1.Roles.Contains(User1.Roles.FirstOrDefault(x => x.Name == "Moderator")) || User1.Id != ESettings.Owner)
+                if (!User1.Roles.Contains(User1.Roles.FirstOrDefault(x => x.Name == "Moderator")) && User1.Id != ESettings.Owner)
                 {
                     //No perms
                     await Context.Channel.SendMessageAsync(":x: You don't have sufficient permissions. ``^strike set <user> [amount]``");
@@ -153,7 +153,7 @@ namespace rJordanBot.Core.Strikes
                 }
 
                 //Execution
-                await Context.Channel.SendMessageAsync($":white_check_mark: {User.Mention} has been given {Amount} strike(s).");
+                await Context.Channel.SendMessageAsync($":white_check_mark: {User.Mention} now has {Amount} strike(s).");
 
                 //Saving
                 await Data.Data.SetStrikes(User.Id, Amount);
