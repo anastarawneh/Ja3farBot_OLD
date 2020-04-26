@@ -10,9 +10,12 @@ using System.Threading.Tasks;
 
 namespace rJordanBot.Core.Data
 {
-    public static class EventHandlers
+    public class EventHandlers
     {
-        public static async Task Roles_ReactionAdded(Cacheable<IUserMessage, ulong> cacheable, ISocketMessageChannel channel, SocketReaction reaction)
+        private readonly DiscordSocketClient Client;
+        public EventHandlers(DiscordSocketClient client) => Client = client;
+
+        public async Task Roles_ReactionAdded(Cacheable<IUserMessage, ulong> cacheable, ISocketMessageChannel channel, SocketReaction reaction)
         {
             if (channel is IDMChannel)
             {
@@ -54,7 +57,7 @@ namespace rJordanBot.Core.Data
             }
         }
 
-        public static async Task Events_ReactionAdded(Cacheable<IUserMessage, ulong> cacheable, ISocketMessageChannel channel, SocketReaction reaction)
+        public async Task Events_ReactionAdded(Cacheable<IUserMessage, ulong> cacheable, ISocketMessageChannel channel, SocketReaction reaction)
         {
             if (channel is IDMChannel) return;
             if ((channel as SocketTextChannel).Name != "events") return;
@@ -89,7 +92,7 @@ namespace rJordanBot.Core.Data
             }
         }
 
-        public static async Task Invites_UserJoined(SocketGuildUser user)
+        public async Task Invites_UserJoined(SocketGuildUser user)
         {
             try
             {
@@ -101,7 +104,7 @@ namespace rJordanBot.Core.Data
             }
         }
 
-        public static async Task Starboard_ReactionAddedOrRemoved(Cacheable<IUserMessage, ulong> cacheable, ISocketMessageChannel channel, SocketReaction reaction)
+        public async Task Starboard_ReactionAddedOrRemoved(Cacheable<IUserMessage, ulong> cacheable, ISocketMessageChannel channel, SocketReaction reaction)
         {
             if (reaction.Emote.Name != "🌟") return;
             if (channel.Id == Data.GetChnlId("starboard")) return;
@@ -146,7 +149,7 @@ namespace rJordanBot.Core.Data
             }
         }
 
-        public static async Task JSON_UserLeft(SocketGuildUser user)
+        public async Task JSON_UserLeft(SocketGuildUser user)
         {
             SocketGuild guild = user.Guild;
             SocketTextChannel channel = guild.Channels.FirstOrDefault(x => x.Id == Data.GetChnlId("bot-log")) as SocketTextChannel;
@@ -175,7 +178,7 @@ namespace rJordanBot.Core.Data
             }
         }
 
-        public static async Task InviteDeletion(SocketMessage message)
+        public async Task InviteDeletion(SocketMessage message)
         {
             if (message.Author.IsBot) return;
             foreach (string whitelist in ESettings.InviteWhitelist)

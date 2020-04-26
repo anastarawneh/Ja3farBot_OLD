@@ -51,31 +51,35 @@ namespace rJordanBot
 
             // Secondary Handlers
             {
-                Client.ReactionAdded += EventHandlers.Roles_ReactionAdded;
-                Client.ReactionAdded += EventHandlers.Events_ReactionAdded;
-                Client.UserJoined += EventHandlers.Invites_UserJoined;
-                Client.ReactionAdded += EventHandlers.Starboard_ReactionAddedOrRemoved;
-                Client.ReactionRemoved += EventHandlers.Starboard_ReactionAddedOrRemoved;
+                EventHandlers eventHandlers = new EventHandlers(Client);
+
+                Client.ReactionAdded += eventHandlers.Roles_ReactionAdded;
+                Client.ReactionAdded += eventHandlers.Events_ReactionAdded;
+                Client.UserJoined += eventHandlers.Invites_UserJoined;
+                Client.ReactionAdded += eventHandlers.Starboard_ReactionAddedOrRemoved;
+                Client.ReactionRemoved += eventHandlers.Starboard_ReactionAddedOrRemoved;
                 Client.MessageReceived += Bot_CommandHandler;
-                Client.UserLeft += EventHandlers.JSON_UserLeft;
-                Client.MessageReceived += EventHandlers.InviteDeletion;
+                Client.UserLeft += eventHandlers.JSON_UserLeft;
+                Client.MessageReceived += eventHandlers.InviteDeletion;
             }
 
             // Log Handlers
             {
-                Client.MessageUpdated += LogEventHandlers.MessageEdited;
-                Client.MessageDeleted += LogEventHandlers.MessageDeleted;
-                Client.UserUpdated += LogEventHandlers.NameChanged;
-                Client.UserUpdated += LogEventHandlers.DiscriminatorChanged;
-                Client.GuildMemberUpdated += LogEventHandlers.RoleAdded;
-                Client.GuildMemberUpdated += LogEventHandlers.RoleRemoved;
-                Client.GuildMemberUpdated += LogEventHandlers.NicknameChanged;
-                Client.ChannelCreated += LogEventHandlers.ChannelCreated;
-                Client.ChannelDestroyed += LogEventHandlers.ChannelDestroyed;
-                Client.UserJoined += LogEventHandlers.UserJoined;
-                Client.UserLeft += LogEventHandlers.UserLeft;
-                Client.ChannelUpdated += LogEventHandlers.ChannelNameChanged;
-                Client.MessagesBulkDeleted += LogEventHandlers.MessagesBulkDeleted;
+                LogEventHandlers logEventHandlers = new LogEventHandlers(Client);
+
+                Client.MessageUpdated += logEventHandlers.MessageEdited;
+                Client.MessageDeleted += logEventHandlers.MessageDeleted;
+                Client.UserUpdated += logEventHandlers.NameChanged;
+                Client.UserUpdated += logEventHandlers.DiscriminatorChanged;
+                Client.GuildMemberUpdated += logEventHandlers.RoleAdded;
+                Client.GuildMemberUpdated += logEventHandlers.RoleRemoved;
+                Client.GuildMemberUpdated += logEventHandlers.NicknameChanged;
+                Client.ChannelCreated += logEventHandlers.ChannelCreated;
+                Client.ChannelDestroyed += logEventHandlers.ChannelDestroyed;
+                Client.UserJoined += logEventHandlers.UserJoined;
+                Client.UserLeft += logEventHandlers.UserLeft;
+                Client.ChannelUpdated += logEventHandlers.ChannelNameChanged;
+                Client.MessagesBulkDeleted += logEventHandlers.MessagesBulkDeleted;
             }
 
             await Client.LoginAsync(TokenType.Bot, ESettings.Token);

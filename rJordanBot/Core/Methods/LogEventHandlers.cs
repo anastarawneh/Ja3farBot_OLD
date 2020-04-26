@@ -11,12 +11,14 @@ using System.Threading.Tasks;
 
 namespace rJordanBot.Core.Data
 {
-    public static class LogEventHandlers
+    public class LogEventHandlers
     {
         static readonly ulong LogID = Data.GetChnlId("ja3far-logs");
+        private readonly DiscordSocketClient Client;
+        public LogEventHandlers(DiscordSocketClient client) => Client = client;
 
         // Message Edited
-        public static async Task MessageEdited(Cacheable<IMessage, ulong> cacheable, SocketMessage message, ISocketMessageChannel channel)
+        public async Task MessageEdited(Cacheable<IMessage, ulong> cacheable, SocketMessage message, ISocketMessageChannel channel)
         {
             if (channel is IDMChannel) return;
             if (message.Author.IsBot) return;
@@ -61,7 +63,7 @@ namespace rJordanBot.Core.Data
         }
 
         // Message Deleted
-        public static async Task MessageDeleted(Cacheable<IMessage, ulong> cacheable, ISocketMessageChannel channel)
+        public async Task MessageDeleted(Cacheable<IMessage, ulong> cacheable, ISocketMessageChannel channel)
         {
             if (channel is IDMChannel) return;
             if (cacheable.Value == null) return;
@@ -94,13 +96,12 @@ namespace rJordanBot.Core.Data
         }
 
         // Name Changed
-        public static async Task NameChanged(SocketUser oldUser, SocketUser newUser)
+        public async Task NameChanged(SocketUser oldUser, SocketUser newUser)
         {
             if (oldUser.Username == newUser.Username) return;
             if ((oldUser as SocketGuildUser) == null) return;
 
-            SocketGuildUser oldUser_ = oldUser as SocketGuildUser;
-            SocketGuild guild = oldUser_.Guild;
+            SocketGuild guild = Constants.IGuilds.Jordan(Client);
             SocketTextChannel LogChannel = guild.Channels.FirstOrDefault(x => x.Id == LogID) as SocketTextChannel;
 
             EmbedBuilder embed = new EmbedBuilder();
@@ -116,13 +117,12 @@ namespace rJordanBot.Core.Data
         }
 
         // Discriminator Changed
-        public static async Task DiscriminatorChanged(SocketUser oldUser, SocketUser newUser)
+        public async Task DiscriminatorChanged(SocketUser oldUser, SocketUser newUser)
         {
             if (oldUser.Discriminator == newUser.Discriminator) return;
             if (oldUser.MutualGuilds.Count == 0) return;
-
-            SocketGuildUser oldUser_ = oldUser as SocketGuildUser;
-            SocketGuild guild = oldUser_.Guild;
+            
+            SocketGuild guild = Constants.IGuilds.Jordan(Client);
             SocketTextChannel LogChannel = guild.Channels.FirstOrDefault(x => x.Id == LogID) as SocketTextChannel;
 
             EmbedBuilder embed = new EmbedBuilder();
@@ -138,7 +138,7 @@ namespace rJordanBot.Core.Data
         }
 
         // Role Added
-        public static async Task RoleAdded(SocketGuildUser oldUser, SocketGuildUser newUser)
+        public async Task RoleAdded(SocketGuildUser oldUser, SocketGuildUser newUser)
         {
             SocketGuild guild = newUser.Guild;
             SocketTextChannel LogChannel = guild.Channels.FirstOrDefault(x => x.Id == LogID) as SocketTextChannel;
@@ -167,7 +167,7 @@ namespace rJordanBot.Core.Data
         }
 
         // Role Removed
-        public static async Task RoleRemoved(SocketGuildUser oldUser, SocketGuildUser newUser)
+        public async Task RoleRemoved(SocketGuildUser oldUser, SocketGuildUser newUser)
         {
             SocketGuild guild = newUser.Guild;
             SocketTextChannel LogChannel = guild.Channels.FirstOrDefault(x => x.Id == LogID) as SocketTextChannel;
@@ -196,7 +196,7 @@ namespace rJordanBot.Core.Data
         }
 
         // Nickname Changed
-        public static async Task NicknameChanged(SocketGuildUser oldUser, SocketGuildUser newUser)
+        public async Task NicknameChanged(SocketGuildUser oldUser, SocketGuildUser newUser)
         {
             if (oldUser.Nickname == newUser.Nickname) return;
             SocketGuild guild = newUser.Guild;
@@ -217,7 +217,7 @@ namespace rJordanBot.Core.Data
         }
 
         // Channel Created
-        public static async Task ChannelCreated(SocketChannel channel)
+        public async Task ChannelCreated(SocketChannel channel)
         {
             if (channel is IDMChannel) return;
             if (channel is ICategoryChannel) return;
@@ -250,7 +250,7 @@ namespace rJordanBot.Core.Data
         }
 
         // Channel Deleted
-        public static async Task ChannelDestroyed(SocketChannel channel)
+        public async Task ChannelDestroyed(SocketChannel channel)
         {
             if (channel is IDMChannel) return;
             if (channel is ICategoryChannel) return;
@@ -278,7 +278,7 @@ namespace rJordanBot.Core.Data
         }
 
         // User Joined
-        public static async Task UserJoined(SocketGuildUser user)
+        public async Task UserJoined(SocketGuildUser user)
         {
             try
             {
@@ -323,7 +323,7 @@ namespace rJordanBot.Core.Data
         }
 
         // User Left
-        public static async Task UserLeft(SocketGuildUser user)
+        public async Task UserLeft(SocketGuildUser user)
         {
             EmbedBuilder embed = new EmbedBuilder();
             embed.WithTitle($"User left");
@@ -355,7 +355,7 @@ namespace rJordanBot.Core.Data
         }
 
         // Channel Name Changed
-        public static async Task ChannelNameChanged(SocketChannel channelBefore, SocketChannel channelAfter)
+        public async Task ChannelNameChanged(SocketChannel channelBefore, SocketChannel channelAfter)
         {
             SocketGuildChannel channelBefore_ = channelBefore as SocketGuildChannel;
             SocketGuildChannel channelAfter_ = channelAfter as SocketGuildChannel;
@@ -381,7 +381,7 @@ namespace rJordanBot.Core.Data
         }
 
         // Messages Bulk Deleted
-        public static async Task MessagesBulkDeleted(IReadOnlyCollection<Cacheable<IMessage, ulong>> collection, ISocketMessageChannel channel)
+        public async Task MessagesBulkDeleted(IReadOnlyCollection<Cacheable<IMessage, ulong>> collection, ISocketMessageChannel channel)
         {
             string messages = "";
             EmbedBuilder embed = new EmbedBuilder();
