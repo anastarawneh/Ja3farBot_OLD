@@ -36,6 +36,7 @@ namespace rJordanBot.Core.Data
             IMessage msgBefore = cacheable.Value;
             IMessage msgAfter = message as IMessage;
 
+            if (msgBefore == null) return;
             if (msgBefore.Content == null || msgAfter.Content == null) return;
             if (msgBefore.Content == msgAfter.Content) return;
 
