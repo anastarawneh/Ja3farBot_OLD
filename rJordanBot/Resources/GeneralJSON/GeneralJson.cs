@@ -109,6 +109,14 @@ namespace rJordanBot.Resources.GeneralJSON
     {
         public ulong ID;
         public string Timezone;
+        public ModType modType;
+    }
+
+    public enum ModType
+    {
+        Owner = 1,
+        Moderator = 2, 
+        FunMod = 3
     }
 
     public static class Extensions
@@ -147,6 +155,19 @@ namespace rJordanBot.Resources.GeneralJSON
             }
 
             return false;
+        }
+
+        public static bool IsFuncModerator(this SocketGuildUser user)
+        {
+            if (!user.IsModerator()) return false;
+            if (user.ToModerator().modType == ModType.FunMod) return false;
+            return true;
+        }
+
+        public static Moderator ToModerator(this SocketGuildUser user)
+        {
+            if (user.IsModerator()) return GeneralJson.moderators.First(x => x.ID == user.Id);
+            else return null;
         }
     }
 }

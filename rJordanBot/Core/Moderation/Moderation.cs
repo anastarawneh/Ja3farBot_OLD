@@ -81,7 +81,7 @@ namespace rJordanBot.Core.Moderation
         public async Task Kick(SocketGuildUser user, [Remainder]string reason = "")
         {
             SocketGuildUser user_ = Context.User as SocketGuildUser;
-            if (!user_.IsModerator() && user_.Id != ESettings.Owner) return;
+            if (!user_.IsFuncModerator() && user_.Id != ESettings.Owner) return;
 
             await user.KickAsync();
 
@@ -104,7 +104,7 @@ namespace rJordanBot.Core.Moderation
         public async Task Ban(SocketGuildUser user, [Remainder]string reason = "")
         {
             SocketGuildUser user_ = Context.User as SocketGuildUser;
-            if (!user_.IsModerator() && user_.Id != ESettings.Owner) return;
+            if (!user_.IsFuncModerator() && user_.Id != ESettings.Owner) return;
 
             await user.BanAsync();
 
@@ -127,7 +127,7 @@ namespace rJordanBot.Core.Moderation
         public async Task Mute(SocketGuildUser user, string time, [Remainder] string reason = null)
         {
             SocketGuildUser user_ = Context.User as SocketGuildUser;
-            if (!user_.IsModerator() && user_.Id != ESettings.Owner) return;
+            if (!user_.IsFuncModerator() && user_.Id != ESettings.Owner) return;
 
             int seconds;
             int time_ = int.Parse(time.Replace("d", "").Replace("h", "").Replace("m", "").Replace("s", ""));
@@ -188,7 +188,7 @@ namespace rJordanBot.Core.Moderation
         public async Task Unmute(SocketGuildUser user)
         {
             SocketGuildUser user_ = Context.User as SocketGuildUser;
-            if (!user_.IsModerator() && user_.Id != ESettings.Owner)
+            if (!user_.IsFuncModerator() && user_.Id != ESettings.Owner)
             {
                 await ReplyAsync(Constants.IMacros.NoPerms);
                 return;
@@ -231,6 +231,12 @@ namespace rJordanBot.Core.Moderation
         public async Task Warn(SocketGuildUser user = null, [Remainder] string reason = null)
         {
             // Checks
+            SocketGuildUser user_ = Context.User as SocketGuildUser;
+            if (!user_.IsFuncModerator() && user_.Id != ESettings.Owner)
+            {
+                await ReplyAsync(Constants.IMacros.NoPerms);
+                return;
+            }
             if (user == null)
             {
                 await ReplyAsync(":x: Please mention a user to be warned. `^warn <user> <reason>`");

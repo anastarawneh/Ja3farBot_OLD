@@ -362,6 +362,18 @@ namespace rJordanBot.Core.Commands
 
                     await ReplyAsync("", false, embed.Build());
                 }
+
+                [Command("type"), Alias("t")]
+                public async Task Type(SocketGuildUser user)
+                {
+                    Moderator mod = user.ToModerator();
+                    if (mod == null)
+                    {
+                        await ReplyAsync($":x: User {user.Mention} is not a moderator.");
+                        return;
+                    }
+                    await ReplyAsync($":white_check_mark: User {user.Mention} is a type {mod.modType.GetHashCode()} moderator.");
+                }
             }
         }
 

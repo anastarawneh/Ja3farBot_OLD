@@ -82,7 +82,8 @@ namespace rJordanBot.Core.Data
                 GeneralJson.moderators.Add(new Moderator
                 {
                     ID = modinit.id,
-                    Timezone = modinit.timezone
+                    Timezone = modinit.timezone,
+                    modType = modinit.modtype
                 });
             }
 

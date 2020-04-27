@@ -47,5 +47,6 @@ namespace rJordanBot.Resources.Datatypes
     {
         public ulong id { get; set; }
         public string timezone { get; set; }
+        public ModType modtype { get; set; }
     }
 }
