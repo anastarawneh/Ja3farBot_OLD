@@ -230,12 +230,14 @@ namespace rJordanBot.Core.Commands
             }
         }
 
-        [Command("stop")]
+        [Command("adminstop")]
         public async Task Stop()
         {
             if (Context.User.Id != ESettings.Owner) return;
             SocketTextChannel channel = Constants.IGuilds.Jordan(Context).Channels.FirstOrDefault(x => x.Id == Data.Data.GetChnlId("bot-log")) as SocketTextChannel;
             await channel.SendMessageAsync($"[{DateTime.Now} at Commands] Stopping [{Environment.GetEnvironmentVariable("SystemType").ToUpper()}] instance...");
+            await Context.Client.LogoutAsync();
+            await Task.Delay(2500);
             IEmote emote = new Emoji("✅");
             await Context.Message.AddReactionAsync(emote);
             Environment.Exit(1);

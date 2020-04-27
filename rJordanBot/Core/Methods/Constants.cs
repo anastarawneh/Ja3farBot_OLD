@@ -42,5 +42,22 @@ namespace rJordanBot.Core.Methods
         {
             public static readonly string NoPerms = ":x: Insufficient permissions.";
         }
+
+        public interface IConversions
+        { 
+            public static SocketGuildUser GuildUser(SocketCommandContext Context)
+            {
+                SocketGuild guild = IGuilds.Jordan(Context);
+                SocketUser user = Context.Client.CurrentUser;
+                return guild.GetUser(user.Id);
+            }
+
+            public static SocketGuildUser GuildUser(DiscordSocketClient Client)
+            {
+                SocketGuild guild = IGuilds.Jordan(Client);
+                SocketUser user = Client.CurrentUser;
+                return guild.GetUser(user.Id);
+            }
+        }
     }
 }
