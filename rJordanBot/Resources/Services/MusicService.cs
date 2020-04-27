@@ -42,7 +42,7 @@ namespace rJordanBot.Resources.Services
 
         public async Task LeaveAsync(SocketVoiceChannel voiceChannel)
         {
-            if (_player != null) await _player.StopAsync();
+            if (_player != null && _player.IsPlaying) await _player.StopAsync();
             await _lavaSocketClient.DisconnectAsync(voiceChannel);
         }
 
