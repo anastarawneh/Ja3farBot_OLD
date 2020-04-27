@@ -2,16 +2,19 @@
 using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.WebSocket;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using rJordanBot.Core.Data;
 using rJordanBot.Core.Methods;
 using rJordanBot.Resources.GeneralJSON;
+using rJordanBot.Resources.Services;
 using rJordanBot.Resources.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Victoria;
 
 namespace rJordanBot
 {
@@ -88,9 +91,14 @@ namespace rJordanBot
             Services = new ServiceCollection()
                 .AddSingleton(Client)
                 .AddSingleton<InteractiveService>()
+                .AddSingleton<LavaRestClient>()
+                .AddSingleton<LavaSocketClient>()
+                .AddSingleton<MusicService>()
                 .BuildServiceProvider();
 
             await Commands.AddModulesAsync(Assembly.GetEntryAssembly(), Services);
+
+            await Services.GetRequiredService<MusicService>().InitializeAsync();
 
             await Task.Delay(-1);
         }
@@ -153,7 +161,7 @@ namespace rJordanBot
             */
         }
 
-        private async Task Client_Log(LogMessage Message)
+        public async Task Client_Log(LogMessage Message)
         {
             switch (Message.Severity)
             {
