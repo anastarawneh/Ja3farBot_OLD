@@ -41,7 +41,10 @@ namespace rJordanBot.Resources.Services
             => await _lavaSocketClient.ConnectAsync(voiceChannel, textChannel);
 
         public async Task LeaveAsync(SocketVoiceChannel voiceChannel)
-            => await _lavaSocketClient.DisconnectAsync(voiceChannel);
+        {
+            if (_player != null) await _player.StopAsync();
+            await _lavaSocketClient.DisconnectAsync(voiceChannel);
+        }
 
         public async Task<string> PlayAsync(string query, ulong guildID, SocketGuildUser bot, SocketVoiceChannel vc, SocketTextChannel tc)
         {
