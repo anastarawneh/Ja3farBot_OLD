@@ -3,6 +3,7 @@ using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.WebSocket;
 using rJordanBot.Core.Methods;
+using rJordanBot.Resources.GeneralJSON;
 using rJordanBot.Resources.Services;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,8 @@ namespace rJordanBot.Core.Commands
         [Command("join")]
         public async Task Join()
         {
+            if (!(Context.User as SocketGuildUser).IsModerator()) return;
+
             if (Context.Channel is IDMChannel) return;
             SocketGuildUser user = Context.User as SocketGuildUser;
             if (user.VoiceChannel == null)
@@ -44,6 +47,8 @@ namespace rJordanBot.Core.Commands
         [Command("leave"), Alias("dc")]
         public async Task Leave()
         {
+            if (!(Context.User as SocketGuildUser).IsModerator()) return;
+
             if (Context.Channel is IDMChannel) return;
             SocketGuildUser user = Context.User as SocketGuildUser;
             if (user.VoiceChannel == null)
@@ -70,6 +75,8 @@ namespace rJordanBot.Core.Commands
         [Command("play"), Alias("p")]
         public async Task Play([Remainder]string query = null)
         {
+            if (!(Context.User as SocketGuildUser).IsModerator()) return;
+
             if (Context.Channel is IDMChannel) return;
             SocketGuildUser user = Context.User as SocketGuildUser;
             if (user.VoiceChannel == null)
@@ -95,6 +102,8 @@ namespace rJordanBot.Core.Commands
         [Command("stop")]
         public async Task Stop()
         {
+            if (!(Context.User as SocketGuildUser).IsModerator()) return;
+
             if (Context.Channel is IDMChannel) return;
             SocketGuildUser user = Context.User as SocketGuildUser;
             if (user.VoiceChannel == null)
@@ -121,6 +130,8 @@ namespace rJordanBot.Core.Commands
         [Command("skip")]
         public async Task Skip()
         {
+            if (!(Context.User as SocketGuildUser).IsModerator()) return;
+
             if (Context.Channel is IDMChannel) return;
             SocketGuildUser user = Context.User as SocketGuildUser;
             if (user.VoiceChannel == null)
@@ -147,6 +158,8 @@ namespace rJordanBot.Core.Commands
         [Command("pause")]
         public async Task Pause()
         {
+            if (!(Context.User as SocketGuildUser).IsModerator()) return;
+
             if (Context.Channel is IDMChannel) return;
             SocketGuildUser user = Context.User as SocketGuildUser;
             if (user.VoiceChannel == null)
@@ -173,6 +186,8 @@ namespace rJordanBot.Core.Commands
         [Command("queue"), Alias("q")]
         public async Task Queue()
         {
+            if (!(Context.User as SocketGuildUser).IsModerator()) return;
+
             if (Context.Channel is IDMChannel) return;
             await ReplyAsync(_musicService.Queue());
         }

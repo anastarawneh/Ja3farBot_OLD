@@ -4,6 +4,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 using rJordanBot.Core.Methods;
 using rJordanBot.Resources.GeneralJSON;
+using rJordanBot.Resources.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace rJordanBot.Core.Moderation
             [Command("verify"), Alias("v")]
             public async Task Verify([Remainder]IUser user = null)
             {
-                if (Context.User != Constants.IGuilds.Jordan(Context).Owner) return;
+                if (Context.User.Id != ESettings.Owner) return;
 
                 ulong id = user.Id;
 

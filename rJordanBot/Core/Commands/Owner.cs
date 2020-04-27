@@ -22,8 +22,6 @@ namespace rJordanBot.Core.Commands
         public async Task Test(SocketGuildUser user)
         {
             if (Context.User.Id != ESettings.Owner) return;
-            string test = "s";
-            int lel = int.Parse(test);
             try
             {
                 
@@ -308,7 +306,7 @@ namespace rJordanBot.Core.Commands
         public class JSON : InteractiveBase<SocketCommandContext>
         {
             [Group("user")]
-            public class User : InteractiveBase<SocketCommandContext>
+            public class UserInfo : InteractiveBase<SocketCommandContext>
             {
                 [Command("add")]
                 public async Task Add(SocketGuildUser user)
@@ -344,7 +342,7 @@ namespace rJordanBot.Core.Commands
             }
 
             [Group("moderator"), Alias("mod")]
-            public class Moderator : InteractiveBase<SocketCommandContext>
+            public class ModeratorInfo : InteractiveBase<SocketCommandContext>
             {
                 [Command("list"), Alias("l")]
                 public async Task List()

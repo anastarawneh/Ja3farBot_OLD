@@ -21,7 +21,8 @@ namespace rJordanBot.Core.Commands
                 "``^help``: Displays this message.\n" +
                 "``^event``: Event command system. Enter ``^event help`` for more.\n" +
                 "``^socials``: Socials command system. Enter ``^socials help`` for more.\n" +
-                "``^report``: DM report system. Only use in DMs."
+                "``^report``: DM report system. Only use in DMs.\n"/* +
+                "``^music``: Music command system."*/
             );
         }
 
@@ -254,6 +255,20 @@ namespace rJordanBot.Core.Commands
             moderationembed.WithFooter(moderationembed.Footer.Text + $" | Canceled at {DateTime.Now.ToString("h:mm")}");
             await moderationmsg.ModifyAsync(x => x.Embed = moderationembed.Build());
             return;
+        }
+
+        [Command("music"), Alias("music help")]
+        public async Task MusicHelp()
+        {
+            await ReplyAsync(
+                ":question: Music commands:\n" +
+                "``^play``: Plays a track from a YouTube search query or link, or adds it to the queue. ``^play <query>``\n" +
+                "``^pause``: Pauses or unpauses the current track.\n" +
+                "``^stop``: Stops and clears the current queue.\n" +
+                "``^skip``: Skips to the next track in the queue.\n" +
+                "``^join``: Joins the voice channel the user is in.\n" +
+                "``^dc``: Disconnects from the voice channel it's in."
+            );
         }
     }
 }

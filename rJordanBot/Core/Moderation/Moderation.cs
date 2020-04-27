@@ -22,7 +22,7 @@ namespace rJordanBot.Core.Moderation
             //Checks
             if (!(Context.User.Id == ESettings.Owner))
             {
-                await Context.Channel.SendMessageAsync(":x: Insufficient Permissions.");
+                await Context.Channel.SendMessageAsync(Constants.IMacros.NoPerms);
                 return;
             }
 
