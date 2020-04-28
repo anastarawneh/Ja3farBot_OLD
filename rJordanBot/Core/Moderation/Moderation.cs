@@ -223,7 +223,7 @@ namespace rJordanBot.Core.Moderation
                     embed.WithTitle("User Muted => User Unmuted");
                     embed.Fields.First(x => x.Name == "Duration").Value += $" (unmuted manually by {Context.User.Mention})";
 
-                    await (message as SocketUserMessage).ModifyAsync(x => x.Embed = embed.Build());
+                    await (message as IUserMessage).ModifyAsync(x => x.Embed = embed.Build());
 
                     await Context.Message.AddReactionAsync(Constants.IEmojis.Tick);
                 }
