@@ -19,7 +19,7 @@ namespace rJordanBot.Core.Commands
     public class Owner : InteractiveBase<SocketCommandContext>
     {
         [Command("test", RunMode = RunMode.Async)]
-        public async Task Test(SocketGuildUser user)
+        public async Task Test()
         {
             if (Context.User.Id != ESettings.Owner) return;
             try

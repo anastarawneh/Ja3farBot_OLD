@@ -223,21 +223,98 @@ namespace rJordanBot.Core.Moderation
                     embed.Fields.First(x => x.Name == "Duration").Value += $" (unmuted manually by {Context.User.Mention})";
 
                     await (message as SocketUserMessage).ModifyAsync(x => x.Embed = embed.Build());
+
+                    await Context.Message.AddReactionAsync(Constants.IEmojis.Tick);
                 }
             }
         }
 
-        [Command("warn")]
-        public async Task Warn(SocketGuildUser user = null, [Remainder] string reason = null)
+        [Group("warn")]
+        public class Warn : InteractiveBase<SocketCommandContext>
         {
-            // Checks
-            SocketGuildUser user_ = Context.User as SocketGuildUser;
-            if (!user_.IsFuncModerator() && user_.Id != ESettings.Owner)
+            [Command("add"), Alias("")]
+            public async Task AddWarning(SocketGuildUser user = null, [Remainder] string reason = null)
             {
-                await ReplyAsync(Constants.IMacros.NoPerms);
-                return;
+                // Checks
+                SocketGuildUser user_ = Context.User as SocketGuildUser;
+                if (!user_.IsFuncModerator() && user_.Id != ESettings.Owner)
+                {
+                    await ReplyAsync(Constants.IMacros.NoPerms);
+                    return;
+                }
+                if (user == null)
+                {
+                    await ReplyAsync(":x: Please mention a user to be warned. `^warn <user> <reason>`");
+                    return;
+                }
+                if (reason == null)
+                {
+                    await ReplyAsync(":x: Please mention a reason for the warning. `^warn <user> <reason>`");
+                    return;
+                }
+
+                // Execution
+                using SqliteDbContext DbContext = new SqliteDbContext();
+                if (DbContext.Strikes.Where(x => x.UserId == user.Id).Count() < 1)
+                {
+                    DbContext.Strikes.Add(new Strike
+                    {
+                        UserId = user.Id,
+                        Amount = 0
+                    });
+                    await DbContext.SaveChangesAsync();
+                }
+                Strike strikeEntry = DbContext.Strikes.First(x => x.UserId == user.Id);
+                strikeEntry.Amount++;
+                DbContext.Update(strikeEntry);
+                await DbContext.SaveChangesAsync();
+
+                // Response
+                await Context.Message.DeleteAsync();
+                IUserMessage response = await ReplyAsync($":white_check_mark: User {user.Mention} has been warned for `{reason}`. Total warnings: `{strikeEntry.Amount}`.");
+                EmbedBuilder embed = new EmbedBuilder();
+                embed.WithTitle("Warning issued");
+                embed.WithAuthor(Context.User);
+                embed.WithColor(Constants.IColors.Blurple);
+                embed.WithDescription($"[Link to message]({response.GetJumpUrl()})");
+                embed.AddField("User", user);
+                embed.AddField("Reason", reason);
+                embed.WithCurrentTimestamp();
+                embed.WithFooter($"UserID: {user.Id}");
+
+                SocketGuild guild = Constants.IGuilds.Jordan(Context);
+                SocketTextChannel logChannel = guild.Channels.First(x => x.Id == Data.Data.GetChnlId("moderation-log")) as SocketTextChannel;
+                await logChannel.SendMessageAsync("", false, embed.Build());
             }
-            if (user == null)
+
+            [Command("get")]
+            public async Task GetWarning(SocketGuildUser user = null)
+            {
+                // Checks
+                SocketGuildUser user_ = Context.User as SocketGuildUser;
+                if (!user_.IsFuncModerator() && user_.Id != ESettings.Owner)
+                {
+                    await ReplyAsync(Constants.IMacros.NoPerms);
+                    return;
+                }
+                if (user == null)
+                {
+                    await ReplyAsync(":x: Please mention a user to be warned. `^warn <user> <reason>`");
+                    return;
+                }
+
+                // Execution
+                switch (Data.Data.GetStrikes(user.Id))
+                {
+                    case 1:
+                        await ReplyAsync($":white_check_mark: User {user.Mention} has `{Data.Data.GetStrikes(user.Id)}` warning.");
+                        break;
+                    default:
+                        await ReplyAsync($":white_check_mark: User {user.Mention} has `{Data.Data.GetStrikes(user.Id)}` warnings.");
+                        break;
+                }
+            }
+        }
             {
                 await ReplyAsync(":x: Please mention a user to be warned. `^warn <user> <reason>`");
                 return;
