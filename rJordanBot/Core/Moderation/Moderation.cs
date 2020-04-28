@@ -3,6 +3,7 @@ using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.Rest;
 using Discord.WebSocket;
+using Microsoft.EntityFrameworkCore;
 using rJordanBot.Core.Methods;
 using rJordanBot.Resources.Database;
 using rJordanBot.Resources.GeneralJSON;
@@ -313,6 +314,42 @@ namespace rJordanBot.Core.Moderation
                         await ReplyAsync($":white_check_mark: User {user.Mention} has `{Data.Data.GetStrikes(user.Id)}` warnings.");
                         break;
                 }
+            }
+
+            [Command("list")]
+            public async Task List(int page = 1)
+            {
+                using SqliteDbContext DbContext = new SqliteDbContext();
+                IOrderedQueryable<Strike> strikes = DbContext.Strikes.AsQueryable().OrderByDescending(x => x.Amount);
+                EmbedBuilder embed = new EmbedBuilder();
+
+                embed.WithTitle("Warning Leaderboard");
+                embed.WithColor(Constants.IColors.Blurple);
+                embed.WithFooter($"\nPage {page}/{strikes.Count() / 5 + 1}");
+
+                string list = "```WARNING LEADERBOARDS:\n\n";
+                List<Strike> strikes_ = strikes.ToList();
+
+                if (5 * page >= strikes.Count())
+                {
+                    for (int x = 5 * (page - 1); x < strikes.Count(); x++)
+                    {
+                        SocketGuildUser user = Context.Guild.GetUser(strikes_[x].UserId);
+                        embed.AddField($"#{x + 1} {user.ToString()}", strikes_[x].Amount);
+                        list += $"#{x + 1} {user} >> {strikes_[x].Amount}\n";
+                    }
+                }
+                else for (int x = 5 * (page - 1); x < 5 * page; x++)
+                    {
+                        SocketGuildUser user = Context.Guild.GetUser(strikes_[x].UserId);
+                        embed.AddField($"#{x + 1} {user.ToString()}", strikes_[x].Amount);
+                        list += $"#{x + 1} {user} >> {strikes_[x].Amount}\n";
+                    }
+
+                list += $"\nPage {page}/{strikes.Count() / 5 + 1}```";
+
+                //await ReplyAsync(list);
+                await ReplyAsync("", false, embed.Build());
             }
         }
 
