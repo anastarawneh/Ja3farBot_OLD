@@ -65,6 +65,7 @@ namespace rJordanBot
                 Client.MessageReceived += Bot_CommandHandler;
                 Client.UserLeft += eventHandlers.JSON_UserLeft;
                 Client.MessageReceived += eventHandlers.InviteDeletion;
+                Client.Ready += eventHandlers.MuteFixing;
             }
 
             // Log Handlers

@@ -315,48 +315,93 @@ namespace rJordanBot.Core.Moderation
                 }
             }
         }
+
+        [Command("mutefix")]
+        public async Task MuteFix(ulong msgID)
+        {
+            if (Context.Channel is IDMChannel) return;
+            SocketGuildUser self = Context.User as SocketGuildUser;
+            if (!self.IsModerator()) return;
+
+            SocketTextChannel modlog = Context.Guild.Channels.First(x => x.Id == Data.Data.GetChnlId("moderation-log")) as SocketTextChannel;
+            IMessage message = modlog.GetMessageAsync(msgID).Result;
+            IEmbed embed = message.Embeds.First();
+            if (embed.Title != "User Muted")
             {
-                await ReplyAsync(":x: Please mention a user to be warned. `^warn <user> <reason>`");
+                await ReplyAsync($":x: User is not muted, no need to fix this.");
                 return;
             }
-            if (reason == null)
+            SocketGuildUser user = Context.Guild.GetUser(ulong.Parse(embed.Footer.Value.Text.Replace("UserID: ", "")));
+            DateTimeOffset mutestart = message.Timestamp.ToLocalTime();
+            DateTimeOffset mutefinish = mutestart;
+            string timestring = embed.Fields.First(x => x.Name == "Duration").Value;
+            char timesymbol = timestring[^1];
+            int time = int.Parse(timestring.Replace(timesymbol.ToString(), ""));
+            switch (timesymbol)
             {
-                await ReplyAsync(":x: Please mention a reason for the warning. `^warn <user> <reason>`");
+                case 'd':
+                    mutefinish = mutefinish.AddDays(time);
+                    break;
+                case 'h':
+                    mutefinish = mutefinish.AddHours(time);
+                    break;
+                case 'm':
+                    mutefinish = mutefinish.AddMinutes(time);
+                    break;
+                case 's':
+                    mutefinish = mutefinish.AddSeconds(time);
+                    break;
+                default:
+                    await ReplyAsync(":x: Time must be in the same format as the duration in the embed.");
+                    return;
+            }
+
+            Console.WriteLine(timestring);
+            Console.WriteLine(timesymbol);
+            Console.WriteLine(time);
+            Console.WriteLine(mutestart);
+            Console.WriteLine(mutefinish);
+            Console.WriteLine(DateTimeOffset.Now.ToLocalTime());
+
+            if (mutefinish <= DateTimeOffset.Now.ToLocalTime())
+            {
+                SocketRole muted = Constants.IGuilds.Jordan(Context).Roles.First(x => x.Name == "Muted");
+                await self.RemoveRoleAsync(muted);
+
+                EmbedBuilder embedBuilder = message.Embeds.First().ToEmbedBuilder();
+
+                embedBuilder.WithColor(0, 255, 0);
+                embedBuilder.WithTitle("User Muted => User Unmuted");
+                embedBuilder.Fields.First(x => x.Name == "Duration").Value += $" (unmuted manually by {Context.Client.CurrentUser.Mention})";
+                await (message as IUserMessage).ModifyAsync(x => x.Embed = embedBuilder.Build());
+
+                await Context.Message.AddReactionAsync(Constants.IEmojis.Tick);
                 return;
             }
 
-            // Execution
-            using SqliteDbContext DbContext = new SqliteDbContext();
-            if (DbContext.Strikes.Where(x => x.UserId == user.Id).Count() < 1)
+            TimeSpan duration = mutefinish - DateTimeOffset.Now.ToLocalTime();
+            await ReplyAsync($":white_check_mark: Fixed {user.Mention}'s mute, it ends in {duration.ToString(@"d\:hh\:mm\:ss")}.");
+
+            while (mutefinish > DateTimeOffset.Now.ToLocalTime())
             {
-                DbContext.Strikes.Add(new Strike
-                {
-                    UserId = user.Id,
-                    Amount = 0
-                });
-                await DbContext.SaveChangesAsync();
+                
             }
-            Strike strikeEntry = DbContext.Strikes.First(x => x.UserId == user.Id);
-            strikeEntry.Amount++;
-            DbContext.Update(strikeEntry);
-            await DbContext.SaveChangesAsync();
 
-            // Response
-            await Context.Message.DeleteAsync();
-            IUserMessage response = await ReplyAsync($":white_check_mark: User {user.Mention} has been warned for `{reason}`. Total warnings: `{strikeEntry.Amount}`.");
-            EmbedBuilder embed = new EmbedBuilder();
-            embed.WithTitle("Warning issued");
-            embed.WithAuthor(Context.User);
-            embed.WithColor(Constants.IColors.Blurple);
-            embed.WithDescription($"[Link to message]({response.GetJumpUrl()})");
-            embed.AddField("User", user);
-            embed.AddField("Reason", reason);
-            embed.WithCurrentTimestamp();
-            embed.WithFooter($"UserID: {user.Id}");
+            user = Context.Guild.GetUser(user.Id); // reload user roles if changed
+            SocketRole mutedrole = Constants.IGuilds.Jordan(Context).Roles.First(x => x.Name == "Muted");
+            IReadOnlyCollection<SocketRole> roles = user.Roles;
+            if (!roles.Contains(mutedrole)) return;
 
-            SocketGuild guild = Constants.IGuilds.Jordan(Context);
-            SocketTextChannel logChannel = guild.Channels.First(x => x.Id == Data.Data.GetChnlId("moderation-log")) as SocketTextChannel;
-            await logChannel.SendMessageAsync("", false, embed.Build());
+            await user.RemoveRoleAsync(mutedrole);
+
+            EmbedBuilder embedBuilder2 = message.Embeds.First().ToEmbedBuilder();
+
+            embedBuilder2.WithColor(0, 255, 0);
+            embedBuilder2.WithTitle("User Muted => User Unmuted");
+            
+            await (message as IUserMessage).ModifyAsync(x => x.Embed = embedBuilder2.Build());
+
+            await Context.Message.AddReactionAsync(Constants.IEmojis.Tick);
         }
     }
 }

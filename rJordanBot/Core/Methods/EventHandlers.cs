@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.WebSocket;
+using rJordanBot.Core.Methods;
 using rJordanBot.Resources.Datatypes;
 using rJordanBot.Resources.GeneralJSON;
 using rJordanBot.Resources.Settings;
@@ -190,6 +191,39 @@ namespace rJordanBot.Core.Data
                 await message.DeleteAsync();
                 await message.Channel.SendMessageAsync(":x: Please don't send Discord server invites in this server.");
             }
+        }
+
+        public async Task MuteFixing()
+        {
+            Client.Ready -= MuteFixing;
+
+            string idList = "";
+            SocketGuild guild = Constants.IGuilds.Jordan(Client);
+            SocketTextChannel botlog = guild.Channels.First(x => x.Id == Data.GetChnlId("bot-log")) as SocketTextChannel;
+            SocketTextChannel modlog = guild.Channels.First(x => x.Id == Data.GetChnlId("moderation-log")) as SocketTextChannel;
+            IEnumerable<IMessage> messages = modlog.GetMessagesAsync(20).FlattenAsync().Result;
+
+            await botlog.SendMessageAsync($"[{DateTime.Now} at Gateway] First launch");
+
+            foreach (IMessage message in messages)
+            {
+                if (message is IUserMessage msg)
+                {
+                    if (message.Embeds.First().Title == "User Muted")
+                    {
+                        idList += $"^mutefix {message.Id}\n";
+                    }
+                }
+            }
+
+            if (idList == "") return;
+
+            SocketTextChannel commands = guild.Channels.First(x => x.Id == Data.GetChnlId("mod-commands")) as SocketTextChannel;
+            await commands.SendMessageAsync($"We have one or more muted users, and I've lost track of time. Can you please enter the following commmand(s)?\n" +
+                $"```\n" +
+                $"{idList}\n" +
+                $"```\n" +
+                $"*This is temporary, until Anas makes sure this works fine and automates it.*");
         }
     }
 }
