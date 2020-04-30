@@ -492,5 +492,15 @@ namespace rJordanBot.Core.Commands
             await Message.ModifyAsync(x => x.Embed = embed.Build());
 
         }
+
+        [Command("reconnect", RunMode = RunMode.Async)]
+        public async Task Reconnect()
+        {
+            DiscordSocketClient client = Context.Client;
+            await client.StopAsync();
+
+            await client.LoginAsync(TokenType.Bot, ESettings.Token);
+            await client.StartAsync();
+        }
     }
 }
