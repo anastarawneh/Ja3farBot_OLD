@@ -292,7 +292,7 @@ namespace rJordanBot.Core.Data
 
                 embed.WithTitle($"User joined");
                 embed.WithAuthor(user);
-                embed.AddField("Account created:", Data.GetDuration(user.CreatedAt.DateTime.AddHours(2), DateTime.Now).Duration());
+                embed.AddField("Account created:", Data.GetDuration(user.CreatedAt.DateTime.ToLocalTime(), DateTime.Now.ToLocalTime()).Duration());
                 embed.AddField("Invite link:", invite);
                 embed.AddField("Invited by:", inviter);
                 embed.WithCurrentTimestamp();
@@ -319,7 +319,7 @@ namespace rJordanBot.Core.Data
             embed.WithTitle($"User left");
             embed.WithAuthor(user);
             if (user.JoinedAt == null) embed.AddField("User joined:", "Unknown");
-            else embed.AddField("User joined:", Data.GetDuration(user.JoinedAt.Value.DateTime.AddHours(2), DateTime.Now).Duration());
+            else embed.AddField("User joined:", Data.GetDuration(user.JoinedAt.Value.DateTime.ToLocalTime(), DateTime.Now.ToLocalTime()).Duration());
             embed.WithCurrentTimestamp();
             embed.WithColor(255, 245, 175);
             embed.WithFooter($"UserID: {user.Id} | User count: {user.Guild.MemberCount}");

@@ -17,13 +17,67 @@ namespace rJordanBot.Resources.Services
         private LavaRestClient _lavaRestClient;
         private LavaSocketClient _lavaSocketClient;
         private DiscordSocketClient _client;
+        private LavaRestClient _oldlavaRestClient;
+        private LavaSocketClient _oldlavaSocketClient;
         private LavaPlayer _player;
+        private List<LavaTrack> queue = new List<LavaTrack>();
+        private LavaTrack track;
+        private IVoiceChannel channel;
+        private ITextChannel tchannel;
+        private bool isItOn = false;
 
         public MusicService(LavaRestClient lavaRestClient, LavaSocketClient lavaSocketClient, DiscordSocketClient client)
         {
             _lavaRestClient = lavaRestClient;
             _lavaSocketClient = lavaSocketClient;
             _client = client;
+        }
+
+        public async Task OnDisconnect(Exception ex)
+        {
+            if (_player == null) return;
+            if (_player.IsPlaying)
+            {
+                isItOn = true;
+                foreach (IQueueObject queueObject in _player.Queue.Items)
+                {
+                    LavaTrack lavaTrack = queueObject as LavaTrack;
+                    queue.Add(lavaTrack);
+                }
+                track = _player.CurrentTrack;
+                channel = _player.VoiceChannel;
+                tchannel = _player.TextChannel;
+                await _player.StopAsync();
+            }
+            else isItOn = false;
+
+            _oldlavaRestClient = _lavaRestClient;
+            _oldlavaSocketClient = _lavaSocketClient;
+        }
+
+        public async Task OnReconnect()
+        {
+            await _lavaSocketClient.StartAsync(_client, new Configuration
+            {
+                LogSeverity = LogSeverity.Debug,
+                SelfDeaf = false
+            });
+
+            if (isItOn)
+            {
+                await _lavaSocketClient.ConnectAsync(channel, tchannel);
+                _player = _lavaSocketClient.GetPlayer(_client.Guilds.First().Id);
+                await _player.PlayAsync(track);
+                await _player.SeekAsync(track.Position);
+                Console.WriteLine(queue.Count().ToString());
+                foreach (LavaTrack item in queue)
+                {
+                    _player.Queue.Enqueue(item);
+                }
+                queue.Clear();
+            }
+
+            isItOn = false;
         }
 
         public Task InitializeAsync()
@@ -34,6 +88,7 @@ namespace rJordanBot.Resources.Services
             _lavaSocketClient.Log += program.Client_Log;
             _lavaSocketClient.OnTrackFinished += OnTrackFinished;
             _client.UserVoiceStateUpdated += CilentVoiceStateChanged;
+            _client.Disconnected += OnDisconnect;
             return Task.CompletedTask;
         }
 
@@ -43,6 +98,7 @@ namespace rJordanBot.Resources.Services
         public async Task LeaveAsync(SocketVoiceChannel voiceChannel)
         {
             if (_player != null && _player.IsPlaying) await _player.StopAsync();
+            _player.Queue.Clear();
             await _lavaSocketClient.DisconnectAsync(voiceChannel);
         }
 
@@ -78,6 +134,7 @@ namespace rJordanBot.Resources.Services
         public async Task<string> StopAsync()
         {
             if (_player is null || _player.CurrentTrack is null) return ":x: Nothing to stop.";
+            _player.Queue.Clear();
             await _player.StopAsync();
             return ":stop_button: Stopped.";
         }
@@ -109,7 +166,7 @@ namespace rJordanBot.Resources.Services
 
         public string Queue()
         {
-            if (_player is null || (_player.Queue.Items.Count() == 0 && _player.CurrentTrack == null))
+            if (_player is null || _player.Queue == null || (_player.Queue.Items.Count() == 0 && _player.CurrentTrack == null))
             {
                 return ":x: Queue is empty.";
             }
@@ -132,6 +189,9 @@ namespace rJordanBot.Resources.Services
                 LogSeverity = LogSeverity.Debug,
                 SelfDeaf = false
             });
+
+            _client.Ready -= ClientReadyAsync;
+            _client.Ready += OnReconnect;
         }
 
         private async Task OnTrackFinished(LavaPlayer player, LavaTrack track, TrackEndReason reason)
