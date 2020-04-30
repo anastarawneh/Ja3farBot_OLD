@@ -225,5 +225,11 @@ namespace rJordanBot.Core.Data
                 $"```\n" +
                 $"*This is temporary, until Anas makes sure this works fine and automates it.*");
         }
+
+        public async Task JoinVerification(SocketGuildUser user)
+        {
+            SocketRole role = Constants.IGuilds.Jordan(Client).Roles.First(x => x.Id == 705470408522072086);
+            await user.AddRoleAsync(role);
+        }
     }
 }
