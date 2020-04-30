@@ -69,9 +69,16 @@ namespace rJordanBot.Core.Data
             if (channel is IDMChannel) return;
             if (cacheable.Value == null) return;
             if (cacheable.Value.Author.IsBot) return;
-            if (channel.Id == Data.GetChnlId("commands")) return;
-
             SocketGuild guild = (channel as SocketGuildChannel).Guild;
+
+            List<SocketTextChannel> Blacklist = new List<SocketTextChannel>
+            {
+                guild.Channels.FirstOrDefault(x => x.Id == Data.GetChnlId("hydra_songrequests")) as SocketTextChannel,
+                guild.Channels.FirstOrDefault(x => x.Id == Data.GetChnlId("commands")) as SocketTextChannel
+            };
+
+            if (Blacklist.Contains(channel as SocketTextChannel)) return;
+
             SocketTextChannel LogChannel = guild.Channels.FirstOrDefault(x => x.Id == LogID) as SocketTextChannel;
             IMessage message = cacheable.GetOrDownloadAsync().Result;
 
@@ -261,34 +268,45 @@ namespace rJordanBot.Core.Data
         public async Task UserJoined(SocketGuildUser user)
         {
             using SqliteDbContext DbContext = new SqliteDbContext();
-
+            
+            EmbedBuilder embed = new EmbedBuilder();
             string invite = "Unknown";
             ulong inviterID = 0;
             string inviter = "Unknown";
 
-            foreach (UserInvite UserInvite in DbContext.UserInvites)
+            if (!user.IsBot)
             {
-                if (UserInvite.UserID == user.Id)
+                foreach (UserInvite UserInvite in DbContext.UserInvites)
                 {
-                    invite = UserInvite.Code;
-                    inviterID = DbContext.Invites.FirstOrDefault(x => x.Text == UserInvite.Code).UserId;
+                    if (UserInvite.UserID == user.Id)
+                    {
+                        invite = UserInvite.Code;
+                        inviterID = DbContext.Invites.FirstOrDefault(x => x.Text == UserInvite.Code).UserId;
+                    }
                 }
-            }
 
-            if (inviterID > 0)
+                if (inviterID > 0)
+                {
+                    inviter = user.Guild.Users.FirstOrDefault(x => x.Id == inviterID).Mention;
+                }
+
+                embed.WithTitle($"User joined");
+                embed.WithAuthor(user);
+                embed.AddField("Account created:", Data.GetDuration(user.CreatedAt.DateTime.AddHours(2), DateTime.Now).Duration());
+                embed.AddField("Invite link:", invite);
+                embed.AddField("Invited by:", inviter);
+                embed.WithCurrentTimestamp();
+                embed.WithColor(83, 221, 172);
+                embed.WithFooter($"UserID: {user.Id} | User count: {user.Guild.MemberCount}");
+            }
+            else
             {
-                inviter = user.Guild.Users.FirstOrDefault(x => x.Id == inviterID).Mention;
+                embed.WithTitle($"Bot joined");
+                embed.WithAuthor(user);
+                embed.WithCurrentTimestamp();
+                embed.WithColor(83, 221, 172);
+                embed.WithFooter($"UserID: {user.Id} | User count: {user.Guild.MemberCount}");
             }
-
-            EmbedBuilder embed = new EmbedBuilder();
-            embed.WithTitle($"User joined");
-            embed.WithAuthor(user);
-            embed.AddField("Account created:", Data.GetDuration(user.CreatedAt.DateTime.AddHours(2), DateTime.Now).Duration());
-            embed.AddField("Invite link:", invite);
-            embed.AddField("Invited by:", inviter);
-            embed.WithCurrentTimestamp();
-            embed.WithColor(83, 221, 172);
-            embed.WithFooter($"UserID: {user.Id} | User count: {user.Guild.MemberCount}");
 
             SocketTextChannel LogChannel = user.Guild.Channels.FirstOrDefault(x => x.Id == LogID) as SocketTextChannel;
             await LogChannel.SendMessageAsync("", false, embed.Build());

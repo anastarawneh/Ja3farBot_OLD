@@ -20,6 +20,7 @@ namespace rJordanBot.Core.Methods
         public interface IEmojis
         {
             public static readonly Emoji Tick = new Emoji("✅");
+            public static readonly Emoji X = new Emoji("❌");
         }
 
         public interface IGuilds

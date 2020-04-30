@@ -50,7 +50,11 @@ namespace rJordanBot.Resources.Services
         {
             SearchResult results = _lavaRestClient.SearchYouTubeAsync(query).Result;
             if (results.LoadType == LoadType.LoadFailed) return ":x: Search failed.";
-            if (results.LoadType == LoadType.NoMatches) return ":x: No matches found.";
+            if (results.LoadType == LoadType.NoMatches)
+            {
+                results = _lavaRestClient.SearchYouTubeAsync(query).Result;
+                if (results.LoadType == LoadType.NoMatches) return ":x: No matches found.";
+            }
 
             LavaTrack track = results.Tracks.First();
 

@@ -21,10 +21,21 @@ namespace rJordanBot.Core.Commands
         [Command("test", RunMode = RunMode.Async)]
         public async Task Test()
         {
+            SocketGuild Guild = Constants.IGuilds.Jordan(Context);
+            EmbedBuilder Embed = new EmbedBuilder();
             if (Context.User.Id != ESettings.Owner) return;
             try
             {
-                
+                SocketTextChannel channel = (SocketTextChannel)Guild.Channels.First(x => x.Id == Data.Data.GetChnlId("verification"));
+                Embed.WithTitle("Welcome to the server!");
+                Embed.WithAuthor(Guild.Name, Guild.IconUrl);
+                Embed.WithColor(Constants.IColors.Blurple);
+                Embed.WithDescription("Welcome to the Jordan Discord! You're on the verification step of joining the server. Don't " +
+                    "worry, you will gain access soon. In the meantime, you can familiarize yourself with our guidelines in #rules," +
+                    " and please do tell us a little about yourself! Where are you from, and where did you find us? Our moderators " +
+                    "will be with you shortly.");
+
+                await channel.SendMessageAsync("", false, Embed.Build());
             }
             catch (Exception ex)
             {
@@ -32,9 +43,11 @@ namespace rJordanBot.Core.Commands
                 Console.WriteLine($"[{DateTime.Now} at Test] {ex.ToString()}");
                 Console.ResetColor();
 
-                IEmote emoji = new Emoji("❌");
-                await Context.Message.AddReactionAsync(emoji);
+                IEmote no = new Emoji("❌");
+                await Context.Message.AddReactionAsync(no);
             }
+            IEmote yes = Constants.IEmojis.Tick;
+            await Context.Message.AddReactionAsync(yes);
         }
 
         [Command("deldm")]
