@@ -105,7 +105,7 @@ namespace rJordanBot.Resources.Datatypes
                 SBMessageID = starboardid
             };
 
-            if (stars >= ESettings.StarboardMin) DbContext.Starboards.Add(starboard);
+            if (stars >= ESettings.StarboardMin && !DbContext.Starboards.Contains(starboard)) DbContext.Starboards.Add(starboard);
             else if (DbContext.Starboards.Contains(starboard) && stars < ESettings.StarboardMin) DbContext.Starboards.Remove(starboard);
             DbContext.SaveChanges();
 

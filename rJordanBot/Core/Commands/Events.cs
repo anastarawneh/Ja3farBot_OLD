@@ -27,7 +27,7 @@ namespace rJordanBot.Core.Commands
                     "``^event create``: Creates an event.\n" +
                     "``^event edit``: Edits an event detail. Make sure to use this syntax without <>: ``^event edit <ID> <Section> <New Message>``\n" +
                     "``^event delete``: Deletes an event. Make sure to use this syntax without <>: ``^event delete <ID> confirm``\n" +
-                    "``^event verify``: Initiates the Event Verification System. Onlu use in DMs.\n" +
+                    "``^event verify``: Initiates the Event Verification System. Only use in DMs.\n" +
                     "``^event tos``: Displays the Event Terms of Service."
                 );
             }

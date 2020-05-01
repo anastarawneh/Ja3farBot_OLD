@@ -258,7 +258,7 @@ namespace rJordanBot
             Console.WriteLine(errormsg);
             Console.ResetColor();
 
-            SocketGuild Guild = Constants.IGuilds.Jordan(Client);
+            SocketGuild Guild = Client.Guilds.First();
             SocketTextChannel Channel = Guild.Channels.First(x => x.Id == Data.GetChnlId("bot-log")) as SocketTextChannel;
             await Channel.SendMessageAsync(errormsg);
         }
