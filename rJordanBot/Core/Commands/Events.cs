@@ -33,7 +33,7 @@ namespace rJordanBot.Core.Commands
             }
 
             [Command("create", RunMode = RunMode.Async)]
-            public async Task Create()
+            public async Task Create([Remainder]string args = "")
             {
                 //Variables
                 string title;
@@ -42,8 +42,11 @@ namespace rJordanBot.Core.Commands
                 string notes;
                 int id;
                 string user;
+                bool local = false;
 
-                if (ESettings.EventsActive == false)
+                if (args.Contains("-l")) local = true;
+
+                if (ESettings.EventsActive == false && !local)
                 {
                     await ReplyAsync(":x: The event system is not available right now.");
                     return;
@@ -66,11 +69,15 @@ namespace rJordanBot.Core.Commands
                 time = time_.Content;
                 if (time == "cancel") goto cancel;
 
-                await ReplyAsync("Please enter the event loaction.");
-                SocketMessage location_ = await NextMessageAsync(true, true, TimeSpan.FromSeconds(120));
-                location = location_.Content;
-                if (location == "cancel") goto cancel;
-
+                if (local) location = "Discord";
+                else
+                {
+                    await ReplyAsync("Please enter the event loaction.");
+                    SocketMessage location_ = await NextMessageAsync(true, true, TimeSpan.FromSeconds(120));
+                    location = location_.Content;
+                    if (location == "cancel") goto cancel;
+                }
+                
                 await ReplyAsync("Please enter any additional notes. Type `none` to ignore.");
                 SocketMessage notes_ = await NextMessageAsync(true, true, TimeSpan.FromSeconds(120));
                 notes = notes_.Content;
@@ -85,7 +92,8 @@ namespace rJordanBot.Core.Commands
                 embed.WithAuthor(Context.User.Username + "#" + Context.User.Discriminator, Context.User.GetAvatarUrl());
                 embed.WithColor(114, 137, 218);
                 embed.WithFooter($"React if you're going! | ID: {id}");
-                embed.WithTitle($"{user} is hosting an event!");
+                if (local) embed.WithTitle($"{user} is hosting a local event!");
+                else embed.WithTitle($"{user} is hosting an event!");
                 embed.AddField("Event", title);
                 embed.AddField("Time", time);
                 embed.AddField("Location", location);

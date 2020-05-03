@@ -63,6 +63,8 @@ namespace rJordanBot.Core.Data
             if (channel is IDMChannel) return;
             if ((channel as SocketTextChannel).Name != "events") return;
             if (reaction.User.Value.IsBot) return;
+            IEmbed embed = cacheable.GetOrDownloadAsync().Result.Embeds.First();
+            if (embed.Fields.First(x => x.Name == "Location").Value == "Discord") return;
 
             if ((reaction.User.Value as SocketGuildUser).ToUser().Verified)
             {
