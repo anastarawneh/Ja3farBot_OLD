@@ -24,6 +24,7 @@ namespace rJordanBot.Resources.Services
         private IVoiceChannel channel;
         private ITextChannel tchannel;
         private bool isItOn = false;
+        private bool loop = false;
 
         public MusicService(LavaRestClient lavaRestClient, LavaSocketClient lavaSocketClient, DiscordSocketClient client)
         {
@@ -99,6 +100,7 @@ namespace rJordanBot.Resources.Services
             if (_player != null && _player.IsPlaying) await _player.StopAsync();
             _player.Queue.Clear();
             await _lavaSocketClient.DisconnectAsync(voiceChannel);
+            loop = false;
         }
 
         public async Task<string> PlayAsync(string query, ulong guildID, SocketGuildUser bot, SocketVoiceChannel vc, SocketTextChannel tc)
@@ -135,6 +137,7 @@ namespace rJordanBot.Resources.Services
             if (_player is null || _player.CurrentTrack is null) return ":x: Nothing to stop.";
             _player.Queue.Clear();
             await _player.StopAsync();
+            loop = false;
             return ":stop_button: Stopped.";
         }
 
@@ -142,6 +145,7 @@ namespace rJordanBot.Resources.Services
         {
             if (_player is null || _player.CurrentTrack == null) return ":x: Nothing to skip.";
             LavaTrack skippedTrack = _player.CurrentTrack;
+            loop = false;
             if (_player.Queue.Items.Count() == 0 && _player.CurrentTrack != null)
             {
                 _player.StopAsync();
@@ -176,9 +180,22 @@ namespace rJordanBot.Resources.Services
                 LavaTrack track = queueObject as LavaTrack;
                 result += $"{_player.Queue.Items.ToList().IndexOf(queueObject) + 1}) {track.Title} -> {track.Length.ToString(@"m\:ss")}\n";
             }
-            result += $"\n0) {_player.CurrentTrack.Title} -> {(_player.CurrentTrack.Length - _player.CurrentTrack.Position).ToString(@"m\:ss")} left\n```";
+            if (loop) result += $"\n0) [LOOPING] {_player.CurrentTrack.Title} -> {(_player.CurrentTrack.Length - _player.CurrentTrack.Position).ToString(@"m\:ss")} left\n```";
+            else result += $"\n0) {_player.CurrentTrack.Title} -> {(_player.CurrentTrack.Length - _player.CurrentTrack.Position).ToString(@"m\:ss")} left\n```";
 
             return result;
+        }
+
+        public string Loop()
+        {
+            if (_player is null || _player.CurrentTrack == null) return ":x: Nothing to loop.";
+            if (!loop)
+            {
+                loop = true;
+                return $":repeat: Looping track `{_player.CurrentTrack.Title}`";
+            }
+            loop = false;
+            return $":repeat: Stopped looping track `{_player.CurrentTrack.Title}`";
         }
 
 
@@ -197,6 +214,12 @@ namespace rJordanBot.Resources.Services
         private async Task OnTrackFinished(LavaPlayer player, LavaTrack track, TrackEndReason reason)
         {
             if (!reason.ShouldPlayNext()) return;
+            if (loop)
+            {
+                await player.PlayAsync(track);
+                await player.TextChannel.SendMessageAsync($":arrow_forward: Now playing: `{track.Title}`");
+                return;
+            }
             if (!player.Queue.TryDequeue(out IQueueObject queueObject) || !(queueObject is LavaTrack nextTrack))
             {
                 await player.TextChannel.SendMessageAsync(":x: There are no more tracks in the queue.");

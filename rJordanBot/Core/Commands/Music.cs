@@ -188,5 +188,9 @@ namespace rJordanBot.Core.Commands
             if (Context.Channel is IDMChannel) return;
             await ReplyAsync(_musicService.Queue());
         }
+
+        [Command("loop"), Alias("l")]
+        public async Task Loop()
+            => await ReplyAsync(_musicService.Loop());
     }
 }

@@ -267,7 +267,8 @@ namespace rJordanBot.Core.Commands
                 "``^stop``: Stops and clears the current queue.\n" +
                 "``^skip``: Skips to the next track in the queue.\n" +
                 "``^join``: Joins the voice channel the user is in.\n" +
-                "``^dc``: Disconnects from the voice channel it's in."
+                "``^dc``: Disconnects from the voice channel it's in.\n" +
+                "``^loop``: Loops the current track."
             );
         }
     }
