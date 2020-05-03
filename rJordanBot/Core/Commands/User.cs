@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace rJordanBot.Core.Commands
 {
-    public class User : InteractiveBase<SocketCommandContext>
+    public class User_cmd : InteractiveBase<SocketCommandContext>
     {
         [Command("help")]
         public async Task Help()
@@ -162,7 +162,7 @@ namespace rJordanBot.Core.Commands
                 await ReplyAsync(":x: Thank you, but we closed moderator applications for now.");
                 return;
             }
-            
+
             if (Context.User.IsBot) return;
             if (!(Context.Channel is IDMChannel))
             {
@@ -172,7 +172,7 @@ namespace rJordanBot.Core.Commands
             if (Context.Message.Timestamp.AddHours(2).Day == 17) return;
 
             SocketGuild guild = Context.Client.Guilds.First();
-            SocketTextChannel moderationchannel = (SocketTextChannel) guild.Channels.First(x => x.Id == Data.Data.GetChnlId("moderation-log"));
+            SocketTextChannel moderationchannel = (SocketTextChannel)guild.Channels.First(x => x.Id == Data.Data.GetChnlId("moderation-log"));
 
             EmbedBuilder moderationembed = new EmbedBuilder();
             moderationembed.WithAuthor(Context.User);

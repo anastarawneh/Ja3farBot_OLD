@@ -3,7 +3,6 @@ using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.Rest;
 using Discord.WebSocket;
-using Microsoft.EntityFrameworkCore;
 using rJordanBot.Core.Methods;
 using rJordanBot.Resources.Database;
 using rJordanBot.Resources.GeneralJSON;
@@ -17,21 +16,6 @@ namespace rJordanBot.Core.Moderation
 {
     public class Moderation : InteractiveBase<SocketCommandContext>
     {
-        [Command("reload"), Summary("Reloads the Settings.json file while running")]
-        public async Task Reload()
-        {
-            //Checks
-            if (!(Context.User.Id == ESettings.Owner))
-            {
-                await Context.Channel.SendMessageAsync(Constants.IMacros.NoPerms);
-                return;
-            }
-
-            //Execution
-            await Data.Data.ReloadJSON();
-            await Context.Message.AddReactionAsync(Constants.IEmojis.Tick);
-        }
-
         [Command("userinfo")]
         [Alias("uinfo", "ui")]
         public async Task UserInfo(SocketUser param = null)
@@ -45,7 +29,6 @@ namespace rJordanBot.Core.Moderation
             }
 
             IUser userInfo = param as IUser;
-            IDMChannel dmchnl = await Context.User.GetOrCreateDMChannelAsync();
 
             string roles = "";
             List<SocketRole> roles_ = (userInfo as SocketGuildUser).Roles.ToList();
@@ -65,14 +48,9 @@ namespace rJordanBot.Core.Moderation
             embed.AddField("ID", userInfo.Id);
             embed.AddField("Roles", roles);
             embed.AddField("Status", userInfo.Status);
-            embed.AddField("Strikes", strikes);
+            embed.AddField("Warnings", strikes);
 
-            IUserMessage msg = await dmchnl.SendMessageAsync("", false, embed.Build());
-            ulong id = msg.Id;
-
-            EmbedBuilder embedB = msg.Embeds.FirstOrDefault().ToEmbedBuilder();
-            embedB.WithFooter($"ID: {id}");
-            await msg.ModifyAsync(x => x.Embed = embedB.Build());
+            await ReplyAsync("", false, embed.Build());
 
             IEmote emote = new Emoji("✅");
             await Context.Message.AddReactionAsync(emote);
@@ -255,6 +233,7 @@ namespace rJordanBot.Core.Moderation
                 }
 
                 // Execution
+
                 using SqliteDbContext DbContext = new SqliteDbContext();
                 if (DbContext.Strikes.Where(x => x.UserId == user.Id).Count() < 1)
                 {
@@ -421,7 +400,7 @@ namespace rJordanBot.Core.Moderation
 
             while (mutefinish > DateTimeOffset.Now.ToLocalTime())
             {
-                
+
             }
 
             user = Context.Guild.GetUser(user.Id); // reload user roles if changed
@@ -435,7 +414,7 @@ namespace rJordanBot.Core.Moderation
 
             embedBuilder2.WithColor(0, 255, 0);
             embedBuilder2.WithTitle("User Muted => User Unmuted");
-            
+
             await (message as IUserMessage).ModifyAsync(x => x.Embed = embedBuilder2.Build());
 
             await Context.Message.AddReactionAsync(Constants.IEmojis.Tick);

@@ -1,10 +1,5 @@
-﻿using Discord;
-using Discord.WebSocket;
-using rJordanBot.Core.Data;
 using rJordanBot.Resources.GeneralJSON;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 
 namespace rJordanBot.Resources.Datatypes
 {

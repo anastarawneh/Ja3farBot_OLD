@@ -6,7 +6,6 @@ using rJordanBot.Core.Methods;
 using rJordanBot.Resources.GeneralJSON;
 using rJordanBot.Resources.Settings;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -125,56 +124,6 @@ namespace rJordanBot.Core.Moderation
                     await ReplyAsync($":x: {user.Mention} is not verified.");
                 }*/
             }
-
-            /*[Group("list"), Alias("l")]
-            public class List : InteractiveBase
-            {
-                [Command("verified"), Alias("v")]
-                public async Task ListVerified()
-                {
-                    SocketRole modrole = Constants.IGuilds.Jordan(Context).Roles.FirstOrDefault(x => x.Name == "Discord Mods");
-                    if (!(Context.User as SocketGuildUser).Roles.Contains(modrole)) return;
-
-                    List<ulong> list = eVerified.Allowed;
-                    string userlist = "None";
-
-                    if (list.Count > 1) userlist = "";
-                    foreach (ulong user in list)
-                    {
-                        userlist = userlist + Constants.IGuilds.Jordan(Context).Users.FirstOrDefault(x => x.Id == user) + "\n";
-                    }
-
-                    EmbedBuilder embed = new EmbedBuilder();
-                    embed.WithTitle("List of Verified Users");
-                    embed.WithDescription(userlist);
-                    embed.WithColor(0, 255, 0);
-
-                    await ReplyAsync("", false, embed.Build());
-                }
-
-                [Command("denied"), Alias("d")]
-                public async Task ListDenied()
-                {
-                    SocketRole modrole = Constants.IGuilds.Jordan(Context).Roles.FirstOrDefault(x => x.Name == "Discord Mods");
-                    if (!(Context.User as SocketGuildUser).Roles.Contains(modrole)) return;
-
-                    List<ulong> list = eVerified.Denied;
-                    string userlist = "None";
-
-                    if (list.Count > 1) userlist = "";
-                    foreach (ulong user in list)
-                    {
-                        userlist = userlist + Constants.IGuilds.Jordan(Context).Users.FirstOrDefault(x => x.Id == user) + "\n";
-                    }
-
-                    EmbedBuilder embed = new EmbedBuilder();
-                    embed.WithTitle("List of Denied Users");
-                    embed.WithDescription(userlist);
-                    embed.WithColor(255, 0, 0);
-
-                    await ReplyAsync("", false, embed.Build());
-                }
-            }*/
 
             [Command("list"), Alias("l")]
             public async Task List()

@@ -2,7 +2,6 @@
 using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.WebSocket;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using rJordanBot.Core.Data;
 using rJordanBot.Core.Methods;
@@ -10,7 +9,6 @@ using rJordanBot.Resources.GeneralJSON;
 using rJordanBot.Resources.Services;
 using rJordanBot.Resources.Settings;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -111,6 +109,7 @@ namespace rJordanBot
             SocketUserMessage Message = MessageParam as SocketUserMessage;
             SocketCommandContext Context = new SocketCommandContext(Client, Message);
 
+            await Context.Guild.DownloadUsersAsync();
             if (Context.Message == null || Context.Message.Content == "") return;
             if (Context.User.IsBot) return;
             if (!(Context.Channel.Id == Data.GetChnlId("bot-commands")) && !(Context.User.Id == ESettings.Owner) && !(Context.User.Id == 362299141587599360) && !(Context.User as SocketGuildUser).IsModerator() && !(Context.Channel is IDMChannel)) return;
@@ -204,7 +203,7 @@ namespace rJordanBot
                 await LogExceptionHandler(message.Exception);
                 return;
             }
-            
+
             Console.WriteLine(errormsg);
             Console.ResetColor();
 
@@ -231,7 +230,7 @@ namespace rJordanBot
                 }
 
                 await context.Channel.SendMessageAsync($"Catastrophic faliure! Paging {context.Guild.GetOwnerAsync().Result.Mention}.");
-                
+
                 string errormsg = $"[{DateTime.Now} at ExceptionHandler]\n" +
                 $"```{ex}```";
 

@@ -1,7 +1,5 @@
-﻿using Discord;
-using Discord.Addons.Interactive;
+﻿using Discord.Addons.Interactive;
 using Discord.Commands;
-using System;
 using System.Threading.Tasks;
 
 namespace rJordanBot.Core.Commands

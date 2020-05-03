@@ -1,5 +1,4 @@
 ﻿using Discord;
-using Discord.Commands;
 using Discord.Rest;
 using Discord.WebSocket;
 using rJordanBot.Core.Methods;
@@ -268,7 +267,7 @@ namespace rJordanBot.Core.Data
         public async Task UserJoined(SocketGuildUser user)
         {
             using SqliteDbContext DbContext = new SqliteDbContext();
-            
+
             EmbedBuilder embed = new EmbedBuilder();
             string invite = "Unknown";
             ulong inviterID = 0;

@@ -1,10 +1,7 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace rJordanBot.Core.Methods
 {
@@ -45,7 +42,7 @@ namespace rJordanBot.Core.Methods
         }
 
         public interface IConversions
-        { 
+        {
             public static SocketGuildUser GuildUser(SocketCommandContext Context)
             {
                 SocketGuild guild = IGuilds.Jordan(Context);

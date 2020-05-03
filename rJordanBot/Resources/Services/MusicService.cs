@@ -4,7 +4,6 @@ using rJordanBot.Core.Methods;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Victoria;
 using Victoria.Entities;
@@ -185,7 +184,8 @@ namespace rJordanBot.Resources.Services
 
         private async Task ClientReadyAsync()
         {
-            await _lavaSocketClient.StartAsync(_client, new Configuration { 
+            await _lavaSocketClient.StartAsync(_client, new Configuration
+            {
                 LogSeverity = LogSeverity.Debug,
                 SelfDeaf = false
             });

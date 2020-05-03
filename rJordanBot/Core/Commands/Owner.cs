@@ -1,9 +1,7 @@
 ﻿using Discord;
 using Discord.Addons.Interactive;
 using Discord.Commands;
-using Discord.Rest;
 using Discord.WebSocket;
-using rJordanBot.Core.Data;
 using rJordanBot.Core.Methods;
 using rJordanBot.Resources.Datatypes;
 using rJordanBot.Resources.GeneralJSON;
@@ -12,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Timers;
 
 namespace rJordanBot.Core.Commands
 {
@@ -21,21 +18,21 @@ namespace rJordanBot.Core.Commands
         [Command("test", RunMode = RunMode.Async)]
         public async Task Test()
         {
-            SocketGuild Guild = Constants.IGuilds.Jordan(Context);
-            EmbedBuilder Embed = new EmbedBuilder();
-            if (Context.User.Id != ESettings.Owner) return;
             try
             {
-                SocketTextChannel channel = (SocketTextChannel)Guild.Channels.First(x => x.Id == Data.Data.GetChnlId("verification"));
-                Embed.WithTitle("Welcome to the server!");
-                Embed.WithAuthor(Guild.Name, Guild.IconUrl);
-                Embed.WithColor(Constants.IColors.Blurple);
-                Embed.WithDescription("Welcome to the Jordan Discord! You're on the verification step of joining the server. Don't " +
-                    "worry, you will gain access soon. In the meantime, you can familiarize yourself with our guidelines in #rules," +
-                    " and please do tell us a little about yourself! Where are you from, and where did you find us? Our moderators " +
-                    "will be with you shortly.");
-
-                await channel.SendMessageAsync("", false, Embed.Build());
+                // TEST CODE STARTS HERE
+                await Context.Guild.DownloadUsersAsync();
+                using SqliteDbContext DbContext = new SqliteDbContext();
+                string result = "```\n";
+                foreach (Resources.Database.Moderator mod in DbContext.Moderators)
+                {
+                    result += $"{Context.Guild.GetUser(mod.ID)}, {mod.modType.GetHashCode()}\n";
+                }
+                result += "```";
+                await ReplyAsync(result);
+                // TEST CODE ENDS HERE
+                IEmote yes = Constants.IEmojis.Tick;
+                await Context.Message.AddReactionAsync(yes);
             }
             catch (Exception ex)
             {
@@ -46,8 +43,21 @@ namespace rJordanBot.Core.Commands
                 IEmote no = new Emoji("❌");
                 await Context.Message.AddReactionAsync(no);
             }
-            IEmote yes = Constants.IEmojis.Tick;
-            await Context.Message.AddReactionAsync(yes);
+        }
+
+        [Command("reload")]
+        public async Task Reload()
+        {
+            //Checks
+            if (Context.User.Id != ESettings.Owner)
+            {
+                await Context.Channel.SendMessageAsync(Constants.IMacros.NoPerms);
+                return;
+            }
+
+            //Execution
+            await Data.Data.ReloadJSON();
+            await Context.Message.AddReactionAsync(Constants.IEmojis.Tick);
         }
 
         [Command("deldm")]
@@ -310,7 +320,7 @@ namespace rJordanBot.Core.Commands
         public async Task Say(SocketTextChannel channel, [Remainder] string message)
         {
             if (Context.User.Id != ESettings.Owner) return;
-            
+
             await channel.SendMessageAsync(message);
             await Context.Message.DeleteAsync();
         }
