@@ -1,4 +1,3 @@
-using rJordanBot.Resources.GeneralJSON;
 ﻿using System.Collections.Generic;
 
 namespace rJordanBot.Resources.Datatypes
@@ -21,27 +20,5 @@ namespace rJordanBot.Resources.Datatypes
         public string emote { get; set; }
         public string group { get; set; }
         public string emoji { get; set; }
-    }
-
-    public class GeneralJsonInitializer
-    {
-        public List<UserInitializer> users { get; set; }
-        public List<ModeratorInitializer> moderators { get; set; }
-    }
-
-    public class UserInitializer
-    {
-        public ulong id { get; set; }
-        public string username { get; set; }
-        public string discrim { get; set; }
-        public bool verified { get; set; }
-        public List<ulong> roles { get; set; }
-    }
-
-    public class ModeratorInitializer
-    {
-        public ulong id { get; set; }
-        public string timezone { get; set; }
-        public ModType modtype { get; set; }
     }
 }

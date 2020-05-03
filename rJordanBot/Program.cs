@@ -5,7 +5,7 @@ using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using rJordanBot.Core.Data;
 using rJordanBot.Core.Methods;
-using rJordanBot.Resources.GeneralJSON;
+using rJordanBot.Resources.Database;
 using rJordanBot.Resources.Services;
 using rJordanBot.Resources.Settings;
 using System;

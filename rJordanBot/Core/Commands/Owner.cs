@@ -3,8 +3,8 @@ using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.WebSocket;
 using rJordanBot.Core.Methods;
+using rJordanBot.Resources.Database;
 using rJordanBot.Resources.Datatypes;
-using rJordanBot.Resources.GeneralJSON;
 using rJordanBot.Resources.Settings;
 using System;
 using System.Collections.Generic;
@@ -325,8 +325,8 @@ namespace rJordanBot.Core.Commands
             await Context.Message.DeleteAsync();
         }
 
-        [Group("json"), RequireOwner]
-        public class JSON : InteractiveBase<SocketCommandContext>
+        [Group("db"), RequireOwner]
+        public class DB : InteractiveBase<SocketCommandContext>
         {
             [Group("user")]
             public class UserInfo : InteractiveBase<SocketCommandContext>
@@ -334,29 +334,23 @@ namespace rJordanBot.Core.Commands
                 [Command("add")]
                 public async Task Add(SocketGuildUser user)
                 {
-                    await GeneralJson.AddUser(user);
+                    using SqliteDbContext DbContext = new SqliteDbContext();
+                    user.ToUser();
 
                     await ReplyAsync($":white_check_mark: User {user.Mention} was added to the JSON file.");
-                }
-
-                [Command("remove")]
-                public async Task Remove(SocketGuildUser user)
-                {
-                    await GeneralJson.RemoveUser(user);
-
-                    await ReplyAsync($":white_check_mark: User {user.Mention} was removed from the JSON file.");
                 }
 
                 [Command("list"), Alias("l")]
                 public async Task List()
                 {
+                    using SqliteDbContext DbContext = new SqliteDbContext();
                     string list = "";
                     EmbedBuilder embed = new EmbedBuilder();
                     embed.WithColor(0, 255, 0);
-                    embed.WithTitle("List of users in JSON file");
-                    foreach (Resources.GeneralJSON.User user in GeneralJson.users)
+                    embed.WithTitle("List of users in database");
+                    foreach (User user in DbContext.Users)
                     {
-                        list += $"{user.Username}#{user.Discriminator}\n";
+                        list += $"{Context.Guild.GetUser(user.ID)}\n";
                     }
                     embed.WithDescription(list);
 
@@ -370,14 +364,15 @@ namespace rJordanBot.Core.Commands
                 [Command("list"), Alias("l")]
                 public async Task List()
                 {
+                    using SqliteDbContext DbContext = new SqliteDbContext();
                     string list = "";
                     EmbedBuilder embed = new EmbedBuilder();
                     embed.WithColor(0, 255, 0);
-                    embed.WithTitle("List of users in JSON file");
-                    foreach (Resources.GeneralJSON.Moderator mod in GeneralJson.moderators)
+                    embed.WithTitle("List of moderators in database");
+                    foreach (Moderator mod in DbContext.Moderators)
                     {
                         SocketGuildUser user = Constants.IGuilds.Jordan(Context).Users.First(x => x.Id == mod.ID);
-                        list += $"{user.Username}#{user.Discriminator}\n";
+                        list += $"{user}\n";
                     }
                     embed.WithDescription(list);
 

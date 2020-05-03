@@ -3,7 +3,7 @@ using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.WebSocket;
 using rJordanBot.Core.Methods;
-using rJordanBot.Resources.GeneralJSON;
+using rJordanBot.Resources.Database;
 using rJordanBot.Resources.Services;
 using System.Threading.Tasks;
 

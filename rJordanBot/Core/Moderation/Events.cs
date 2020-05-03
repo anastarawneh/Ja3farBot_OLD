@@ -3,7 +3,7 @@ using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.WebSocket;
 using rJordanBot.Core.Methods;
-using rJordanBot.Resources.GeneralJSON;
+using rJordanBot.Resources.Database;
 using rJordanBot.Resources.Settings;
 using System;
 using System.Linq;
@@ -39,8 +39,9 @@ namespace rJordanBot.Core.Moderation
                 eVerified.Denied.Remove(id);
                 Data.Data.UpdateVerified();*/
 
-                    (user as SocketGuildUser).ToUser().Verified = true;
-                await Data.Data.SaveGeneralJSON();
+                using SqliteDbContext DbContext = new SqliteDbContext();
+                (user as SocketGuildUser).ToUser().Verified = true;
+                await DbContext.SaveChangesAsync();
 
                 await ReplyAsync($"{user.Mention} is now verified.");
 
@@ -70,8 +71,9 @@ namespace rJordanBot.Core.Moderation
                 eVerified.Allowed.Remove(id);
                 Data.Data.UpdateVerified();*/
 
+                using SqliteDbContext DbContext = new SqliteDbContext();
                 (user as SocketGuildUser).ToUser().Verified = false;
-                await Data.Data.SaveGeneralJSON();
+                await DbContext.SaveChangesAsync();
 
                 await ReplyAsync($"{user.Mention} is now denied.");
 
@@ -128,14 +130,14 @@ namespace rJordanBot.Core.Moderation
             [Command("list"), Alias("l")]
             public async Task List()
             {
+                using SqliteDbContext DbContext = new SqliteDbContext();
                 SocketRole modrole = Constants.IGuilds.Jordan(Context).Roles.FirstOrDefault(x => x.Name == "Discord Mods");
                 if (!(Context.User as SocketGuildUser).Roles.Contains(modrole)) return;
 
-                //List<ulong> list = eVerified.Allowed;
                 string userlist = "None";
 
-                if (GeneralJson.users.Count > 1) userlist = "";
-                foreach (User user in GeneralJson.users)
+                if (DbContext.Users.Count() > 1) userlist = "";
+                foreach (User user in DbContext.Users)
                 {
                     if (user.Verified) userlist = userlist + Constants.IGuilds.Jordan(Context).Users.FirstOrDefault(x => x.Id == user.ID) + "\n";
                 }

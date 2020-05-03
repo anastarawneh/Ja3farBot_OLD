@@ -5,7 +5,6 @@ using Discord.Rest;
 using Discord.WebSocket;
 using rJordanBot.Core.Methods;
 using rJordanBot.Resources.Database;
-using rJordanBot.Resources.GeneralJSON;
 using rJordanBot.Resources.Settings;
 using System;
 using System.Collections.Generic;
@@ -29,6 +28,7 @@ namespace rJordanBot.Core.Moderation
             }
 
             IUser userInfo = param as IUser;
+            using SqliteDbContext DbContext = new SqliteDbContext();
 
             string roles = "";
             List<SocketRole> roles_ = (userInfo as SocketGuildUser).Roles.ToList();
@@ -40,6 +40,9 @@ namespace rJordanBot.Core.Moderation
 
             int strikes = Data.Data.GetStrikes(userInfo.Id);
 
+            User user_ = DbContext.Users.First(x => x.ID == param.Id) ?? new User { ID = 0, Verified = false };
+            bool verified = user_.Verified;
+
             EmbedBuilder embed = new EmbedBuilder();
             embed.WithColor(40, 200, 150);
             embed.WithThumbnailUrl(userInfo.GetAvatarUrl());
@@ -49,6 +52,7 @@ namespace rJordanBot.Core.Moderation
             embed.AddField("Roles", roles);
             embed.AddField("Status", userInfo.Status);
             embed.AddField("Warnings", strikes);
+            embed.AddField("Verified", verified);
 
             await ReplyAsync("", false, embed.Build());
 

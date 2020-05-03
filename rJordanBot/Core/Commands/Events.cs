@@ -4,7 +4,7 @@ using Discord.Commands;
 using Discord.Rest;
 using Discord.WebSocket;
 using rJordanBot.Core.Methods;
-using rJordanBot.Resources.GeneralJSON;
+using rJordanBot.Resources.Database;
 using rJordanBot.Resources.Settings;
 using System;
 using System.Collections.Generic;
@@ -48,7 +48,7 @@ namespace rJordanBot.Core.Commands
                     await ReplyAsync(":x: The event system is not available right now.");
                     return;
                 }
-                
+
                 if (!(Context.User as SocketGuildUser).ToUser().Verified)
                 {
                     await ReplyAsync(":x: You need to be verified to be able to use the Events system.");

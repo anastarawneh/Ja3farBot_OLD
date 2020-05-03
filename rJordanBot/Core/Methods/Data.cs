@@ -6,7 +6,6 @@ using Newtonsoft.Json;
 using rJordanBot.Core.Methods;
 using rJordanBot.Resources.Database;
 using rJordanBot.Resources.Datatypes;
-using rJordanBot.Resources.GeneralJSON;
 using rJordanBot.Resources.Settings;
 using System;
 using System.Collections.Generic;
@@ -23,7 +22,6 @@ namespace rJordanBot.Core.Data
         public static Task InitJSON()
         {
             string JSON = "";
-            string GeneralJSON = "";
             //Assembly.GetEntryAssembly().Location = /home/ubuntu/linux-x64/publish/rJordanBot.dll; (ON AWS)
 
             string SettingsLocation = "";
@@ -56,36 +54,6 @@ namespace rJordanBot.Core.Data
             ESettings.ModAppsActive = Settings.modappsactive;
             ESettings.EventsActive = Settings.eventsactive;
             ESettings.InviteWhitelist = Settings.invitewhitelist;
-
-            using (FileStream Stream = new FileStream(SettingsLocation.Replace("Settings", "GeneralJSON"), FileMode.Open, FileAccess.Read))
-            using (StreamReader Reader = new StreamReader(Stream))
-            {
-                GeneralJSON = Reader.ReadToEnd();
-            }
-
-            GeneralJsonInitializer generalJsonInit = JsonConvert.DeserializeObject<GeneralJsonInitializer>(GeneralJSON);
-            GeneralJson.users = new List<User>();
-            GeneralJson.moderators = new List<Moderator>();
-            foreach (UserInitializer userinit in generalJsonInit.users)
-            {
-                GeneralJson.users.Add(new User
-                {
-                    ID = userinit.id,
-                    Username = userinit.username,
-                    Discriminator = userinit.discrim,
-                    Verified = userinit.verified,
-                    Roles = userinit.roles
-                });
-            }
-            foreach (ModeratorInitializer modinit in generalJsonInit.moderators)
-            {
-                GeneralJson.moderators.Add(new Moderator
-                {
-                    ID = modinit.id,
-                    Timezone = modinit.timezone,
-                    modType = modinit.modtype
-                });
-            }
 
             return Task.CompletedTask;
         }
@@ -642,22 +610,6 @@ namespace rJordanBot.Core.Data
 
                 await starboardMessage.Save();
             }
-        }
-
-        public static Task SaveGeneralJSON()
-        {
-            GeneralJsonInitializer generalJsonInitializer = GeneralJson.ToInitForm();
-
-            string FileLocation = Environment.GetEnvironmentVariable("SettingsLocation").Replace("Settings", "GeneralJSON");
-            using FileStream Stream = new FileStream(FileLocation, FileMode.Truncate, FileAccess.ReadWrite);
-            using StreamWriter Writer = new StreamWriter(Stream);
-            JsonSerializer Serializer = new JsonSerializer
-            {
-                Formatting = Newtonsoft.Json.Formatting.Indented
-            };
-            Serializer.Serialize(Writer, generalJsonInitializer);
-
-            return Task.CompletedTask;
         }
     }
 }
