@@ -6,34 +6,32 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Victoria;
-using Victoria.Entities;
-using Victoria.Queue;
+using Victoria.Enums;
+using Victoria.EventArgs;
+using Victoria.Interfaces;
+using Victoria.Responses.Rest;
 
 namespace rJordanBot.Resources.Services
 {
     public class MusicService
     {
-        private LavaRestClient _lavaRestClient;
-        private LavaSocketClient _lavaSocketClient;
+        private LavaNode _lavaNode;
         private DiscordSocketClient _client;
-        private LavaRestClient _oldlavaRestClient;
-        private LavaSocketClient _oldlavaSocketClient;
         private LavaPlayer _player;
-        private List<LavaTrack> queue = new List<LavaTrack>();
+        /*private List<LavaTrack> queue = new List<LavaTrack>();
         private LavaTrack track;
         private IVoiceChannel channel;
-        private ITextChannel tchannel;
+        private ITextChannel tchannel;*/
         private bool isItOn = false;
         private bool loop = false;
 
-        public MusicService(LavaRestClient lavaRestClient, LavaSocketClient lavaSocketClient, DiscordSocketClient client)
+        public MusicService(LavaNode lavaNode, DiscordSocketClient client)
         {
-            _lavaRestClient = lavaRestClient;
-            _lavaSocketClient = lavaSocketClient;
+            _lavaNode = lavaNode;
             _client = client;
         }
 
-        public async Task OnDisconnect(Exception ex)
+        /*public async Task OnDisconnect(Exception ex)
         {
             if (_player == null) return;
             if (_player.IsPlaying)
@@ -78,51 +76,72 @@ namespace rJordanBot.Resources.Services
             }
 
             isItOn = false;
-        }
+        }*/
 
         public Task InitializeAsync()
         {
             Program program = new Program();
 
             _client.Ready += ClientReadyAsync;
-            _lavaSocketClient.Log += program.Client_Log;
-            _lavaSocketClient.OnTrackFinished += OnTrackFinished;
+            _lavaNode.OnLog += program.Client_Log;
+            _lavaNode.OnTrackEnded += OnTrackEnded;
             _client.UserVoiceStateUpdated += CilentVoiceStateChanged;
-            _client.Disconnected += OnDisconnect;
+            // _client.Disconnected += OnDisconnect;
             return Task.CompletedTask;
         }
 
         public async Task ConnectAsync(SocketVoiceChannel voiceChannel, SocketTextChannel textChannel)
-            => await _lavaSocketClient.ConnectAsync(voiceChannel, textChannel);
+            => await _lavaNode.JoinAsync(voiceChannel, textChannel);
 
         public async Task LeaveAsync(SocketVoiceChannel voiceChannel)
         {
-            if (_player != null && _player.IsPlaying) await _player.StopAsync();
+            if (_player != null && _player.PlayerState == PlayerState.Playing) await _player.StopAsync();
             _player.Queue.Clear();
-            await _lavaSocketClient.DisconnectAsync(voiceChannel);
+            await _lavaNode.LeaveAsync(voiceChannel);
             loop = false;
         }
 
-        public async Task<string> PlayAsync(string query, ulong guildID, SocketGuildUser bot, SocketVoiceChannel vc, SocketTextChannel tc)
+        public async Task<string> PlayAsync(string query, IGuild guild, SocketGuildUser bot, SocketVoiceChannel vc, SocketTextChannel tc)
         {
-            SearchResult results = _lavaRestClient.SearchYouTubeAsync(query).Result;
-            if (results.LoadType == LoadType.LoadFailed) return ":x: Search failed.";
-            if (results.LoadType == LoadType.NoMatches)
-            {
-                results = _lavaRestClient.SearchYouTubeAsync(query).Result;
-                if (results.LoadType == LoadType.NoMatches) return ":x: No matches found.";
-            }
+            SearchResponse result;
+            if (query.Contains("https://")) result = _lavaNode.SearchAsync(query).Result;
+            else result = _lavaNode.SearchYouTubeAsync(query).Result;
+            if (result.LoadStatus == LoadStatus.LoadFailed) return ":x: Search failed.";
+            if (result.LoadStatus == LoadStatus.NoMatches) return ":x: No matches found.";
+            PlaylistInfo playlist;
 
-            LavaTrack track = results.Tracks.First();
+            LavaTrack track = result.Tracks.First();
 
             if (bot.VoiceChannel == null)
             {
                 await ConnectAsync(vc, tc);
             }
 
-            _player = _lavaSocketClient.GetPlayer(guildID);
+            _player = _lavaNode.GetPlayer(guild);
 
-            if (_player.IsPlaying)
+            if (result.LoadStatus == LoadStatus.PlaylistLoaded)
+            {
+                playlist = result.Playlist;
+
+                if (_player.PlayerState == PlayerState.Playing)
+                {
+                    foreach (LavaTrack resultTrack in result.Tracks)
+                    {
+                        _player.Queue.Enqueue(resultTrack);
+                    }
+                    return $":1234: Playlist `{playlist.Name}` loaded in queue.";
+                }
+
+                await _player.PlayAsync(track);
+                foreach (LavaTrack resultTrack in result.Tracks)
+                {
+                    if (resultTrack != track) _player.Queue.Enqueue(resultTrack);
+                }
+                return $":1234: Playlist `{playlist.Name}` loaded in queue ({result.Tracks.Count()} tracks).\n" +
+                        $":arrow_forward: Now playing: `{track.Title}`";
+            }
+
+            if (_player.PlayerState == PlayerState.Playing)
             {
                 _player.Queue.Enqueue(track);
                 return $":fast_forward: `{track.Title}` added to the queue in position {_player.Queue.Items.ToList().IndexOf(track) + 1}.";
@@ -134,7 +153,7 @@ namespace rJordanBot.Resources.Services
 
         public async Task<string> StopAsync()
         {
-            if (_player is null || _player.CurrentTrack is null) return ":x: Nothing to stop.";
+            if (_player is null || _player.Track is null) return ":x: Nothing to stop.";
             _player.Queue.Clear();
             await _player.StopAsync();
             loop = false;
@@ -143,22 +162,22 @@ namespace rJordanBot.Resources.Services
 
         public string Skip()
         {
-            if (_player is null || _player.CurrentTrack == null) return ":x: Nothing to skip.";
-            LavaTrack skippedTrack = _player.CurrentTrack;
+            if (_player is null || _player.Track == null) return ":x: Nothing to skip.";
+            LavaTrack skippedTrack = _player.Track;
             loop = false;
-            if (_player.Queue.Items.Count() == 0 && _player.CurrentTrack != null)
+            if (_player.Queue.Items.Count() == 0 && _player.Track != null)
             {
                 _player.StopAsync();
                 return ":stop_button: There are no more tracks in the queue.";
             }
             _player.SkipAsync();
             return $":track_next: Skipped `{skippedTrack.Title}`\n" +
-                $":arrow_forward: Now playing: `{_player.CurrentTrack.Title}`";
+                $":arrow_forward: Now playing: `{_player.Track.Title}`";
         }
 
         public async Task<string> PauseAsync()
         {
-            if (!_player.IsPaused)
+            if (_player.PlayerState != PlayerState.Paused)
             {
                 await _player.PauseAsync();
                 return ":pause_button: Paused player.";
@@ -167,52 +186,75 @@ namespace rJordanBot.Resources.Services
             return ":arrow_forward: Resumed player.";
         }
 
-        public string Queue()
+        public string Queue(int page)
         {
-            if (_player is null || _player.Queue == null || (_player.Queue.Items.Count() == 0 && _player.CurrentTrack == null))
+            if (_player is null || (_player.Queue.Items.Count() == 0 && _player.Track == null))
             {
                 return ":x: Queue is empty.";
             }
 
             string result = "```stylus\n";
-            foreach (IQueueObject queueObject in _player.Queue.Items)
+            foreach (IQueueable queueObject in _player.Queue.Items)
             {
                 LavaTrack track = queueObject as LavaTrack;
-                result += $"{_player.Queue.Items.ToList().IndexOf(queueObject) + 1}) {track.Title} -> {track.Length.ToString(@"m\:ss")}\n";
+                result += $"{_player.Queue.Items.ToList().IndexOf(queueObject) + 1}) {track.Title} -> {track.Duration.ToString(@"m\:ss")}\n";
             }
-            if (loop) result += $"\n0) [LOOPING] {_player.CurrentTrack.Title} -> {(_player.CurrentTrack.Length - _player.CurrentTrack.Position).ToString(@"m\:ss")} left\n```";
-            else result += $"\n0) {_player.CurrentTrack.Title} -> {(_player.CurrentTrack.Length - _player.CurrentTrack.Position).ToString(@"m\:ss")} left\n```";
+            if (loop) result += $"\n0) [LOOPING] {_player.Track.Title} -> {(_player.Track.Duration - _player.Track.Position).ToString(@"m\:ss")} left\n```";
+            else result += $"\n0) {_player.Track.Title} -> {(_player.Track.Duration - _player.Track.Position).ToString(@"m\:ss")} left\n```";
+
+            if (result.Count() > 2000)
+            {
+                result = "```stylus\n";
+                if (10 * page >= _player.Queue.Items.Count())
+                {
+                    for (int x = 10 * (page - 1); x < _player.Queue.Items.Count(); x++)
+                    {
+                        LavaTrack track = _player.Queue.Items.ElementAt(x) as LavaTrack;
+                        result += $"{x + 1}) {track.Title} -> {track.Duration.ToString(@"m\:ss")}\n";
+                    }
+                }
+                else for (int x = 10 * (page - 1); x < 10 * page; x++)
+                    {
+                        LavaTrack track = _player.Queue.Items.ElementAt(x) as LavaTrack;
+                        result += $"{x + 1}) {track.Title} -> {track.Duration.ToString(@"m\:ss")}\n";
+                    }
+
+                if (loop) result += $"\n0) [LOOPING] {_player.Track.Title} -> {(_player.Track.Duration - _player.Track.Position).ToString(@"m\:ss")} left\n";
+                else result += $"\n0) {_player.Track.Title} -> {(_player.Track.Duration - _player.Track.Position).ToString(@"m\:ss")} left\n";
+
+                result += $"\nPage {page}/{_player.Queue.Items.Count() / 10 + 1}```";
+            }
 
             return result;
         }
 
         public string Loop()
         {
-            if (_player is null || _player.CurrentTrack == null) return ":x: Nothing to loop.";
+            if (_player is null || _player.Track == null) return ":x: Nothing to loop.";
             if (!loop)
             {
                 loop = true;
-                return $":repeat: Looping track `{_player.CurrentTrack.Title}`";
+                return $":repeat: Looping track `{_player.Track.Title}`";
             }
             loop = false;
-            return $":repeat: Stopped looping track `{_player.CurrentTrack.Title}`";
+            return $":repeat: Stopped looping track `{_player.Track.Title}`";
         }
 
 
         private async Task ClientReadyAsync()
         {
-            await _lavaSocketClient.StartAsync(_client, new Configuration
-            {
-                LogSeverity = LogSeverity.Debug,
-                SelfDeaf = false
-            });
+            await _lavaNode.ConnectAsync();
 
-            _client.Ready -= ClientReadyAsync;
-            _client.Ready += OnReconnect;
+            /*_client.Ready -= ClientReadyAsync;
+            _client.Ready += OnReconnect;*/
         }
 
-        private async Task OnTrackFinished(LavaPlayer player, LavaTrack track, TrackEndReason reason)
+        private async Task OnTrackEnded(TrackEndedEventArgs args)
         {
+            TrackEndReason reason = args.Reason;
+            LavaPlayer player = args.Player;
+            LavaTrack track = args.Track;
+
             if (!reason.ShouldPlayNext()) return;
             if (loop)
             {
@@ -220,7 +262,7 @@ namespace rJordanBot.Resources.Services
                 await player.TextChannel.SendMessageAsync($":arrow_forward: Now playing: `{track.Title}`");
                 return;
             }
-            if (!player.Queue.TryDequeue(out IQueueObject queueObject) || !(queueObject is LavaTrack nextTrack))
+            if (!player.Queue.TryDequeue(out IQueueable queueObject) || !(queueObject is LavaTrack nextTrack))
             {
                 await player.TextChannel.SendMessageAsync(":x: There are no more tracks in the queue.");
                 return;
@@ -245,7 +287,7 @@ namespace rJordanBot.Resources.Services
             else if (postState.VoiceChannel.Users.Contains(Constants.IConversions.GuildUser(_client))) postType = 1;
             else postType = 2;
 
-            if (preType == 1 && _player.IsPaused) return;
+            if (preType == 1 && _player.PlayerState == PlayerState.Paused) return;
             if ((preType == 0 && postType == 0) || (preType == 2 && postType == 2) || (preType == 0 && postType == 2) || (preType == 2 && postType == 0)) return;
             if (preType == 1 && preState.VoiceChannel.Users.Count != 1) return;
             if (postType == 1 && postState.VoiceChannel.Users.Count != 2) return;

@@ -24,6 +24,7 @@ namespace rJordanBot
         private DiscordSocketClient Client;
         private CommandService Commands;
         private IServiceProvider Services;
+        private LavaConfig _lavaConfig;
 
         private async Task MainAsync()
         {
@@ -42,6 +43,12 @@ namespace rJordanBot
                 DefaultRunMode = RunMode.Async,
                 LogLevel = LogSeverity.Info
             });
+
+            _lavaConfig = new LavaConfig
+            {
+                LogSeverity = LogSeverity.Debug,
+                SelfDeaf = false
+            };
 
             // Main Handlers
             {
@@ -91,8 +98,8 @@ namespace rJordanBot
             Services = new ServiceCollection()
                 .AddSingleton(Client)
                 .AddSingleton<InteractiveService>()
-                .AddSingleton<LavaRestClient>()
-                .AddSingleton<LavaSocketClient>()
+                .AddSingleton<LavaNode>()
+                .AddSingleton(_lavaConfig)
                 .AddSingleton<MusicService>()
                 .BuildServiceProvider();
 

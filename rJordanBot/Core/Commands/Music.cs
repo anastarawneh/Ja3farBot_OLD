@@ -92,7 +92,7 @@ namespace rJordanBot.Core.Commands
                 return;
             }
 
-            string result = _musicService.PlayAsync(query, Context.Guild.Id, bot, user.VoiceChannel, Context.Channel as SocketTextChannel).Result;
+            string result = _musicService.PlayAsync(query, Context.Guild, bot, user.VoiceChannel, Context.Channel as SocketTextChannel).Result;
             await ReplyAsync(result);
         }
 
@@ -181,16 +181,37 @@ namespace rJordanBot.Core.Commands
         }
 
         [Command("queue"), Alias("q")]
-        public async Task Queue()
+        public async Task Queue(int page = 1)
         {
             if (!(Context.User as SocketGuildUser).IsModerator()) return;
 
             if (Context.Channel is IDMChannel) return;
-            await ReplyAsync(_musicService.Queue());
+            await ReplyAsync(_musicService.Queue(page));
         }
 
         [Command("loop"), Alias("l")]
         public async Task Loop()
-            => await ReplyAsync(_musicService.Loop());
+        {
+            if (Context.Channel is IDMChannel) return;
+            SocketGuildUser user = Context.User as SocketGuildUser;
+            if (user.VoiceChannel == null)
+            {
+                await ReplyAsync(":x: Not connected to a voice channel.");
+                return;
+            }
+            SocketGuildUser bot = Context.Guild.CurrentUser;
+            if (bot.VoiceChannel == null)
+            {
+                await ReplyAsync(":x: Not connected to a voice channel.");
+                return;
+            }
+            if (user.VoiceChannel != bot.VoiceChannel)
+            {
+                await ReplyAsync(":x: Not connected to the same voice channel.");
+                return;
+            }
+
+            await ReplyAsync(_musicService.Loop());
+        }
     }
 }
