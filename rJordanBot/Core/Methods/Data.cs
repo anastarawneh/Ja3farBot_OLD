@@ -54,6 +54,7 @@ namespace rJordanBot.Core.Data
             ESettings.ModAppsActive = Settings.modappsactive;
             ESettings.EventsActive = Settings.eventsactive;
             ESettings.InviteWhitelist = Settings.invitewhitelist;
+            ESettings.VerifyID = Settings.verifyid;
 
             return Task.CompletedTask;
         }
@@ -78,6 +79,7 @@ namespace rJordanBot.Core.Data
             ESettings.ModAppsActive = Settings.modappsactive;
             ESettings.EventsActive = Settings.eventsactive;
             ESettings.InviteWhitelist = Settings.invitewhitelist;
+            ESettings.VerifyID = Settings.verifyid;
 
             return Task.CompletedTask;
         }

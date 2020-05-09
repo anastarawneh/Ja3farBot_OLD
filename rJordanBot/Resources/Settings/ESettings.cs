@@ -11,5 +11,6 @@ namespace rJordanBot.Resources.Settings
         public static bool ModAppsActive;
         public static bool EventsActive;
         public static List<string> InviteWhitelist;
+        public static ulong VerifyID;
     }
 }

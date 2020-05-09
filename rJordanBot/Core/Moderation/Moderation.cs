@@ -423,5 +423,17 @@ namespace rJordanBot.Core.Moderation
 
             await Context.Message.AddReactionAsync(Constants.IEmojis.Tick);
         }
+
+        [Command("clean")]
+        public async Task Clean()
+        {
+            ITextChannel channel = Context.Channel as ITextChannel;
+            if (channel.Id != Data.Data.GetChnlId("verification") || channel is IDMChannel) return;
+
+            IEnumerable<IMessage> messages = channel.GetMessagesAsync().FlattenAsync().Result;
+            int count = messages.Count() - 1;
+            var deletable = channel.GetMessagesAsync(count).FlattenAsync().Result;
+            await channel.DeleteMessagesAsync(deletable);
+        }
     }
 }

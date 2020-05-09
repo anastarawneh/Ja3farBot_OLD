@@ -11,6 +11,7 @@ namespace rJordanBot.Resources.Datatypes
         public bool modappsactive { get; set; }
         public bool eventsactive { get; set; }
         public List<string> invitewhitelist { get; set; }
+        public ulong verifyid { get; set; }
     }
 
     public class RoleSetting
