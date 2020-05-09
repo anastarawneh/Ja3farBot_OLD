@@ -249,5 +249,37 @@ namespace rJordanBot.Core.Commands
 
             await ReplyAsync(_musicService.SeekAsync(duration).Result);
         }
+
+        [Command("remove")]
+        public async Task Remove(int index = 0)
+        {
+            if (!(Context.User as SocketGuildUser).IsModerator()) return;
+
+            if (Context.Channel is IDMChannel) return;
+            SocketGuildUser user = Context.User as SocketGuildUser;
+            if (user.VoiceChannel == null)
+            {
+                await ReplyAsync(":x: Not connected to a voice channel.");
+                return;
+            }
+            SocketGuildUser bot = Context.Guild.CurrentUser;
+            if (bot.VoiceChannel == null)
+            {
+                await ReplyAsync(":x: Not connected to a voice channel.");
+                return;
+            }
+            if (user.VoiceChannel != bot.VoiceChannel)
+            {
+                await ReplyAsync(":x: Not connected to the same voice channel.");
+                return;
+            }
+
+            if (index == 0)
+            {
+                await ReplyAsync(":x: Please enter the track's position in the queue.");
+            }
+
+            await ReplyAsync(_musicService.Remove(index));
+        }
     }
 }

@@ -269,6 +269,17 @@ namespace rJordanBot.Resources.Services
             return $":left_right_arrow: Seeking into {timeSpan.ToString(@"m\:ss")}.";
         }
 
+        public string Remove(int index)
+        {
+            if (_player is null || _player.Queue.Equals(null) || (_player.Queue.Items.Count() == 0 && _player.Track == null))
+            {
+                return ":x: Queue is empty.";
+            }
+            LavaTrack track = _player.Queue.Items.ElementAt(index - 1) as LavaTrack;
+            _player.Queue.RemoveAt(index - 1);
+            return $":hash: Removed track `{track.Title}`";
+        }
+
 
         private async Task ClientReadyAsync()
         {
