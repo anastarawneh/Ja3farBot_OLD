@@ -23,7 +23,7 @@ namespace rJordanBot.Resources.Services
         private LavaTrack track;
         private IVoiceChannel channel;
         private ITextChannel tchannel;*/
-        private bool isItOn = false;
+        private bool alone = false;
         private bool loop = false;
 
         public MusicService(LavaNode lavaNode, DiscordSocketClient client)
@@ -87,6 +87,7 @@ namespace rJordanBot.Resources.Services
             _lavaNode.OnLog += program.Client_Log;
             _lavaNode.OnTrackEnded += OnTrackEnded;
             _client.UserVoiceStateUpdated += CilentVoiceStateChanged;
+            _client.UserVoiceStateUpdated += BotMoved;
             // _client.Disconnected += OnDisconnect;
             return Task.CompletedTask;
         }
@@ -325,13 +326,15 @@ namespace rJordanBot.Resources.Services
                 Console.WriteLine($"Pause, from {preType} to {postType}");
                 await PauseAsync();
                 await _player.TextChannel.SendMessageAsync(":pause_button: Paused playback; the voice channel is empty.");
+                alone = true;
             }
 
             if ((preType == 0 && postType == 1) || (preType == 2 && postType == 1))
             {
-                Console.WriteLine($"Pause, from {preType} to {postType}");
+                Console.WriteLine($"Resume, from {preType} to {postType}");
                 await PauseAsync();
                 await _player.TextChannel.SendMessageAsync(":arrow_forward: Resumed playback.");
+                alone = false;
             }
 
             /*if (preState.VoiceChannel == null && postState.VoiceChannel == null) return;
@@ -350,6 +353,19 @@ namespace rJordanBot.Resources.Services
                 await PauseAsync();
                 await _player.TextChannel.SendMessageAsync(":arrow_forward: Resumed playback.");
             }*/
+        }
+
+        private async Task BotMoved(SocketUser user, SocketVoiceState preState, SocketVoiceState postState)
+        {
+            SocketGuildUser bot = _client.Guilds.First().CurrentUser;
+            if (user != bot) return;
+            if (_player.PlayerState != PlayerState.Paused) return;
+            if (!alone) return;
+            if (postState.VoiceChannel.Users.Count() == 1) return;
+
+            await PauseAsync();
+            await _player.TextChannel.SendMessageAsync(":arrow_forward: Resumed playback.");
+            alone = false;
         }
     }
 }
