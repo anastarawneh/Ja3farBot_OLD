@@ -192,6 +192,8 @@ namespace rJordanBot.Core.Commands
         [Command("loop"), Alias("l")]
         public async Task Loop()
         {
+            if (!(Context.User as SocketGuildUser).IsModerator()) return;
+
             if (Context.Channel is IDMChannel) return;
             SocketGuildUser user = Context.User as SocketGuildUser;
             if (user.VoiceChannel == null)

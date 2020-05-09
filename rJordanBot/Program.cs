@@ -55,6 +55,7 @@ namespace rJordanBot
                 Client.MessageReceived += Client_CommandHandler;
                 Client.Ready += Client_Ready;
                 Client.Log += Client_Log;
+                Commands.Log += Client_Log;
                 Commands.CommandExecuted += CommandExceptionHandler;
             }
 
@@ -237,7 +238,7 @@ namespace rJordanBot
 
                 await context.Channel.SendMessageAsync($"Catastrophic faliure! Paging {context.Guild.GetOwnerAsync().Result.Mention}.");
 
-                string errormsg = $"[{DateTime.Now} at ExceptionHandler]\n" +
+                /*string errormsg = $"[{DateTime.Now} at ExceptionHandler]\n" +
                 $"```{ex}```";
 
                 if (ex.ToString().Contains("Server requested a reconnect")) errormsg = $"[{DateTime.Now} at ExceptionHandler] Server requested a reconnect";
@@ -249,7 +250,7 @@ namespace rJordanBot
                 DiscordSocketClient Client = context.Client as DiscordSocketClient;
                 SocketGuild Guild = Constants.IGuilds.Jordan(Client);
                 SocketTextChannel Channel = Guild.Channels.First(x => x.Id == Data.GetChnlId("bot-log")) as SocketTextChannel;
-                await Channel.SendMessageAsync(errormsg);
+                await Channel.SendMessageAsync(errormsg);*/
             }
         }
         public async Task LogExceptionHandler(Exception ex)

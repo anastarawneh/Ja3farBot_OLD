@@ -3,6 +3,7 @@ using Discord.WebSocket;
 using rJordanBot.Core.Methods;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Victoria;
@@ -188,7 +189,7 @@ namespace rJordanBot.Resources.Services
 
         public string Queue(int page)
         {
-            if (_player is null || (_player.Queue.Items.Count() == 0 && _player.Track == null))
+            if (_player is null || _player.Queue.Equals(null) || (_player.Queue.Items.Count() == 0 && _player.Track == null))
             {
                 return ":x: Queue is empty.";
             }
@@ -245,8 +246,8 @@ namespace rJordanBot.Resources.Services
         {
             await _lavaNode.ConnectAsync();
 
-            /*_client.Ready -= ClientReadyAsync;
-            _client.Ready += OnReconnect;*/
+            _client.Ready -= ClientReadyAsync;
+            /*_client.Ready += OnReconnect;*/
         }
 
         private async Task OnTrackEnded(TrackEndedEventArgs args)
