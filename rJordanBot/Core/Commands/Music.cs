@@ -84,6 +84,7 @@ namespace rJordanBot.Core.Commands
             if (query == null)
             {
                 await ReplyAsync(":x: Please specify the search query for the track to be played.");
+                return;
             }
             SocketGuildUser bot = Constants.IConversions.GuildUser(Context);
             if (bot.VoiceChannel != null && user.VoiceChannel != bot.VoiceChannel)
