@@ -241,6 +241,33 @@ namespace rJordanBot.Resources.Services
             return $":repeat: Stopped looping track `{_player.Track.Title}`";
         }
 
+        public async Task<string> SeekAsync(string durationS)
+        {
+            TimeSpan timeSpan;
+            /*int durationI;
+
+            switch (durationS[^1])
+            {
+                case 'm':
+                    durationI = int.Parse(durationS.Replace("m", ""));
+                    timeSpan = new TimeSpan(0, durationI, 0);
+                    break;
+                case 's':
+                    durationI = int.Parse(durationS.Replace("s", ""));
+                    timeSpan = new TimeSpan(0, 0, durationI);
+                    break;
+                default:
+                   return ":x: Invalid format. `^seek <_s> OR ^seek <_m>`";
+            }*/
+            string[] time = durationS.Split(':');
+            timeSpan = new TimeSpan(0, int.Parse(time[0]), int.Parse(time[1]));
+
+            if (timeSpan >= _player.Track.Duration) return $":x: Position must be within the track's length ({_player.Track.Duration.ToString(@"m\:ss")}).";
+
+            await _player.SeekAsync(timeSpan);
+            return $":left_right_arrow: Seeking into {timeSpan.ToString(@"m\:ss")}.";
+        }
+
 
         private async Task ClientReadyAsync()
         {
