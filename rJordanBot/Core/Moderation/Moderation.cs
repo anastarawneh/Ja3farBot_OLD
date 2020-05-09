@@ -155,6 +155,12 @@ namespace rJordanBot.Core.Moderation
                 seconds--;
             }
 
+            await Context.Guild.DownloadUsersAsync();
+            if (Context.Guild.Users.Contains(user))
+            {
+                embed.WithColor(0, 0, 255);
+                embed.WithTitle("User Muted => User Left");
+            }
             user = Context.Guild.GetUser(user.Id); // reload user roles if changed
             IReadOnlyCollection<SocketRole> roles = user.Roles;
             if (!roles.Contains(muted)) return;
