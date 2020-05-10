@@ -184,10 +184,10 @@ namespace rJordanBot.Core.Commands
         [Command("queue"), Alias("q")]
         public async Task Queue(int page = 1)
         {
-            if (!(Context.User as SocketGuildUser).IsModerator()) return;
+            if (!(Context.User as SocketGuildUser).IsModerator() && !Context.User.Username.Contains("AnasTester")) return;
 
             if (Context.Channel is IDMChannel) return;
-            await ReplyAsync(_musicService.Queue(page));
+            await ReplyAsync(_musicService.Queue(page, Context.User));
         }
 
         [Command("loop"), Alias("l")]

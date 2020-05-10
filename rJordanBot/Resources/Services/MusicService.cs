@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.WebSocket;
 using rJordanBot.Core.Methods;
+using rJordanBot.Resources.Settings;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -188,12 +189,14 @@ namespace rJordanBot.Resources.Services
             return ":arrow_forward: Resumed player.";
         }
 
-        public string Queue(int page)
+        public string Queue(int page, SocketUser user)
         {
             if (_player is null || _player.Queue.Equals(null) || (_player.Queue.Items.Count() == 0 && _player.Track == null))
             {
                 return ":x: Queue is empty.";
             }
+
+            if (_player.VoiceChannel.Name == "Private Office" && user.Id != ESettings.Owner) return ":x: The bot is in Anas' private office, so the queue is hidden.";
 
             string result = "```stylus\n";
             foreach (IQueueable queueObject in _player.Queue.Items)
@@ -286,7 +289,12 @@ namespace rJordanBot.Resources.Services
             await _lavaNode.ConnectAsync();
 
             _client.Ready -= ClientReadyAsync;
-            /*_client.Ready += OnReconnect;*/
+        }
+
+        private async Task OnReconnect(SocketGuild guild)
+        {
+            await _lavaNode.ConnectAsync();
+            _player = _lavaNode.GetPlayer(guild);
         }
 
         private async Task OnTrackEnded(TrackEndedEventArgs args)
@@ -370,6 +378,7 @@ namespace rJordanBot.Resources.Services
         {
             SocketGuildUser bot = _client.Guilds.First().CurrentUser;
             if (user != bot) return;
+            if (_player == null) return;
             if (_player.PlayerState != PlayerState.Paused) return;
             if (!alone) return;
             if (postState.VoiceChannel.Users.Count() == 1) return;
