@@ -1,6 +1,5 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using rJordanBot.Core.Methods;
 using rJordanBot.Resources.Database;
 using rJordanBot.Resources.Datatypes;
 using rJordanBot.Resources.Settings;
@@ -9,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace rJordanBot.Core.Data
+namespace rJordanBot.Core.Methods
 {
     public class EventHandlers
     {
@@ -141,15 +140,7 @@ namespace rJordanBot.Core.Data
                 return;
             }
 
-            try
-            {
-                await Data.UpdateStarboard(starboardmessage);
-            }
-            catch (Exception ex)
-            {
-                Program program = new Program();
-                await program.LogExceptionHandler(ex);
-            }
+            await Data.UpdateStarboard(starboardmessage);
         }
 
         public async Task JSON_UserLeft(SocketGuildUser user)

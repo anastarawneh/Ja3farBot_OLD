@@ -15,34 +15,14 @@ namespace rJordanBot.Core.Commands
 {
     public class Owner : InteractiveBase<SocketCommandContext>
     {
-        [Command("test", RunMode = RunMode.Async)]
+        [Command("test", RunMode = RunMode.Async), RequireOwner]
         public async Task Test()
         {
-            try
-            {
-                // TEST CODE STARTS HERE
-                await Context.Guild.DownloadUsersAsync();
-                using SqliteDbContext DbContext = new SqliteDbContext();
-                string result = "```\n";
-                foreach (Resources.Database.Moderator mod in DbContext.Moderators)
-                {
-                    result += $"{Context.Guild.GetUser(mod.ID)}, {mod.modType.GetHashCode()}\n";
-                }
-                result += "```";
-                await ReplyAsync(result);
-                // TEST CODE ENDS HERE
-                IEmote yes = Constants.IEmojis.Tick;
-                await Context.Message.AddReactionAsync(yes);
-            }
-            catch (Exception ex)
-            {
-                Console.ForegroundColor = ConsoleColor.DarkBlue;
-                Console.WriteLine($"[{DateTime.Now} at Test] {ex.ToString()}");
-                Console.ResetColor();
-
-                IEmote no = new Emoji("❌");
-                await Context.Message.AddReactionAsync(no);
-            }
+            // TEST CODE STARTS HERE
+            int x = int.Parse("lol throw me an exception");
+            // TEST CODE ENDS HERE
+            IEmote yes = Constants.IEmojis.Tick;
+            await Context.Message.AddReactionAsync(yes);
         }
 
         [Command("reload")]
@@ -56,7 +36,7 @@ namespace rJordanBot.Core.Commands
             }
 
             //Execution
-            await Data.Data.ReloadJSON();
+            await Methods.Data.ReloadJSON();
             await Context.Message.AddReactionAsync(Constants.IEmojis.Tick);
         }
 
@@ -93,7 +73,7 @@ namespace rJordanBot.Core.Commands
         public async Task ResetChannels()
         {
             if (Context.User.Id != ESettings.Owner && Context.User.Id != Context.Client.CurrentUser.Id) return;
-            await Data.Data.ResetChannels(Context);
+            await Methods.Data.ResetChannels(Context);
 
             IEmote emote = new Emoji("✅");
             await Context.Message.AddReactionAsync(emote);
@@ -108,7 +88,7 @@ namespace rJordanBot.Core.Commands
                 if (Context.User.Id != ESettings.Owner) return;
 
                 EmbedBuilder embed = new EmbedBuilder();
-                SocketTextChannel channel = Constants.IGuilds.Jordan(Context).Channels.FirstOrDefault(x => x.Id == Data.Data.GetChnlId("role-selection")) as SocketTextChannel;
+                SocketTextChannel channel = Constants.IGuilds.Jordan(Context).Channels.FirstOrDefault(x => x.Id == Methods.Data.GetChnlId("role-selection")) as SocketTextChannel;
 
                 embed.WithTitle("General Roles");
                 embed.WithColor(114, 137, 218);
@@ -134,8 +114,8 @@ namespace rJordanBot.Core.Commands
             {
                 if (Context.User.Id != ESettings.Owner) return;
 
-                RoleSetting roleSetting = Data.Data.GetRoleSetting(role);
-                SocketTextChannel channel = Constants.IGuilds.Jordan(Context).Channels.Where(x => x.Id == Data.Data.GetChnlId("role-selection")).FirstOrDefault() as SocketTextChannel;
+                RoleSetting roleSetting = Methods.Data.GetRoleSetting(role);
+                SocketTextChannel channel = Constants.IGuilds.Jordan(Context).Channels.Where(x => x.Id == Methods.Data.GetChnlId("role-selection")).FirstOrDefault() as SocketTextChannel;
                 IUserMessage msg = channel.GetMessageAsync(roleSetting.id).Result as IUserMessage;
                 Embed embed = msg.Embeds.FirstOrDefault() as Embed;
                 EmbedBuilder embedBuilder = embed.ToEmbedBuilder();
@@ -161,7 +141,7 @@ namespace rJordanBot.Core.Commands
                 await ReplyAsync(":white_check_mark: Loaded.");
 
                 Emoji emote = new Emoji("");
-                emote = new Emoji(Data.Data.GetRoleSetting(role).emoji);
+                emote = new Emoji(Methods.Data.GetRoleSetting(role).emoji);
                 await msg.AddReactionAsync(emote);
             }
 
@@ -170,8 +150,8 @@ namespace rJordanBot.Core.Commands
             {
                 if (Context.User.Id != ESettings.Owner) return;
 
-                RoleSetting roleSetting = Data.Data.GetRoleSetting(role);
-                SocketTextChannel channel = Constants.IGuilds.Jordan(Context).Channels.Where(x => x.Id == Data.Data.GetChnlId("role-selection")).FirstOrDefault() as SocketTextChannel;
+                RoleSetting roleSetting = Methods.Data.GetRoleSetting(role);
+                SocketTextChannel channel = Constants.IGuilds.Jordan(Context).Channels.Where(x => x.Id == Methods.Data.GetChnlId("role-selection")).FirstOrDefault() as SocketTextChannel;
                 IUserMessage msg = channel.GetMessageAsync(roleSetting.id).Result as IUserMessage;
                 Embed embed = msg.Embeds.FirstOrDefault() as Embed;
 
@@ -207,7 +187,7 @@ namespace rJordanBot.Core.Commands
                         await ReplyAsync(":white_check_mark: Role unloaded.");
 
                         IEmote emote = new Emoji("");
-                        emote = new Emoji(Data.Data.GetRoleSetting(role).emoji);
+                        emote = new Emoji(Methods.Data.GetRoleSetting(role).emoji);
                         await msg.RemoveReactionAsync(emote, Context.Client.CurrentUser as IUser);
                         return;
                     }
@@ -255,7 +235,7 @@ namespace rJordanBot.Core.Commands
         public async Task Stop()
         {
             if (Context.User.Id != ESettings.Owner) return;
-            SocketTextChannel channel = Constants.IGuilds.Jordan(Context).Channels.FirstOrDefault(x => x.Id == Data.Data.GetChnlId("bot-log")) as SocketTextChannel;
+            SocketTextChannel channel = Constants.IGuilds.Jordan(Context).Channels.FirstOrDefault(x => x.Id == Methods.Data.GetChnlId("bot-log")) as SocketTextChannel;
             await channel.SendMessageAsync($"[{DateTime.Now} at Commands] Stopping [{Environment.GetEnvironmentVariable("SystemType").ToUpper()}] instance...");
             await Context.Client.LogoutAsync();
             await Task.Delay(2500);
@@ -287,12 +267,12 @@ namespace rJordanBot.Core.Commands
         {
             EmbedBuilder embed = new EmbedBuilder();
             embed.WithTitle("We're rebranding!");
-            embed.WithDescription($"Good evening everyone. It's been long overdue, but as of today, this Discord server and the r/jordan subreddit are going in separate ways. We would like to thank the subreddit team for allowing this community to grow as it did, and we're looking forward to what the future holds for this server. There will be some slight changes in {MentionUtils.MentionChannel(Data.Data.GetChnlId("welcome"))} and {MentionUtils.MentionChannel(Data.Data.GetChnlId("rules"))}, so please make sure to reread them to stay up to date on our guidelines.");
+            embed.WithDescription($"Good evening everyone. It's been long overdue, but as of today, this Discord server and the r/jordan subreddit are going in separate ways. We would like to thank the subreddit team for allowing this community to grow as it did, and we're looking forward to what the future holds for this server. There will be some slight changes in {MentionUtils.MentionChannel(Methods.Data.GetChnlId("welcome"))} and {MentionUtils.MentionChannel(Methods.Data.GetChnlId("rules"))}, so please make sure to reread them to stay up to date on our guidelines.");
             embed.WithFooter("Please leave any feedback about this update in #feedback.");
             embed.WithColor(114, 137, 218);
 
             IUserMessage testmsg = await ReplyAsync("", false, embed.Build());
-            IUserMessage confirmationmessage = await ReplyAsync($"Please type `confirm` within 30 seconds to send this message to <#{Data.Data.GetChnlId("announcements")}>.");
+            IUserMessage confirmationmessage = await ReplyAsync($"Please type `confirm` within 30 seconds to send this message to <#{Methods.Data.GetChnlId("announcements")}>.");
 
             var reply = await NextMessageAsync(true, true, TimeSpan.FromSeconds(30));
             if (reply == null)
@@ -305,7 +285,7 @@ namespace rJordanBot.Core.Commands
                 {
                     case "confirm":
                         await testmsg.DeleteAsync();
-                        SocketTextChannel AnnouncementChannel = Constants.IGuilds.Jordan(Context).Channels.FirstOrDefault(x => x.Id == Data.Data.GetChnlId("announcements")) as SocketTextChannel;
+                        SocketTextChannel AnnouncementChannel = Constants.IGuilds.Jordan(Context).Channels.FirstOrDefault(x => x.Id == Methods.Data.GetChnlId("announcements")) as SocketTextChannel;
                         await AnnouncementChannel.SendMessageAsync("@everyone", false, embed.Build());
                         //await AnnouncementChannel.SendMessageAsync("", false, embed.Build());
                         break;

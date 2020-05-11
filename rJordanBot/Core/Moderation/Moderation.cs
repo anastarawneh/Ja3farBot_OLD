@@ -38,7 +38,7 @@ namespace rJordanBot.Core.Moderation
             }
             if (roles == "") roles = "None";
 
-            int strikes = Data.Data.GetStrikes(userInfo.Id);
+            int strikes = Methods.Data.GetStrikes(userInfo.Id);
 
             User user_ = DbContext.Users.First(x => x.ID == param.Id) ?? new User { ID = 0, Verified = false };
             bool verified = user_.Verified;
@@ -79,7 +79,7 @@ namespace rJordanBot.Core.Moderation
             embed.WithFooter($"UserID: {user.Id}");
             if (reason != "") embed.AddField("Reason", reason);
 
-            SocketTextChannel logChannel = (SocketTextChannel)Constants.IGuilds.Jordan(Context).Channels.First(x => x.Id == Data.Data.GetChnlId("moderation-log"));
+            SocketTextChannel logChannel = (SocketTextChannel)Constants.IGuilds.Jordan(Context).Channels.First(x => x.Id == Methods.Data.GetChnlId("moderation-log"));
             await logChannel.SendMessageAsync("", false, embed.Build());
         }
 
@@ -102,7 +102,7 @@ namespace rJordanBot.Core.Moderation
             embed.WithFooter($"UserID: {user.Id}");
             if (reason != "") embed.AddField("Reason", reason);
 
-            SocketTextChannel logChannel = (SocketTextChannel)Constants.IGuilds.Jordan(Context).Channels.First(x => x.Id == Data.Data.GetChnlId("moderation-log"));
+            SocketTextChannel logChannel = (SocketTextChannel)Constants.IGuilds.Jordan(Context).Channels.First(x => x.Id == Methods.Data.GetChnlId("moderation-log"));
             await logChannel.SendMessageAsync("", false, embed.Build());
         }
 
@@ -146,7 +146,7 @@ namespace rJordanBot.Core.Moderation
             if (reason != null) embed.AddField("Reason", reason);
             embed.WithFooter($"UserID: {user.Id}");
 
-            SocketTextChannel logChannel = (SocketTextChannel)Constants.IGuilds.Jordan(Context).Channels.First(x => x.Id == Data.Data.GetChnlId("moderation-log"));
+            SocketTextChannel logChannel = (SocketTextChannel)Constants.IGuilds.Jordan(Context).Channels.First(x => x.Id == Methods.Data.GetChnlId("moderation-log"));
             RestUserMessage msg = logChannel.SendMessageAsync("", false, embed.Build()).Result;
 
             while (seconds > 0)
@@ -198,7 +198,7 @@ namespace rJordanBot.Core.Moderation
             SocketRole muted = Constants.IGuilds.Jordan(Context).Roles.First(x => x.Name == "Muted");
             await user.RemoveRoleAsync(muted);
 
-            SocketTextChannel channel = Context.Guild.Channels.First(x => x.Id == Data.Data.GetChnlId("moderation-log")) as SocketTextChannel;
+            SocketTextChannel channel = Context.Guild.Channels.First(x => x.Id == Methods.Data.GetChnlId("moderation-log")) as SocketTextChannel;
             IEnumerable<IMessage> messages = channel.GetMessagesAsync(10).FlattenAsync().Result;
             foreach (IMessage message in messages)
             {
@@ -273,7 +273,7 @@ namespace rJordanBot.Core.Moderation
                 embed.WithFooter($"UserID: {user.Id}");
 
                 SocketGuild guild = Constants.IGuilds.Jordan(Context);
-                SocketTextChannel logChannel = guild.Channels.First(x => x.Id == Data.Data.GetChnlId("moderation-log")) as SocketTextChannel;
+                SocketTextChannel logChannel = guild.Channels.First(x => x.Id == Methods.Data.GetChnlId("moderation-log")) as SocketTextChannel;
                 await logChannel.SendMessageAsync("", false, embed.Build());
             }
 
@@ -294,13 +294,13 @@ namespace rJordanBot.Core.Moderation
                 }
 
                 // Execution
-                switch (Data.Data.GetStrikes(user.Id))
+                switch (Methods.Data.GetStrikes(user.Id))
                 {
                     case 1:
-                        await ReplyAsync($":white_check_mark: User {user.Mention} has `{Data.Data.GetStrikes(user.Id)}` warning.");
+                        await ReplyAsync($":white_check_mark: User {user.Mention} has `{Methods.Data.GetStrikes(user.Id)}` warning.");
                         break;
                     default:
-                        await ReplyAsync($":white_check_mark: User {user.Mention} has `{Data.Data.GetStrikes(user.Id)}` warnings.");
+                        await ReplyAsync($":white_check_mark: User {user.Mention} has `{Methods.Data.GetStrikes(user.Id)}` warnings.");
                         break;
                 }
             }
@@ -349,7 +349,7 @@ namespace rJordanBot.Core.Moderation
             SocketGuildUser self = Context.User as SocketGuildUser;
             if (!self.IsModerator()) return;
 
-            SocketTextChannel modlog = Context.Guild.Channels.First(x => x.Id == Data.Data.GetChnlId("moderation-log")) as SocketTextChannel;
+            SocketTextChannel modlog = Context.Guild.Channels.First(x => x.Id == Methods.Data.GetChnlId("moderation-log")) as SocketTextChannel;
             IMessage message = modlog.GetMessageAsync(msgID).Result;
             IEmbed embed = message.Embeds.First();
             if (embed.Title != "User Muted")
@@ -434,7 +434,7 @@ namespace rJordanBot.Core.Moderation
         public async Task Clean()
         {
             ITextChannel channel = Context.Channel as ITextChannel;
-            if (channel.Id != Data.Data.GetChnlId("verification") || channel is IDMChannel) return;
+            if (channel.Id != Methods.Data.GetChnlId("verification") || channel is IDMChannel) return;
 
             IEnumerable<IMessage> messages = channel.GetMessagesAsync().FlattenAsync().Result;
             int count = messages.Count() - 1;

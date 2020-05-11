@@ -77,7 +77,7 @@ namespace rJordanBot.Core.Commands
                     location = location_.Content;
                     if (location == "cancel") goto cancel;
                 }
-                
+
                 await ReplyAsync("Please enter any additional notes. Type `none` to ignore.");
                 SocketMessage notes_ = await NextMessageAsync(true, true, TimeSpan.FromSeconds(120));
                 notes = notes_.Content;
@@ -103,7 +103,7 @@ namespace rJordanBot.Core.Commands
                 }
 
                 //Saving
-                SocketTextChannel channel = Constants.IGuilds.Jordan(Context).Channels.Where(x => x.Id == Data.Data.GetChnlId("events")).FirstOrDefault() as SocketTextChannel;
+                SocketTextChannel channel = Constants.IGuilds.Jordan(Context).Channels.Where(x => x.Id == Methods.Data.GetChnlId("events")).FirstOrDefault() as SocketTextChannel;
                 IEmote emote = new Emoji("✅");
                 SocketRole role = Constants.IGuilds.Jordan(Context).Roles.First(x => x.Id == 644974763692785664);
                 RestUserMessage msg_ = await channel.SendMessageAsync($"{role.Mention}", false, embed.Build());
@@ -136,7 +136,7 @@ namespace rJordanBot.Core.Commands
                     return;
                 }
 
-                ulong eventschnlid = Data.Data.GetChnlId("events");
+                ulong eventschnlid = Methods.Data.GetChnlId("events");
                 SocketTextChannel eventschnl = Constants.IGuilds.Jordan(Context).Channels.Where(x => x.Id == eventschnlid).FirstOrDefault() as SocketTextChannel;
                 IEnumerable<IMessage> msgs = await eventschnl.GetMessagesAsync(100).FlattenAsync();
                 foreach (IMessage msg in msgs)
@@ -208,7 +208,7 @@ namespace rJordanBot.Core.Commands
                     return;
                 }
 
-                SocketTextChannel eventschnl = Constants.IGuilds.Jordan(Context).Channels.Where(x => x.Id == Data.Data.GetChnlId("events")).FirstOrDefault() as SocketTextChannel;
+                SocketTextChannel eventschnl = Constants.IGuilds.Jordan(Context).Channels.Where(x => x.Id == Methods.Data.GetChnlId("events")).FirstOrDefault() as SocketTextChannel;
                 IEnumerable<IMessage> msgs = await eventschnl.GetMessagesAsync(5).FlattenAsync();
                 foreach (IMessage msg in msgs)
                 {
@@ -242,7 +242,7 @@ namespace rJordanBot.Core.Commands
                     return;
                 }
 
-                SocketTextChannel log = Context.Client.Guilds.FirstOrDefault().Channels.FirstOrDefault(x => x.Id == Data.Data.GetChnlId("bot-log")) as SocketTextChannel;
+                SocketTextChannel log = Context.Client.Guilds.FirstOrDefault().Channels.FirstOrDefault(x => x.Id == Methods.Data.GetChnlId("bot-log")) as SocketTextChannel;
                 string logmsg = $"[{DateTime.Now} at EVS] {Context.User.Mention} has started verification.";
                 await log.SendMessageAsync(logmsg);
                 Console.WriteLine(logmsg);
@@ -274,7 +274,7 @@ namespace rJordanBot.Core.Commands
                 embed.WithImageUrl(msg.Attachments.FirstOrDefault().Url);
 
                 SocketGuild guild = Constants.IGuilds.Jordan(Context);
-                SocketTextChannel channel = guild.Channels.FirstOrDefault(x => x.Id == Data.Data.GetChnlId("moderation-log")) as SocketTextChannel;
+                SocketTextChannel channel = guild.Channels.FirstOrDefault(x => x.Id == Methods.Data.GetChnlId("moderation-log")) as SocketTextChannel;
                 await channel.SendMessageAsync("", false, embed.Build());
 
                 //Finish

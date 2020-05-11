@@ -144,7 +144,7 @@ namespace rJordanBot.Core.Commands
             embed.WithFooter($"{DateTime.Now} | User ID: {Context.User.Id}");
 
             SocketGuild guild = Context.Client.Guilds.FirstOrDefault();
-            SocketGuildChannel channel = guild.Channels.FirstOrDefault(x => x.Id == Data.Data.GetChnlId("moderation-log"));
+            SocketGuildChannel channel = guild.Channels.FirstOrDefault(x => x.Id == Methods.Data.GetChnlId("moderation-log"));
             await (channel as SocketTextChannel).SendMessageAsync($"{guild.Roles.Where(x => x.Name == "Moderator").FirstOrDefault().Mention}", false, embed.Build());
             return;
 
@@ -172,7 +172,7 @@ namespace rJordanBot.Core.Commands
             if (Context.Message.Timestamp.AddHours(2).Day == 17) return;
 
             SocketGuild guild = Context.Client.Guilds.First();
-            SocketTextChannel moderationchannel = (SocketTextChannel)guild.Channels.First(x => x.Id == Data.Data.GetChnlId("moderation-log"));
+            SocketTextChannel moderationchannel = (SocketTextChannel)guild.Channels.First(x => x.Id == Methods.Data.GetChnlId("moderation-log"));
 
             EmbedBuilder moderationembed = new EmbedBuilder();
             moderationembed.WithAuthor(Context.User);

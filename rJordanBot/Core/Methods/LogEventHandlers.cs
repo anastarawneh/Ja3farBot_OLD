@@ -1,14 +1,13 @@
 ﻿using Discord;
 using Discord.Rest;
 using Discord.WebSocket;
-using rJordanBot.Core.Methods;
 using rJordanBot.Resources.Database;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace rJordanBot.Core.Data
+namespace rJordanBot.Core.Methods
 {
     public class LogEventHandlers
     {

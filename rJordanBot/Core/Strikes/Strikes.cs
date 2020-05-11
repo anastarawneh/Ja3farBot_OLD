@@ -40,7 +40,7 @@ namespace rJordanBot.Core.Strikes
                 }
 
                 //Execution
-                await Context.Channel.SendMessageAsync($":white_check_mark: {User.Mention} has {Data.Data.GetStrikes(User.Id)} strike(s).");
+                await Context.Channel.SendMessageAsync($":white_check_mark: {User.Mention} has {Methods.Data.GetStrikes(User.Id)} strike(s).");
             }
 
             [Command, Summary("Add a strike"), Alias("add")]
@@ -80,7 +80,7 @@ namespace rJordanBot.Core.Strikes
                 await Context.Channel.SendMessageAsync($":white_check_mark: {User.Mention} has been given {Amount} strike(s).");
 
                 //Saving
-                await Data.Data.SaveStrikes(User.Id, Amount);
+                await Methods.Data.SaveStrikes(User.Id, Amount);
 
             }
 
@@ -156,7 +156,7 @@ namespace rJordanBot.Core.Strikes
                 await Context.Channel.SendMessageAsync($":white_check_mark: {User.Mention} now has {Amount} strike(s).");
 
                 //Saving
-                await Data.Data.SetStrikes(User.Id, Amount);
+                await Methods.Data.SetStrikes(User.Id, Amount);
             }
         }
     }

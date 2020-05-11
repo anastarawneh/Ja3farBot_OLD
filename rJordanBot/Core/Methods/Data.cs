@@ -3,7 +3,6 @@ using Discord.Commands;
 using Discord.Rest;
 using Discord.WebSocket;
 using Newtonsoft.Json;
-using rJordanBot.Core.Methods;
 using rJordanBot.Resources.Database;
 using rJordanBot.Resources.Datatypes;
 using rJordanBot.Resources.Settings;
@@ -15,7 +14,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace rJordanBot.Core.Data
+namespace rJordanBot.Core.Methods
 {
     public static class Data
     {

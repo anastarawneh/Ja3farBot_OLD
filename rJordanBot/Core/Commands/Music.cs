@@ -5,7 +5,6 @@ using Discord.WebSocket;
 using rJordanBot.Core.Methods;
 using rJordanBot.Resources.Database;
 using rJordanBot.Resources.Services;
-using rJordanBot.Resources.Settings;
 using System.Threading.Tasks;
 
 namespace rJordanBot.Core.Commands

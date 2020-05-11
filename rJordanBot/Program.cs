@@ -3,7 +3,6 @@ using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
-using rJordanBot.Core.Data;
 using rJordanBot.Core.Methods;
 using rJordanBot.Resources.Database;
 using rJordanBot.Resources.Services;
@@ -21,23 +20,23 @@ namespace rJordanBot
         static void Main(/*string[] args*/)
             => new Program().MainAsync().GetAwaiter().GetResult();
 
-        private DiscordSocketClient Client;
-        private CommandService Commands;
-        private IServiceProvider Services;
+        private DiscordSocketClient _client;
+        private CommandService _cmdService;
+        private IServiceProvider _provider;
         private LavaConfig _lavaConfig;
 
         private async Task MainAsync()
         {
             await Data.InitJSON();
 
-            Client = new DiscordSocketClient(new DiscordSocketConfig
+            _client = new DiscordSocketClient(new DiscordSocketConfig
             {
                 LogLevel = LogSeverity.Debug,
                 MessageCacheSize = 100,
                 AlwaysDownloadUsers = true
             });
 
-            Commands = new CommandService(new CommandServiceConfig
+            _cmdService = new CommandService(new CommandServiceConfig
             {
                 CaseSensitiveCommands = true,
                 DefaultRunMode = RunMode.Async,
@@ -52,70 +51,84 @@ namespace rJordanBot
 
             // Main Handlers
             {
-                Client.MessageReceived += Client_CommandHandler;
-                Client.Ready += Client_Ready;
-                Client.Log += Client_Log;
-                Commands.Log += Client_Log;
-                Commands.CommandExecuted += CommandExceptionHandler;
+                _client.MessageReceived += Client_CommandHandler;
+                _client.Ready += Client_Ready;
+                //_client.Log += Client_Log;
+                //_cmdService.Log += Client_Log;
+                _cmdService.CommandExecuted += SocialsExceptionHandler;
             }
 
             // Secondary Handlers
             {
-                EventHandlers eventHandlers = new EventHandlers(Client);
+                EventHandlers eventHandlers = new EventHandlers(_client);
 
-                Client.ReactionAdded += eventHandlers.Roles_ReactionAdded;
-                Client.ReactionAdded += eventHandlers.Events_ReactionAdded;
-                Client.UserJoined += eventHandlers.Invites_UserJoined;
-                Client.ReactionAdded += eventHandlers.Starboard_ReactionAddedOrRemoved;
-                Client.ReactionRemoved += eventHandlers.Starboard_ReactionAddedOrRemoved;
-                Client.MessageReceived += Bot_CommandHandler;
-                Client.UserLeft += eventHandlers.JSON_UserLeft;
-                Client.MessageReceived += eventHandlers.InviteDeletion;
-                Client.Ready += eventHandlers.MuteFixing;
-                Client.UserJoined += eventHandlers.JoinVerification;
+                _client.ReactionAdded += eventHandlers.Roles_ReactionAdded;
+                _client.ReactionAdded += eventHandlers.Events_ReactionAdded;
+                _client.UserJoined += eventHandlers.Invites_UserJoined;
+                _client.ReactionAdded += eventHandlers.Starboard_ReactionAddedOrRemoved;
+                _client.ReactionRemoved += eventHandlers.Starboard_ReactionAddedOrRemoved;
+                _client.MessageReceived += Bot_CommandHandler;
+                _client.UserLeft += eventHandlers.JSON_UserLeft;
+                _client.MessageReceived += eventHandlers.InviteDeletion;
+                _client.Ready += eventHandlers.MuteFixing;
+                _client.UserJoined += eventHandlers.JoinVerification;
             }
 
             // Log Handlers
             {
-                LogEventHandlers logEventHandlers = new LogEventHandlers(Client);
+                LogEventHandlers logEventHandlers = new LogEventHandlers(_client);
 
-                Client.MessageUpdated += logEventHandlers.MessageEdited;
-                Client.MessageDeleted += logEventHandlers.MessageDeleted;
-                Client.UserUpdated += logEventHandlers.NameOrDiscrimChanged;
-                Client.GuildMemberUpdated += logEventHandlers.RoleAdded;
-                Client.GuildMemberUpdated += logEventHandlers.RoleRemoved;
-                Client.GuildMemberUpdated += logEventHandlers.NicknameChanged;
-                Client.ChannelCreated += logEventHandlers.ChannelCreated;
-                Client.ChannelDestroyed += logEventHandlers.ChannelDestroyed;
-                Client.UserJoined += logEventHandlers.UserJoined;
-                Client.UserLeft += logEventHandlers.UserLeft;
-                Client.ChannelUpdated += logEventHandlers.ChannelNameChanged;
-                Client.MessagesBulkDeleted += logEventHandlers.MessagesBulkDeleted;
+                _client.MessageUpdated += logEventHandlers.MessageEdited;
+                _client.MessageDeleted += logEventHandlers.MessageDeleted;
+                _client.UserUpdated += logEventHandlers.NameOrDiscrimChanged;
+                _client.GuildMemberUpdated += logEventHandlers.RoleAdded;
+                _client.GuildMemberUpdated += logEventHandlers.RoleRemoved;
+                _client.GuildMemberUpdated += logEventHandlers.NicknameChanged;
+                _client.ChannelCreated += logEventHandlers.ChannelCreated;
+                _client.ChannelDestroyed += logEventHandlers.ChannelDestroyed;
+                _client.UserJoined += logEventHandlers.UserJoined;
+                _client.UserLeft += logEventHandlers.UserLeft;
+                _client.ChannelUpdated += logEventHandlers.ChannelNameChanged;
+                _client.MessagesBulkDeleted += logEventHandlers.MessagesBulkDeleted;
             }
 
-            await Client.LoginAsync(TokenType.Bot, ESettings.Token);
-            await Client.StartAsync();
+            await _client.LoginAsync(TokenType.Bot, ESettings.Token);
+            await _client.StartAsync();
 
-            Services = new ServiceCollection()
-                .AddSingleton(Client)
+            _provider = new ServiceCollection()
+                .AddSingleton(_client)
+                .AddSingleton(_cmdService)
                 .AddSingleton<InteractiveService>()
                 .AddSingleton<LavaNode>()
                 .AddSingleton(_lavaConfig)
                 .AddSingleton<MusicService>()
                 .BuildServiceProvider();
 
-            await Commands.AddModulesAsync(Assembly.GetEntryAssembly(), Services);
+            await _cmdService.AddModulesAsync(Assembly.GetEntryAssembly(), _provider);
 
-            await Services.GetRequiredService<MusicService>().InitializeAsync();
+            await _provider.GetRequiredService<MusicService>().InitializeAsync();
 
             await Task.Delay(-1);
+        }
+
+        private async Task Client_Ready()
+        {
+            await _client.SetStatusAsync(UserStatus.Online);
+            if (Environment.GetEnvironmentVariable("SystemType") == "aws") await _client.SetGameAsync("^help", null, ActivityType.Listening);
+            else
+            {
+                await _client.SetStatusAsync(UserStatus.DoNotDisturb);
+                await _client.SetGameAsync("In Maintenance! Not listening.", null, ActivityType.Playing);
+            };
+
+            await Data.SetInvitesBefore(Constants.IGuilds.Jordan(_client).Users.FirstOrDefault(x => x.Id == _client.CurrentUser.Id));
         }
 
         private async Task Client_CommandHandler(SocketMessage MessageParam)
         {
             if (MessageParam is SocketSystemMessage) return;
             SocketUserMessage Message = MessageParam as SocketUserMessage;
-            SocketCommandContext Context = new SocketCommandContext(Client, Message);
+            SocketCommandContext Context = new SocketCommandContext(_client, Message);
 
             if (Context.Message == null || Context.Message.Content == "") return;
             if (Context.User.IsBot) return;
@@ -125,48 +138,11 @@ namespace rJordanBot
             int ArgPos = 0;
             if (!(Message.HasStringPrefix("^", ref ArgPos)/* || Message.HasMentionPrefix(Client.CurrentUser, ref ArgPos)*/)) return;
 
-            IResult Result = await Commands.ExecuteAsync(Context, ArgPos, Services);
+            IResult Result = await _cmdService.ExecuteAsync(Context, ArgPos, _provider);
             if (!Result.IsSuccess)
             {
                 await Command_Log_Message(Message, Result);
             }
-        }
-
-        private async Task Client_Ready()
-        {
-            await Client.SetStatusAsync(UserStatus.Online);
-            if (Environment.GetEnvironmentVariable("SystemType") == "aws") await Client.SetGameAsync("^help", null, ActivityType.Listening);
-            else
-            {
-                await Client.SetStatusAsync(UserStatus.DoNotDisturb);
-                await Client.SetGameAsync("In Maintenance! Not listening.", null, ActivityType.Playing);
-            };
-
-            await Data.SetInvitesBefore(Constants.IGuilds.Jordan(Client).Users.FirstOrDefault(x => x.Id == Client.CurrentUser.Id));
-
-            /*if (Client.Guilds.First().Roles.First(x => x.Name == "Muted").Members.Count() > 0)
-            {
-                IEnumerable<SocketGuildUser> muteds = Client.Guilds.First().Roles.First(x => x.Name == "Muted").Members;
-                if (muteds.Count() == 1) await (Client.Guilds.First().Channels.First(x => x.Id == Data.GetChnlId("mod-commands")) as SocketTextChannel).SendMessageAsync($"{Client.Guilds.First().Owner.Mention}, there is a muted user right now, and I've lost track of the time: {muteds.First().Mention}");
-                else
-                {
-                    string users = "";
-                    foreach (SocketGuildUser muted in muteds)
-                    {
-                        users += $"{muted.Mention} ";
-                    }
-                    await (Client.Guilds.First().Channels.First(x => x.Id == Data.GetChnlId("mod-commands")) as SocketTextChannel).SendMessageAsync($"{Client.Guilds.First().Owner.Mention}, there are muted users right now, and I've lost track of the time: {users}");
-                }
-            }*/
-            /*
-#if !DEBUG
-            Console.WriteLine("RELEASE");
-#endif
-
-#if DEBUG
-            Console.WriteLine("DEBUG");
-#endif
-            */
         }
 
         public async Task Client_Log(LogMessage Message)
@@ -224,6 +200,7 @@ namespace rJordanBot
         }
 
         public async Task CommandExceptionHandler(Optional<CommandInfo> optional, ICommandContext context, IResult result)
+        public async Task SocialsExceptionHandler(Optional<CommandInfo> optional, ICommandContext context, IResult result)
         {
             if (result is ExecuteResult Result)
             {
@@ -277,29 +254,28 @@ namespace rJordanBot
             Console.WriteLine(errormsg);
             Console.ResetColor();
 
-            SocketGuild Guild = Constants.IGuilds.Jordan(Client);
+            SocketGuild Guild = Constants.IGuilds.Jordan(_client);
             SocketTextChannel Channel = Guild.Channels.Where(x => x.Id == Data.GetChnlId("bot-log")).FirstOrDefault() as SocketTextChannel;
 
             await Channel.SendMessageAsync(errormsg);
         }
 
-
         public async Task Bot_CommandHandler(SocketMessage message)
         {
             if (message is SocketSystemMessage) return;
             SocketUserMessage Message = message as SocketUserMessage;
-            SocketCommandContext Context = new SocketCommandContext(Client, Message);
+            SocketCommandContext Context = new SocketCommandContext(_client, Message);
             string[] commands = { "resetchannels" };
 
             if (Context.Message == null || Context.Message.Content == "") return;
-            if (Context.User.Id != Client.CurrentUser.Id) return;
+            if (Context.User.Id != _client.CurrentUser.Id) return;
             if (Context.Channel.Id != Data.GetChnlId("commands")) return;
             if (!commands.Contains(Context.Message.Content.Substring(2))) return;
 
             int ArgPos = 0;
             if (!Message.HasStringPrefix("^^", ref ArgPos)) return;
 
-            IResult Result = await Commands.ExecuteAsync(Context, ArgPos, Services);
+            IResult Result = await _cmdService.ExecuteAsync(Context, ArgPos, _provider);
             if (!Result.IsSuccess)
             {
                 await Command_Log_Message(Message, Result);

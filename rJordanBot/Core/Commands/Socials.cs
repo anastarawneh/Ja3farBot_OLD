@@ -30,7 +30,7 @@ namespace rJordanBot.Core.Commands
 
                 await ReplyAsync(":white_check_mark: Your socials have been updated.");
 
-                await Data.Data.SetSocials(Context.User.Id, site, link, Context);
+                await Methods.Data.SetSocials(Context.User.Id, site, link, Context);
             }
         }
     }
