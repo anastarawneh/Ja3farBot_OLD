@@ -33,7 +33,8 @@ namespace rJordanBot
             {
                 LogLevel = LogSeverity.Debug,
                 MessageCacheSize = 100,
-                AlwaysDownloadUsers = true
+                AlwaysDownloadUsers = true,
+                ExclusiveBulkDelete = true
             });
 
             _cmdService = new CommandService(new CommandServiceConfig
@@ -49,48 +50,10 @@ namespace rJordanBot
                 SelfDeaf = false
             };
 
-            // Main Handlers
-            {
-                _client.MessageReceived += Client_CommandHandler;
-                _client.Ready += Client_Ready;
-                //_client.Log += Client_Log;
-                //_cmdService.Log += Client_Log;
-                _cmdService.CommandExecuted += SocialsExceptionHandler;
-            }
-
-            // Secondary Handlers
-            {
-                EventHandlers eventHandlers = new EventHandlers(_client);
-
-                _client.ReactionAdded += eventHandlers.Roles_ReactionAdded;
-                _client.ReactionAdded += eventHandlers.Events_ReactionAdded;
-                _client.UserJoined += eventHandlers.Invites_UserJoined;
-                _client.ReactionAdded += eventHandlers.Starboard_ReactionAddedOrRemoved;
-                _client.ReactionRemoved += eventHandlers.Starboard_ReactionAddedOrRemoved;
-                _client.MessageReceived += Bot_CommandHandler;
-                _client.UserLeft += eventHandlers.JSON_UserLeft;
-                _client.MessageReceived += eventHandlers.InviteDeletion;
-                _client.Ready += eventHandlers.MuteFixing;
-                _client.UserJoined += eventHandlers.JoinVerification;
-            }
-
-            // Log Handlers
-            {
-                LogEventHandlers logEventHandlers = new LogEventHandlers(_client);
-
-                _client.MessageUpdated += logEventHandlers.MessageEdited;
-                _client.MessageDeleted += logEventHandlers.MessageDeleted;
-                _client.UserUpdated += logEventHandlers.NameOrDiscrimChanged;
-                _client.GuildMemberUpdated += logEventHandlers.RoleAdded;
-                _client.GuildMemberUpdated += logEventHandlers.RoleRemoved;
-                _client.GuildMemberUpdated += logEventHandlers.NicknameChanged;
-                _client.ChannelCreated += logEventHandlers.ChannelCreated;
-                _client.ChannelDestroyed += logEventHandlers.ChannelDestroyed;
-                _client.UserJoined += logEventHandlers.UserJoined;
-                _client.UserLeft += logEventHandlers.UserLeft;
-                _client.ChannelUpdated += logEventHandlers.ChannelNameChanged;
-                _client.MessagesBulkDeleted += logEventHandlers.MessagesBulkDeleted;
-            }
+            _client.MessageReceived += Client_CommandHandler;
+            _client.Ready += Client_Ready;
+            _cmdService.CommandExecuted += SocialsExceptionHandler;
+            _client.MessageReceived += Bot_CommandHandler;
 
             await _client.LoginAsync(TokenType.Bot, ESettings.Token);
             await _client.StartAsync();
@@ -103,12 +66,16 @@ namespace rJordanBot
                 .AddSingleton(_lavaConfig)
                 .AddSingleton<MusicService>()
                 .AddSingleton<LoggerService>()
+                .AddSingleton<EventHandlers>()
+                .AddSingleton<LogEventHandlers>()
                 .BuildServiceProvider();
 
             await _cmdService.AddModulesAsync(Assembly.GetEntryAssembly(), _provider);
 
-            await _provider.GetRequiredService<MusicService>().InitializeAsync();
+            await _provider.GetRequiredService<MusicService>().Initialize();
             await _provider.GetRequiredService<LoggerService>().Initialize();
+            await _provider.GetRequiredService<EventHandlers>().Initialize();
+            await _provider.GetRequiredService<LogEventHandlers>().Initialize();
 
             await Task.Delay(-1);
         }

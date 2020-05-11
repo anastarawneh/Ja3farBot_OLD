@@ -28,7 +28,7 @@ namespace rJordanBot.Resources.Services
             _client = client;
         }
 
-        public Task InitializeAsync()
+        public Task Initialize()
         {
             Program program = new Program();
 
@@ -239,7 +239,7 @@ namespace rJordanBot.Resources.Services
         public string qLoop()
         {
             if (_player is null || _player.Track == null) return ":x: Nothing to loop.";
-            if (!_loop)
+            if (!_qloop)
             {
                 _loop = false;
                 _qloop = true;
@@ -280,7 +280,8 @@ namespace rJordanBot.Resources.Services
             {
                 await player.PlayAsync(nextTrack);
                 player.Queue.Enqueue(track);
-                await player.TextChannel.SendMessageAsync($":arrow_forward: Now playing: `{track.Title}`");
+                await player.TextChannel.SendMessageAsync($":arrow_forward: Now playing: `{nextTrack.Title}`");
+                return;
             }
 
             await player.PlayAsync(nextTrack);

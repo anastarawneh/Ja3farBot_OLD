@@ -12,8 +12,25 @@ namespace rJordanBot.Core.Methods
 {
     public class EventHandlers
     {
-        private readonly DiscordSocketClient Client;
-        public EventHandlers(DiscordSocketClient client) => Client = client;
+        private readonly DiscordSocketClient _client;
+        public EventHandlers(DiscordSocketClient client) => _client = client;
+
+        public Task Initialize()
+        {
+            _client.ReactionAdded += Roles_ReactionAdded;
+            _client.ReactionAdded += Events_ReactionAdded;
+            _client.UserJoined += Invites_UserJoined;
+            _client.ReactionAdded += Starboard_ReactionAddedOrRemoved;
+            _client.ReactionRemoved += Starboard_ReactionAddedOrRemoved;
+            _client.UserLeft += JSON_UserLeft;
+            _client.MessageReceived += InviteDeletion;
+            _client.Ready += MuteFixing;
+            _client.UserJoined += JoinVerification;
+            _client.GuildMemberUpdated += Greeting_GuildMemberUpdated;
+
+            return Task.CompletedTask;
+        }
+
 
         public async Task Roles_ReactionAdded(Cacheable<IUserMessage, ulong> cacheable, ISocketMessageChannel channel, SocketReaction reaction)
         {
@@ -190,10 +207,10 @@ namespace rJordanBot.Core.Methods
 
         public async Task MuteFixing()
         {
-            Client.Ready -= MuteFixing;
+            _client.Ready -= MuteFixing;
 
             string idList = "";
-            SocketGuild guild = Constants.IGuilds.Jordan(Client);
+            SocketGuild guild = Constants.IGuilds.Jordan(_client);
             SocketTextChannel botlog = guild.Channels.First(x => x.Id == Data.GetChnlId("bot-log")) as SocketTextChannel;
             SocketTextChannel modlog = guild.Channels.First(x => x.Id == Data.GetChnlId("moderation-log")) as SocketTextChannel;
             IEnumerable<IMessage> messages = modlog.GetMessagesAsync(20).FlattenAsync().Result;
@@ -223,8 +240,18 @@ namespace rJordanBot.Core.Methods
 
         public async Task JoinVerification(SocketGuildUser user)
         {
-            SocketRole role = Constants.IGuilds.Jordan(Client).Roles.First(x => x.Id == 705470408522072086);
+            SocketRole role = Constants.IGuilds.Jordan(_client).Roles.First(x => x.Id == 705470408522072086);
             await user.AddRoleAsync(role);
+        }
+
+        public async Task Greeting_GuildMemberUpdated(SocketGuildUser user1, SocketGuildUser user2)
+        {
+            SocketGuild guild = user1.Guild;
+            SocketRole verification = guild.Roles.First(x => x.Name == "Verification");
+            if (!(!user1.Roles.Contains(verification) && user2.Roles.Contains(verification))) return;
+
+            SocketTextChannel general = guild.Channels.First(x => x.Id == Data.GetChnlId("general")) as SocketTextChannel;
+            await general.SendMessageAsync($"{user2.Mention} has joined! Say hello everyone!");
         }
     }
 }

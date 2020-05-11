@@ -12,8 +12,26 @@ namespace rJordanBot.Core.Methods
     public class LogEventHandlers
     {
         static readonly ulong LogID = Data.GetChnlId("ja3far-logs");
-        private readonly DiscordSocketClient Client;
-        public LogEventHandlers(DiscordSocketClient client) => Client = client;
+        private readonly DiscordSocketClient _client;
+        public LogEventHandlers(DiscordSocketClient client) => _client = client;
+
+        public Task Initialize()
+        {
+            _client.MessageUpdated += MessageEdited;
+            _client.MessageDeleted += MessageDeleted;
+            _client.UserUpdated += NameOrDiscrimChanged;
+            _client.GuildMemberUpdated += RoleAdded;
+            _client.GuildMemberUpdated += RoleRemoved;
+            _client.GuildMemberUpdated += NicknameChanged;
+            _client.ChannelCreated += ChannelCreated;
+            _client.ChannelDestroyed += ChannelDestroyed;
+            _client.UserJoined += UserJoined;
+            _client.UserLeft += UserLeft;
+            _client.ChannelUpdated += ChannelNameChanged;
+            _client.MessagesBulkDeleted += MessagesBulkDeleted;
+
+            return Task.CompletedTask;
+        }
 
         // Message Edited
         public async Task MessageEdited(Cacheable<IMessage, ulong> cacheable, SocketMessage message, ISocketMessageChannel channel)
@@ -107,7 +125,7 @@ namespace rJordanBot.Core.Methods
             if (oldUser.Username == newUser.Username && oldUser.Discriminator == newUser.Discriminator) return;
             if (oldUser.MutualGuilds.Count < 1) return;
 
-            SocketGuild guild = Constants.IGuilds.Jordan(Client);
+            SocketGuild guild = Constants.IGuilds.Jordan(_client);
             SocketTextChannel LogChannel = guild.Channels.FirstOrDefault(x => x.Id == LogID) as SocketTextChannel;
 
             EmbedBuilder embed = new EmbedBuilder();
