@@ -251,7 +251,7 @@ namespace rJordanBot.Core.Commands
             }
         }
 
-        [Command("adminstop")]
+        [Command("botstop")]
         public async Task Stop()
         {
             if (Context.User.Id != ESettings.Owner) return;

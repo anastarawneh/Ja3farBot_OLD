@@ -94,7 +94,10 @@ namespace rJordanBot.Resources.Services
         }
 
         public async Task ConnectAsync(SocketVoiceChannel voiceChannel, SocketTextChannel textChannel)
-            => await _lavaNode.JoinAsync(voiceChannel, textChannel);
+        {
+            await _lavaNode.JoinAsync(voiceChannel, textChannel);
+            _player = _lavaNode.GetPlayer(voiceChannel.Guild);
+        }
 
         public async Task LeaveAsync(SocketVoiceChannel voiceChannel)
         {
@@ -289,12 +292,6 @@ namespace rJordanBot.Resources.Services
             await _lavaNode.ConnectAsync();
 
             _client.Ready -= ClientReadyAsync;
-        }
-
-        private async Task OnReconnect(SocketGuild guild)
-        {
-            await _lavaNode.ConnectAsync();
-            _player = _lavaNode.GetPlayer(guild);
         }
 
         private async Task OnTrackEnded(TrackEndedEventArgs args)
