@@ -71,7 +71,7 @@ namespace rJordanBot.Core.Methods
 
             List<SocketTextChannel> Blacklist = new List<SocketTextChannel>
             {
-                guild.Channels.FirstOrDefault(x => x.Id == Data.GetChnlId("hydra_songrequests")) as SocketTextChannel,
+                guild.Channels.FirstOrDefault(x => x.Id == Data.GetChnlId("music-boi_songrequests")) as SocketTextChannel,
                 guild.Channels.FirstOrDefault(x => x.Id == Data.GetChnlId("commands")) as SocketTextChannel
             };
 
