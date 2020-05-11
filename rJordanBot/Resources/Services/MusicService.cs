@@ -83,7 +83,7 @@ namespace rJordanBot.Resources.Services
             Program program = new Program();
 
             _client.Ready += ClientReadyAsync;
-            _lavaNode.OnLog += program.Client_Log;
+            // _lavaNode.OnLog += program.Client_Log;
             _lavaNode.OnTrackEnded += OnTrackEnded;
             _client.UserVoiceStateUpdated += CilentVoiceStateChanged;
             _client.UserVoiceStateUpdated += BotMoved;

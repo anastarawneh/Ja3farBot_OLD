@@ -102,11 +102,13 @@ namespace rJordanBot
                 .AddSingleton<LavaNode>()
                 .AddSingleton(_lavaConfig)
                 .AddSingleton<MusicService>()
+                .AddSingleton<LoggerService>()
                 .BuildServiceProvider();
 
             await _cmdService.AddModulesAsync(Assembly.GetEntryAssembly(), _provider);
 
             await _provider.GetRequiredService<MusicService>().InitializeAsync();
+            await _provider.GetRequiredService<LoggerService>().Initialize();
 
             await Task.Delay(-1);
         }
@@ -145,61 +147,6 @@ namespace rJordanBot
             }
         }
 
-        public async Task Client_Log(LogMessage Message)
-        {
-            switch (Message.Severity)
-            {
-                case LogSeverity.Critical:
-                case LogSeverity.Error:
-                    Console.ForegroundColor = ConsoleColor.DarkRed;
-                    await Log_Message(Message, true);
-                    break;
-                case LogSeverity.Warning:
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    await Log_Message(Message, true);
-                    break;
-                case LogSeverity.Info:
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    await Log_Message(Message, true);
-                    break;
-                case LogSeverity.Verbose:
-                case LogSeverity.Debug:
-                    if (Environment.GetEnvironmentVariable("SystemType") == "aws")
-                    {
-                        Console.ForegroundColor = ConsoleColor.White;
-                    }
-                    else Console.ForegroundColor = ConsoleColor.DarkGray;
-                    await Log_Message(Message, false);
-                    break;
-            }
-        }
-
-
-        public async Task Log_Message(LogMessage message, bool WithAsync)
-        {
-            string errormsg = $"[{DateTime.Now} at {message.Source}] {message.Message}";
-            string errormsg_ = $"[{DateTime.Now} at {message.Source}] {message.Message}";
-            if (message.Severity == LogSeverity.Warning) errormsg_ = $"[{DateTime.Now} at {message.Source}] **{message.Message}**";
-
-            if (message.Exception != null)
-            {
-                await LogExceptionHandler(message.Exception);
-                return;
-            }
-
-            Console.WriteLine(errormsg);
-            Console.ResetColor();
-
-            SocketGuild Guild = Constants.IGuilds.Jordan(Client);
-            SocketTextChannel Channel = Guild.Channels.Where(x => x.Id == 642475027123404811).FirstOrDefault() as SocketTextChannel;
-
-            if (WithAsync == true)
-            {
-                await Channel.SendMessageAsync(errormsg_);
-            }
-        }
-
-        public async Task CommandExceptionHandler(Optional<CommandInfo> optional, ICommandContext context, IResult result)
         public async Task SocialsExceptionHandler(Optional<CommandInfo> optional, ICommandContext context, IResult result)
         {
             if (result is ExecuteResult Result)
@@ -212,38 +159,7 @@ namespace rJordanBot
                     await context.Channel.SendMessageAsync(ex.Message);
                     return;
                 }
-
-                await context.Channel.SendMessageAsync($"Catastrophic faliure! Paging {context.Guild.GetOwnerAsync().Result.Mention}.");
-
-                /*string errormsg = $"[{DateTime.Now} at ExceptionHandler]\n" +
-                $"```{ex}```";
-
-                if (ex.ToString().Contains("Server requested a reconnect")) errormsg = $"[{DateTime.Now} at ExceptionHandler] Server requested a reconnect";
-
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine(errormsg);
-                Console.ResetColor();
-
-                DiscordSocketClient Client = context.Client as DiscordSocketClient;
-                SocketGuild Guild = Constants.IGuilds.Jordan(Client);
-                SocketTextChannel Channel = Guild.Channels.First(x => x.Id == Data.GetChnlId("bot-log")) as SocketTextChannel;
-                await Channel.SendMessageAsync(errormsg);*/
             }
-        }
-        public async Task LogExceptionHandler(Exception ex)
-        {
-            string errormsg = $"[{DateTime.Now} at ExecptionHandler] \n" +
-                $"```{ex}```";
-            if (ex.ToString().Contains("Server requested a reconnect")) errormsg = $"[{DateTime.Now} at ExceptionHandler] Server requested a reconnect";
-            if (ex.ToString().Contains("WebSocket connection was closed")) errormsg = $"[{DateTime.Now} at ExceptionHandler] WebSocket connection was closed";
-
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine(errormsg);
-            Console.ResetColor();
-
-            SocketGuild Guild = Client.Guilds.First();
-            SocketTextChannel Channel = Guild.Channels.First(x => x.Id == Data.GetChnlId("bot-log")) as SocketTextChannel;
-            await Channel.SendMessageAsync(errormsg);
         }
 
         public async Task Command_Log_Message(SocketUserMessage message, IResult result)
