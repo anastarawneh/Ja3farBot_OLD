@@ -68,8 +68,8 @@ namespace rJordanBot.Resources.Services
             string errormsg = $"[{DateTime.Now} at ExecptionHandler] \n{ex}";
             string errormsg_ = $"[{DateTime.Now} at ExecptionHandler] \n```{ex}```";
 
-            if (ex.ToString().Contains("Server requested a reconnect")) errormsg = $"[{DateTime.Now} at ExceptionHandler] Server requested a reconnect";
-            if (ex.ToString().Contains("WebSocket connection was closed")) errormsg = $"[{DateTime.Now} at ExceptionHandler] WebSocket connection was closed";
+            if (ex.ToString().Contains("Server requested a reconnect")) errormsg_ = $"[{DateTime.Now} at ExceptionHandler] Server requested a reconnect";
+            if (ex.ToString().Contains("WebSocket connection was closed")) errormsg_ = $"[{DateTime.Now} at ExceptionHandler] WebSocket connection was closed";
 
             Console.WriteLine(errormsg);
             if (_hasServer && _serverLog) await _logChannel.SendMessageAsync(errormsg_);
