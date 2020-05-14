@@ -150,6 +150,7 @@ namespace rJordanBot.Resources.Services
             if (_player.VoiceChannel.Name == "Private Office" && user.Id != ESettings.Owner) return ":x: The bot is in Anas' private office, so the queue is hidden.";
 
             string result = "```stylus\n";
+            if (_qloop) result += "[QUEUE LOOPING]";
             foreach (IQueueable queueObject in _player.Queue.Items)
             {
                 LavaTrack track = queueObject as LavaTrack;
@@ -265,9 +266,9 @@ namespace rJordanBot.Resources.Services
             LavaTrack track = args.Track;
 
             if (!reason.ShouldPlayNext()) return;
-            if (!player.Queue.TryDequeue(out IQueueable queueObject) || !(queueObject is LavaTrack nextTrack) && !_loop && !_qloop)
+            if (!player.Queue.TryDequeue(out IQueueable queueObject) || !(queueObject is LavaTrack nextTrack))
             {
-                await player.TextChannel.SendMessageAsync(":x: There are no more tracks in the queue.");
+                if (!_loop && !_qloop) await player.TextChannel.SendMessageAsync(":x: There are no more tracks in the queue.");
                 return;
             }
             if (_loop)
