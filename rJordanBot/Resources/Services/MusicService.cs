@@ -266,15 +266,15 @@ namespace rJordanBot.Resources.Services
             LavaTrack track = args.Track;
 
             if (!reason.ShouldPlayNext()) return;
-            if (!player.Queue.TryDequeue(out IQueueable queueObject) || !(queueObject is LavaTrack nextTrack))
-            {
-                if (!_loop && !_qloop) await player.TextChannel.SendMessageAsync(":x: There are no more tracks in the queue.");
-                return;
-            }
             if (_loop)
             {
                 await player.PlayAsync(track);
                 await player.TextChannel.SendMessageAsync($":arrow_forward: Now playing: `{track.Title}`");
+                return;
+            }
+            if (!player.Queue.TryDequeue(out IQueueable queueObject) || !(queueObject is LavaTrack nextTrack))
+            {
+                await player.TextChannel.SendMessageAsync(":x: There are no more tracks in the queue.");
                 return;
             }
             if (_qloop)
