@@ -248,7 +248,7 @@ namespace rJordanBot.Core.Methods
         {
             SocketGuild guild = user1.Guild;
             SocketRole verification = guild.Roles.First(x => x.Name == "Verification");
-            if (!(!user1.Roles.Contains(verification) && user2.Roles.Contains(verification))) return;
+            if (!(user1.Roles.Contains(verification) && !user2.Roles.Contains(verification))) return;
 
             SocketTextChannel general = guild.Channels.First(x => x.Id == Data.GetChnlId("general")) as SocketTextChannel;
             await general.SendMessageAsync($"{user2.Mention} has joined! Say hello everyone!");

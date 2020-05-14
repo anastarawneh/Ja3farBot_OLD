@@ -265,7 +265,7 @@ namespace rJordanBot.Resources.Services
             LavaTrack track = args.Track;
 
             if (!reason.ShouldPlayNext()) return;
-            if (!player.Queue.TryDequeue(out IQueueable queueObject) || !(queueObject is LavaTrack nextTrack))
+            if (!player.Queue.TryDequeue(out IQueueable queueObject) || !(queueObject is LavaTrack nextTrack) && !_loop && !_qloop)
             {
                 await player.TextChannel.SendMessageAsync(":x: There are no more tracks in the queue.");
                 return;
