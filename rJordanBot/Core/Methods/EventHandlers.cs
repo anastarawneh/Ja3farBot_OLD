@@ -240,6 +240,7 @@ namespace rJordanBot.Core.Methods
 
         public async Task JoinVerification(SocketGuildUser user)
         {
+            if (user.IsBot) return;
             SocketRole role = Constants.IGuilds.Jordan(_client).Roles.First(x => x.Id == 705470408522072086);
             await user.AddRoleAsync(role);
         }
