@@ -308,5 +308,32 @@ namespace rJordanBot.Core.Commands
 
             await ReplyAsync(_musicService.qLoop());
         }
+
+        [Command("shuffle")]
+        public async Task Shuffle()
+        {
+            if (!(Context.User as SocketGuildUser).IsModerator()) return;
+
+            if (Context.Channel is IDMChannel) return;
+            SocketGuildUser user = Context.User as SocketGuildUser;
+            if (user.VoiceChannel == null)
+            {
+                await ReplyAsync(":x: Not connected to a voice channel.");
+                return;
+            }
+            SocketGuildUser bot = Context.Guild.CurrentUser;
+            if (bot.VoiceChannel == null)
+            {
+                await ReplyAsync(":x: Not connected to a voice channel.");
+                return;
+            }
+            if (user.VoiceChannel != bot.VoiceChannel)
+            {
+                await ReplyAsync(":x: Not connected to the same voice channel.");
+                return;
+            }
+
+            await ReplyAsync(_musicService.Shuffle());
+        }
     }
 }

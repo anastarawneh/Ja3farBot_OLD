@@ -251,6 +251,18 @@ namespace rJordanBot.Resources.Services
             return $":repeat: Stopped looping queue.";
         }
 
+        public string Shuffle()
+        {
+            if (_player is null || _player.Queue.Equals(null) || (_player.Queue.Items.Count() == 0 && _player.Track == null))
+            {
+                return ":x: Nothing to shuffle.";
+            }
+
+            _player.Queue.Shuffle();
+
+            return ":arrows_counterclockwise: Shuffled the queue.";
+        }
+
 
         private async Task ClientReadyAsync()
         {
