@@ -395,6 +395,7 @@ namespace rJordanBot.Core.Methods
             embed.WithColor(Constants.IColors.Red);
             embed.WithCurrentTimestamp();
 
+            collection = collection.Reverse() as IReadOnlyCollection<Cacheable<IMessage, ulong>>;
             foreach (Cacheable<IMessage, ulong> cacheable in collection)
             {
                 IMessage message = cacheable.Value;
