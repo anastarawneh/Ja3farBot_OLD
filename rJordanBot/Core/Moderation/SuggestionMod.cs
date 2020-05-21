@@ -30,15 +30,15 @@ namespace rJordanBot.Core.Moderation
             }
 
             [Command("get")]
-            public async Task Get(int num, string flags = null)
+            public async Task Get(int num)
             {
-                if (num < 7 && flags != "-t")
+                if (num < 7)
                 {
                     await ReplyAsync(":x: Due to some stupid mistake, our suggestions start at 7.");
                     return;
                 }
 
-                Suggestion suggestion = _suggestionService.GetSuggestion(num, flags);
+                Suggestion suggestion = _suggestionService.GetSuggestion(num);
                 string result = $"```" +
                     $"Number: {suggestion.number}\n" +
                     $"Author: {suggestion.author}\n" +
@@ -60,7 +60,7 @@ namespace rJordanBot.Core.Moderation
             {
                 await ReplyAsync(":x: Due to some stupid mistake, our suggestions start at 7.");
                 return;
-            }*/
+            }
 
             await ReplyAsync(_suggestionService.Approve(_suggestionService.GetSuggestion(num), Context.User as SocketGuildUser, reason).Result);
         }

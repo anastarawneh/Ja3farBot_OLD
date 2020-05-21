@@ -109,9 +109,8 @@ namespace rJordanBot.Resources.Services
         }
 
 
-        public Suggestion GetSuggestion(int num, string flag = null)
+        public Suggestion GetSuggestion(int num)
         {
-            if (flag == "-t") channel = _client.Guilds.First().Channels.First(x => x.Id == Data.GetChnlId("bot-testing")) as ITextChannel;
             IEnumerable<IMessage> msgs = channel.GetMessagesAsync(100).FlattenAsync().Result;
             IUserMessage msg = msgs.First(x => x.Embeds.First().Title.Contains($"Suggestion #{num}")) as IUserMessage;
 
