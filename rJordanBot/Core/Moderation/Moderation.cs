@@ -265,7 +265,7 @@ namespace rJordanBot.Core.Moderation
                 EmbedBuilder embed = new EmbedBuilder();
                 embed.WithTitle("Warning issued");
                 embed.WithAuthor(Context.User);
-                embed.WithColor(Constants.IColors.Blurple);
+                embed.WithColor(Constants.IColors.Blue);
                 embed.WithDescription($"[Link to message]({response.GetJumpUrl()})");
                 embed.AddField("User", user);
                 embed.AddField("Reason", reason);
@@ -313,7 +313,7 @@ namespace rJordanBot.Core.Moderation
                 EmbedBuilder embed = new EmbedBuilder();
 
                 embed.WithTitle("Warning Leaderboard");
-                embed.WithColor(Constants.IColors.Blurple);
+                embed.WithColor(Constants.IColors.Blue);
                 embed.WithFooter($"\nPage {page}/{strikes.Count() / 5 + 1}");
 
                 string list = "```WARNING LEADERBOARDS:\n\n";

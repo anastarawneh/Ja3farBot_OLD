@@ -9,7 +9,7 @@ namespace rJordanBot.Core.Methods
     {
         public interface IColors
         {
-            public static readonly Color Blurple = new Color(66, 134, 244);
+            public static readonly Color Blue = new Color(66, 134, 244);
             public static readonly Color Red = new Color(221, 95, 83);
             public static readonly Color Green = new Color(83, 221, 172);
             public static readonly Color Blurple = new Color(114, 137, 218);
@@ -27,6 +27,8 @@ namespace rJordanBot.Core.Methods
         {
             public static readonly Emoji Tick = new Emoji("✅");
             public static readonly Emoji X = new Emoji("❌");
+            public static readonly Emoji Up = new Emoji("⬆️");
+            public static readonly Emoji Down = new Emoji("⬇️");
         }
 
         public interface IGuilds
