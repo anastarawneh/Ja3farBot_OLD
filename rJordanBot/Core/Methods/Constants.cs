@@ -12,6 +12,15 @@ namespace rJordanBot.Core.Methods
             public static readonly Color Blurple = new Color(66, 134, 244);
             public static readonly Color Red = new Color(221, 95, 83);
             public static readonly Color Green = new Color(83, 221, 172);
+            public static readonly Color Blurple = new Color(114, 137, 218);
+
+            public interface ISuggestionColors
+            {
+                public static readonly Color Green = new Color(75, 255, 68);
+                public static readonly Color Red = new Color(255, 75, 66);
+                public static readonly Color Turquise = new Color(145, 251, 255);
+                public static readonly Color Yellow = new Color(253, 255, 145);
+            }
         }
 
         public interface IEmojis

@@ -423,7 +423,7 @@ namespace rJordanBot.Core.Commands
 
             EmbedBuilder embed = new EmbedBuilder();
             embed.WithTitle($"Giveaway: {prize}");
-            embed.WithColor(Constants.IColors.Blurple);
+            embed.WithColor(Constants.IColors.Blue);
             embed.WithDescription("React with 🎉 to enter!");
             embed.AddField("Time Remaining", field);
 

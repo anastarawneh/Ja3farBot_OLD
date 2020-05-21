@@ -112,4 +112,23 @@ namespace rJordanBot.Resources.Datatypes
             return Task.CompletedTask;
         }
     }
+
+    public class Suggestion
+    {
+        public IUserMessage message { get; set; }
+        public int number { get; set; }
+        public string author { get; set; }
+        public string suggestion { get; set; }
+        public SuggestionState state { get; set; }
+        public string reason { get; set; }
+        public string mod { get; set; }
+    }
+    public enum SuggestionState
+    {
+        Normal = 0,
+        Approved = 1,
+        Denied = -1,
+        Implemented = 2,
+        Considered = 3
+    }
 }
