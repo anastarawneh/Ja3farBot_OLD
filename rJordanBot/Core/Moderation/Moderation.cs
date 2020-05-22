@@ -34,11 +34,11 @@ namespace rJordanBot.Core.Moderation
             List<SocketRole> roles_ = (userInfo as SocketGuildUser).Roles.ToList();
             foreach (SocketRole role in roles_)
             {
-                if (role != roles_[0]) roles = roles + $"{role.Name}\n";
+                if (role != roles_[0]) roles += $"{role.Name}\n";
             }
             if (roles == "") roles = "None";
 
-            int strikes = Methods.Data.GetStrikes(userInfo.Id);
+            int strikes = Data.GetStrikes(userInfo.Id);
 
             User user_ = DbContext.Users.First(x => x.ID == param.Id) ?? new User { ID = 0, Verified = false };
             bool verified = user_.Verified;
