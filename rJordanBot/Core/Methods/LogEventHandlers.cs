@@ -331,11 +331,20 @@ namespace rJordanBot.Core.Methods
         // User Left
         public async Task UserLeft(SocketGuildUser user)
         {
+            string roles = "";
+            List<SocketRole> roles_ = user.Roles.ToList();
+            foreach (SocketRole role in roles_)
+            {
+                if (role != roles_[0]) roles += $"{role.Name}\n";
+            }
+            if (roles == "") roles = "None";
+
             EmbedBuilder embed = new EmbedBuilder();
             embed.WithTitle($"User left");
             embed.WithAuthor(user);
             if (user.JoinedAt == null) embed.AddField("User joined:", "Unknown");
             else embed.AddField("User joined:", Data.GetDuration(user.JoinedAt.Value.DateTime.ToLocalTime(), DateTime.Now.ToLocalTime()).Duration());
+            embed.AddField("Roles:", roles_);
             embed.WithCurrentTimestamp();
             embed.WithColor(255, 245, 175);
             embed.WithFooter($"UserID: {user.Id} | User count: {user.Guild.MemberCount}");
