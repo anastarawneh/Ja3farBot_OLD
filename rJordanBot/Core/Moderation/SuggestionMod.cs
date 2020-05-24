@@ -19,15 +19,22 @@ namespace rJordanBot.Core.Moderation
             _suggestionService = suggestionService;
         }
 
-        [Group("suggestmod")]
+        [Command("suggestmodhelp")]
+        [Alias("smodhelp")]
         [RequireMod]
-        public class SuggestMod : InteractiveBase<SocketCommandContext>
+        public async Task SuggestModHelp()
         {
-            private SuggestionService _suggestionService;
-            public SuggestMod(SuggestionService suggestionService)
-            {
-                _suggestionService = suggestionService;
-            }
+            await ReplyAsync(
+                ":question: Suggestion mod commands:\n" +
+                "``^suggestmodhelp``: Displays this message.\n" +
+                "``^suggestinfo <number>``: Displays information about a suggestion.\n" +
+                "*``^approve <number> [reason]``: Approves a suggestion for an optional reason.*\n" +
+                "*``^deny <number> [reason]``: Denies a suggestion for an optional reason.*\n" +
+                "*``^implemented <number> [reason]``: Marks a suggestion as implemented for an optional reason.*\n" +
+                "*``^consider <number> [reason]``: Considers a suggestion for an optional reason.*\n" +
+                $"*Commands with asterisks are functional mod only.*"
+            );
+        }
 
         [Command("suggestinfo")]
         [RequireMod]

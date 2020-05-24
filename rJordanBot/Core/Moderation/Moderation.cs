@@ -4,6 +4,7 @@ using Discord.Commands;
 using Discord.Rest;
 using Discord.WebSocket;
 using rJordanBot.Core.Methods;
+using rJordanBot.Core.Preconditions;
 using rJordanBot.Resources.Database;
 using rJordanBot.Resources.Settings;
 using System;
@@ -15,6 +16,27 @@ namespace rJordanBot.Core.Moderation
 {
     public class Moderation : InteractiveBase<SocketCommandContext>
     {
+        [Command("modhelp")]
+        [RequireMod]
+        public async Task ModHelp()
+        {
+            await ReplyAsync(
+                ":question: Mod commands:\n" +
+                "``^modhelp``: Displays this message.\n" +
+                "``^userinfo <user>``: Displays information about a user.\n" +
+                "*``^kick <user> [reason]``: Kicks a user for an optional reason.*\n" +
+                "*``^ban <user> [reason]``: Bans a user for an optional reason.*\n" +
+                "*``^mute <user> <time> [reason]``: Temporarily mute a reason for an optional reason. Time format is `_s, _m, _h, or _d`.\n" +
+                "*``^unmute <user>``: Unmutes a user.*\n" +
+                "*``^warn <user> <reason>``: Warns a user for a required reason.*\n" +
+                "*``^warn get <user>``: Gets the user's warnings.*\n" +
+                "*``^warn list``: Lists all users with warnings.*\n" +
+                "``^mutefix <id>``: Fixes a user's mute timer on bot reboot. Only use when prompted.\n" +
+                $"``^clean``: Cleans #{MentionUtils.MentionChannel(Data.GetChnlId("verification"))}.\n" +
+                $"*Commands with asterisks are functional mod only.*"
+            );
+        }
+        
         [Command("userinfo")]
         [Alias("uinfo", "ui")]
         [RequireMod]
