@@ -120,5 +120,19 @@ namespace rJordanBot.Resources.Services
                     break;
             }
         }
+
+        public async Task CommandErrorLog(SocketUserMessage message, IResult result)
+        {
+            string errormsg = $"[{DateTime.Now} at Commands] Command error: | Command: {message.Content} | User: {message.Author} | Reason: {result.ErrorReason}\nError: {result.Error}";
+
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine(errormsg);
+            Console.ResetColor();
+
+            SocketGuild Guild = Constants.IGuilds.Jordan(_client);
+            SocketTextChannel Channel = Guild.Channels.Where(x => x.Id == Data.GetChnlId("bot-log")).FirstOrDefault() as SocketTextChannel;
+
+            await Channel.SendMessageAsync(errormsg);
+        }
     }
 }

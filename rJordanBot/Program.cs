@@ -112,7 +112,8 @@ namespace rJordanBot
             IResult Result = await _cmdService.ExecuteAsync(Context, ArgPos, _provider);
             if (!Result.IsSuccess)
             {
-                await Command_Log_Message(Message, Result);
+                await _provider.GetRequiredService<LoggerService>().CommandErrorLog(Message, Result);
+                await MessageParam.Channel.SendMessageAsync($":x: Command error: `{Result.ErrorReason}`");
             }
         }
 
@@ -129,20 +130,6 @@ namespace rJordanBot
                     return;
                 }
             }
-        }
-
-        public async Task Command_Log_Message(SocketUserMessage message, IResult result)
-        {
-            string errormsg = $"[{DateTime.Now} at Commands] Command error: | Command: {message.Content} | User: {message.Author} | Reason: {result.ErrorReason}\nError: {result.Error}";
-
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine(errormsg);
-            Console.ResetColor();
-
-            SocketGuild Guild = Constants.IGuilds.Jordan(_client);
-            SocketTextChannel Channel = Guild.Channels.Where(x => x.Id == Data.GetChnlId("bot-log")).FirstOrDefault() as SocketTextChannel;
-
-            await Channel.SendMessageAsync(errormsg);
         }
 
         public async Task Bot_CommandHandler(SocketMessage message)
@@ -163,7 +150,7 @@ namespace rJordanBot
             IResult Result = await _cmdService.ExecuteAsync(Context, ArgPos, _provider);
             if (!Result.IsSuccess)
             {
-                await Command_Log_Message(Message, Result);
+                await _provider.GetRequiredService<LoggerService>().CommandErrorLog(Message, Result);
             }
         }
     }
