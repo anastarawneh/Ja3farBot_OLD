@@ -344,7 +344,7 @@ namespace rJordanBot.Core.Methods
             embed.WithAuthor(user);
             if (user.JoinedAt == null) embed.AddField("User joined:", "Unknown");
             else embed.AddField("User joined:", Data.GetDuration(user.JoinedAt.Value.DateTime.ToLocalTime(), DateTime.Now.ToLocalTime()).Duration());
-            embed.AddField("Roles:", roles_);
+            embed.AddField("Roles:", roles);
             embed.WithCurrentTimestamp();
             embed.WithColor(255, 245, 175);
             embed.WithFooter($"UserID: {user.Id} | User count: {user.Guild.MemberCount}");
