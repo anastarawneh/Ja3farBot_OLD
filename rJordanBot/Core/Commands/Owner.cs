@@ -15,7 +15,8 @@ namespace rJordanBot.Core.Commands
 {
     public class Owner : InteractiveBase<SocketCommandContext>
     {
-        [Command("test", RunMode = RunMode.Async), RequireOwner]
+        [Command("test", RunMode = RunMode.Async)]
+        [RequireOwner]
         public async Task Test()
         {
             // TEST CODE STARTS HERE
@@ -26,24 +27,17 @@ namespace rJordanBot.Core.Commands
         }
 
         [Command("reload")]
+        [RequireOwner]
         public async Task Reload()
         {
-            //Checks
-            if (Context.User.Id != ESettings.Owner)
-            {
-                await Context.Channel.SendMessageAsync(Constants.IMacros.NoPerms);
-                return;
-            }
-
-            //Execution
-            await Methods.Data.ReloadJSON();
+            await Data.ReloadJSON();
             await Context.Message.AddReactionAsync(Constants.IEmojis.Tick);
         }
 
         [Command("deldm")]
+        [RequireOwner]
         public async Task DelDM(int msgcount)
         {
-            if (Context.User.Id != ESettings.Owner) return;
             IDMChannel dm = await Context.User.GetOrCreateDMChannelAsync();
             IEnumerable<IMessage> msgs = dm.GetMessagesAsync(msgcount).FlattenAsync().Result;
             foreach (IMessage msg in msgs)
@@ -55,10 +49,9 @@ namespace rJordanBot.Core.Commands
         }
 
         [Command("ping")]
+        [RequireOwner]
         public async Task Ping()
         {
-            if (Context.User.Id != ESettings.Owner) return;
-
             string ans = Environment.GetEnvironmentVariable("SystemType");
 
             await ReplyAsync($"[{ans.ToUpper()}] Pong!");
@@ -80,13 +73,12 @@ namespace rJordanBot.Core.Commands
         }
 
         [Group("roleembed"), Alias("re")]
+        [RequireOwner]
         public class RoleEmbed : InteractiveBase<SocketCommandContext>
         {
             [Command("create")]
             public async Task Create()
             {
-                if (Context.User.Id != ESettings.Owner) return;
-
                 EmbedBuilder embed = new EmbedBuilder();
                 SocketTextChannel channel = Constants.IGuilds.Jordan(Context).Channels.FirstOrDefault(x => x.Id == Methods.Data.GetChnlId("role-selection")) as SocketTextChannel;
 
@@ -112,8 +104,6 @@ namespace rJordanBot.Core.Commands
             [Command("load")]
             public async Task Load(string role)
             {
-                if (Context.User.Id != ESettings.Owner) return;
-
                 RoleSetting roleSetting = Methods.Data.GetRoleSetting(role);
                 SocketTextChannel channel = Constants.IGuilds.Jordan(Context).Channels.Where(x => x.Id == Methods.Data.GetChnlId("role-selection")).FirstOrDefault() as SocketTextChannel;
                 IUserMessage msg = channel.GetMessageAsync(roleSetting.id).Result as IUserMessage;
@@ -148,8 +138,6 @@ namespace rJordanBot.Core.Commands
             [Command("unload"), Alias("ul")]
             public async Task Unload(string role)
             {
-                if (Context.User.Id != ESettings.Owner) return;
-
                 RoleSetting roleSetting = Methods.Data.GetRoleSetting(role);
                 SocketTextChannel channel = Constants.IGuilds.Jordan(Context).Channels.Where(x => x.Id == Methods.Data.GetChnlId("role-selection")).FirstOrDefault() as SocketTextChannel;
                 IUserMessage msg = channel.GetMessageAsync(roleSetting.id).Result as IUserMessage;
@@ -197,8 +185,6 @@ namespace rJordanBot.Core.Commands
             [Command("ban")]
             public async Task Ban(SocketGuildUser user)
             {
-                if (Context.User.Id != ESettings.Owner) return;
-
                 SocketGuild guild = Constants.IGuilds.Jordan(Context);
                 SocketRole role = guild.Roles.First(x => x.Name == "Role denied");
 
@@ -215,8 +201,6 @@ namespace rJordanBot.Core.Commands
             [Command("unban")]
             public async Task Unban(SocketGuildUser user)
             {
-                if (Context.User.Id != ESettings.Owner) return;
-
                 SocketGuild guild = Constants.IGuilds.Jordan(Context);
                 SocketRole role = guild.Roles.First(x => x.Name == "Role denied");
 
@@ -232,9 +216,9 @@ namespace rJordanBot.Core.Commands
         }
 
         [Command("botstop")]
+        [RequireOwner]
         public async Task Stop()
         {
-            if (Context.User.Id != ESettings.Owner) return;
             SocketTextChannel channel = Constants.IGuilds.Jordan(Context).Channels.FirstOrDefault(x => x.Id == Methods.Data.GetChnlId("bot-log")) as SocketTextChannel;
             await channel.SendMessageAsync($"[{DateTime.Now} at Commands] Stopping [{Environment.GetEnvironmentVariable("SystemType").ToUpper()}] instance...");
             await Context.Client.LogoutAsync();
@@ -245,9 +229,9 @@ namespace rJordanBot.Core.Commands
         }
 
         [Command("setgame"), Alias("sg")]
+        [RequireOwner]
         public async Task SetGame(string state, [Remainder]string game = null)
         {
-            if (Context.User.Id != ESettings.Owner) return;
             ActivityType activity = new ActivityType();
             activity = state switch
             {
@@ -263,6 +247,7 @@ namespace rJordanBot.Core.Commands
         }
 
         [Command("announce")]
+        [RequireOwner]
         public async Task Announce()
         {
             EmbedBuilder embed = new EmbedBuilder();
@@ -297,15 +282,15 @@ namespace rJordanBot.Core.Commands
         }
 
         [Command("say")]
+        [RequireOwner]
         public async Task Say(SocketTextChannel channel, [Remainder] string message)
         {
-            if (Context.User.Id != ESettings.Owner) return;
-
             await channel.SendMessageAsync(message);
             await Context.Message.DeleteAsync();
         }
 
-        [Group("db"), RequireOwner]
+        [Group("db")]
+        [RequireOwner]
         public class DB : InteractiveBase<SocketCommandContext>
         {
             [Group("user")]
@@ -374,10 +359,9 @@ namespace rJordanBot.Core.Commands
         }
 
         [Command("giveaway", RunMode = RunMode.Async)]
+        [RequireOwner]
         public async Task Giveaway(string time, [Remainder] string prize)
         {
-            if (Context.User.Id != ESettings.Owner) return;
-
             int Seconds;
             int Time = int.Parse(time.Replace("d", "").Replace("h", "").Replace("m", "").Replace("s", ""));
             string remaining;
@@ -479,6 +463,7 @@ namespace rJordanBot.Core.Commands
         }
 
         [Command("reconnect", RunMode = RunMode.Async)]
+        [RequireOwner]
         public async Task Reconnect()
         {
             DiscordSocketClient client = Context.Client;

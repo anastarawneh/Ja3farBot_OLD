@@ -17,10 +17,9 @@ namespace rJordanBot.Core.Moderation
     {
         [Command("userinfo")]
         [Alias("uinfo", "ui")]
+        [RequireMod]
         public async Task UserInfo(SocketUser param = null)
         {
-            if (Context.User.Id != ESettings.Owner) return;
-
             if (param == null)
             {
                 await ReplyAsync(":x: Please mention a user.");
@@ -61,11 +60,9 @@ namespace rJordanBot.Core.Moderation
         }
 
         [Command("kick")]
+        [RequireFuncMod]
         public async Task Kick(SocketGuildUser user, [Remainder]string reason = "")
         {
-            SocketGuildUser user_ = Context.User as SocketGuildUser;
-            if (!user_.IsFuncModerator() && user_.Id != ESettings.Owner) return;
-
             await user.KickAsync();
 
             if (reason == "") await ReplyAsync($":white_check_mark: {user.Mention} has been kicked.");
@@ -84,11 +81,9 @@ namespace rJordanBot.Core.Moderation
         }
 
         [Command("ban")]
+        [RequireFuncMod]
         public async Task Ban(SocketGuildUser user, [Remainder]string reason = "")
         {
-            SocketGuildUser user_ = Context.User as SocketGuildUser;
-            if (!user_.IsFuncModerator() && user_.Id != ESettings.Owner) return;
-
             await user.BanAsync();
 
             if (reason == "") await ReplyAsync($":white_check_mark: {user.Mention} has been banned.");
@@ -107,11 +102,9 @@ namespace rJordanBot.Core.Moderation
         }
 
         [Command("mute")]
+        [RequireFuncMod]
         public async Task Mute(SocketGuildUser user, string time, [Remainder] string reason = null)
         {
-            SocketGuildUser user_ = Context.User as SocketGuildUser;
-            if (!user_.IsFuncModerator() && user_.Id != ESettings.Owner) return;
-
             int seconds;
             int time_ = int.Parse(time.Replace("d", "").Replace("h", "").Replace("m", "").Replace("s", ""));
             SocketRole muted = Constants.IGuilds.Jordan(Context).Roles.First(x => x.Name == "Muted");
@@ -174,15 +167,9 @@ namespace rJordanBot.Core.Moderation
         }
 
         [Command("unmute")]
+        [RequireFuncMod]
         public async Task Unmute(SocketGuildUser user)
         {
-            SocketGuildUser user_ = Context.User as SocketGuildUser;
-            if (!user_.IsFuncModerator() && user_.Id != ESettings.Owner)
-            {
-                await ReplyAsync(Constants.IMacros.NoPerms);
-                return;
-            }
-
             IReadOnlyCollection<SocketRole> roles = user.Roles;
             foreach (SocketRole role in roles)
             {
@@ -219,18 +206,13 @@ namespace rJordanBot.Core.Moderation
         }
 
         [Group("warn")]
+        [RequireFuncMod]
         public class Warn : InteractiveBase<SocketCommandContext>
         {
             [Command("add"), Alias("")]
             public async Task AddWarning(SocketGuildUser user = null, [Remainder] string reason = null)
             {
                 // Checks
-                SocketGuildUser user_ = Context.User as SocketGuildUser;
-                if (!user_.IsFuncModerator() && user_.Id != ESettings.Owner)
-                {
-                    await ReplyAsync(Constants.IMacros.NoPerms);
-                    return;
-                }
                 if (user == null)
                 {
                     await ReplyAsync(":x: Please mention a user to be warned. `^warn <user> <reason>`");
@@ -281,12 +263,6 @@ namespace rJordanBot.Core.Moderation
             public async Task GetWarning(SocketGuildUser user = null)
             {
                 // Checks
-                SocketGuildUser user_ = Context.User as SocketGuildUser;
-                if (!user_.IsFuncModerator() && user_.Id != ESettings.Owner)
-                {
-                    await ReplyAsync(Constants.IMacros.NoPerms);
-                    return;
-                }
                 if (user == null)
                 {
                     await ReplyAsync(":x: Please mention a user to be warned. `^warn <user> <reason>`");
@@ -343,11 +319,11 @@ namespace rJordanBot.Core.Moderation
         }
 
         [Command("mutefix")]
+        [RequireMod]
         public async Task MuteFix(ulong msgID)
         {
             if (Context.Channel is IDMChannel) return;
             SocketGuildUser self = Context.User as SocketGuildUser;
-            if (!self.IsModerator()) return;
 
             SocketTextChannel modlog = Context.Guild.Channels.First(x => x.Id == Methods.Data.GetChnlId("moderation-log")) as SocketTextChannel;
             IMessage message = modlog.GetMessageAsync(msgID).Result;
@@ -431,10 +407,11 @@ namespace rJordanBot.Core.Moderation
         }
 
         [Command("clean")]
+        [RequireMod]
         public async Task Clean()
         {
             ITextChannel channel = Context.Channel as ITextChannel;
-            if (channel.Id != Methods.Data.GetChnlId("verification") || channel is IDMChannel) return;
+            if (channel.Id != Data.GetChnlId("verification") || channel is IDMChannel) return;
 
             IEnumerable<IMessage> messages = channel.GetMessagesAsync().FlattenAsync().Result;
             int count = messages.Count() - 1;

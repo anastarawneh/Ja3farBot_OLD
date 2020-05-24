@@ -49,7 +49,8 @@ namespace rJordanBot.Core.Methods
 
         public interface IMacros
         {
-            public static readonly string NoPerms = ":x: Insufficient permissions.";
+            public static readonly string NoPerms = "Insufficient permissions.";
+            public static readonly string NoGuild = "You must be in a guild to run this command.";
         }
 
         public interface IConversions

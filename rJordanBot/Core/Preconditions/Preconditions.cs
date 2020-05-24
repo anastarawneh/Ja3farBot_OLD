@@ -1,5 +1,7 @@
 ﻿using Discord.Commands;
 using Discord.WebSocket;
+using rJordanBot.Core.Methods;
+using rJordanBot.Resources.Database;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,15 +14,25 @@ namespace rJordanBot.Core.Preconditions
     {
         public override Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context, CommandInfo command, IServiceProvider services)
         {
-            if (context.User is SocketGuildUser gUser)
+            if (context.User is SocketGuildUser user)
             {
-                if (gUser.Roles.Any(r => r.Name == "Discord Mods"))
-                    return Task.FromResult(PreconditionResult.FromSuccess());
-                else
-                    return Task.FromResult(PreconditionResult.FromError($"Invalid Permissions."));
+                if (user.IsModerator()) return Task.FromResult(PreconditionResult.FromSuccess());
+                else return Task.FromResult(PreconditionResult.FromError(Constants.IMacros.NoPerms));
             }
-            else
-                return Task.FromResult(PreconditionResult.FromError("You must be in a guild to run this command."));
+            else return Task.FromResult(PreconditionResult.FromError(Constants.IMacros.NoGuild));
+        }
+    }
+
+    public class RequireFuncMod : PreconditionAttribute
+    {
+        public override Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context, CommandInfo command, IServiceProvider services)
+        {
+            if (context.User is SocketGuildUser user)
+            {
+                if (user.IsFuncModerator()) return Task.FromResult(PreconditionResult.FromSuccess());
+                else return Task.FromResult(PreconditionResult.FromError(Constants.IMacros.NoPerms));
+            }
+            else return Task.FromResult(PreconditionResult.FromError(Constants.IMacros.NoGuild));
         }
     }
 }

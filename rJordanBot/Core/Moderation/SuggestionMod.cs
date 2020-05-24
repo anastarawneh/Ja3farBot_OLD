@@ -29,31 +29,32 @@ namespace rJordanBot.Core.Moderation
                 _suggestionService = suggestionService;
             }
 
-            [Command("get")]
-            public async Task Get(int num)
+        [Command("suggestinfo")]
+        [RequireMod]
+        public async Task SuggestInfo(int num)
+        {
+            if (num < 7)
             {
-                if (num < 7)
-                {
-                    await ReplyAsync(":x: Due to some stupid mistake, our suggestions start at 7.");
-                    return;
-                }
-
-                Suggestion suggestion = _suggestionService.GetSuggestion(num);
-                string result = $"```" +
-                    $"Number: {suggestion.number}\n" +
-                    $"Author: {suggestion.author}\n" +
-                    $"Message: {suggestion.suggestion}\n" +
-                    $"Jordan: {_suggestionService.IsOwnSuggestion(suggestion)}\n" +
-                    $"State: {suggestion.state}\n" +
-                    $"Reason: {suggestion.reason}\n" +
-                    $"Mod: {suggestion.mod}" +
-                    $"```";
-
-                await ReplyAsync(result);
+                await ReplyAsync(":x: Due to some stupid mistake, our suggestions start at 7.");
+                return;
             }
+
+            Suggestion suggestion = _suggestionService.GetSuggestion(num);
+            string result = $"```" +
+                $"Number: {suggestion.number}\n" +
+                $"Author: {suggestion.author}\n" +
+                $"Message: {suggestion.suggestion}\n" +
+                $"Jordan: {_suggestionService.IsOwnSuggestion(suggestion)}\n" +
+                $"State: {suggestion.state}\n" +
+                $"Reason: {suggestion.reason}\n" +
+                $"Mod: {suggestion.mod}" +
+                $"```";
+
+            await ReplyAsync(result);
         }
 
         [Command("approve")]
+        [RequireFuncMod]
         public async Task Approve(int num, [Remainder]string reason = "No reason given")
         {
             if (num < 7)
@@ -66,6 +67,7 @@ namespace rJordanBot.Core.Moderation
         }
 
         [Command("deny")]
+        [RequireFuncMod]
         public async Task Deny(int num, [Remainder]string reason = "No reason given")
         {
             if (num < 7)
@@ -78,6 +80,7 @@ namespace rJordanBot.Core.Moderation
         }
 
         [Command("implemented")]
+        [RequireFuncMod]
         public async Task Implemented(int num, [Remainder]string reason = "No reason given")
         {
             if (num < 7)
@@ -90,6 +93,7 @@ namespace rJordanBot.Core.Moderation
         }
 
         [Command("consider")]
+        [RequireFuncMod]
         public async Task Consider(int num, [Remainder]string reason = "No reason given")
         {
             if (num < 7)

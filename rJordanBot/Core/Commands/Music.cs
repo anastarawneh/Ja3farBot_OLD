@@ -3,6 +3,7 @@ using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.WebSocket;
 using rJordanBot.Core.Methods;
+using rJordanBot.Core.Preconditions;
 using rJordanBot.Resources.Database;
 using rJordanBot.Resources.Services;
 using System.Threading.Tasks;
@@ -19,10 +20,9 @@ namespace rJordanBot.Core.Commands
         }
 
         [Command("join")]
+        [RequireMod]
         public async Task Join()
         {
-            if (!(Context.User as SocketGuildUser).IsModerator()) return;
-
             if (Context.Channel is IDMChannel) return;
             SocketGuildUser user = Context.User as SocketGuildUser;
             if (user.VoiceChannel == null)
@@ -42,10 +42,9 @@ namespace rJordanBot.Core.Commands
         }
 
         [Command("leave"), Alias("dc")]
+        [RequireMod]
         public async Task Leave()
         {
-            if (!(Context.User as SocketGuildUser).IsModerator()) return;
-
             if (Context.Channel is IDMChannel) return;
             SocketGuildUser user = Context.User as SocketGuildUser;
             if (user.VoiceChannel == null)
@@ -70,10 +69,9 @@ namespace rJordanBot.Core.Commands
         }
 
         [Command("play"), Alias("p")]
+        [RequireMod]
         public async Task Play([Remainder]string query = null)
         {
-            if (!(Context.User as SocketGuildUser).IsModerator()) return;
-
             if (Context.Channel is IDMChannel) return;
             SocketGuildUser user = Context.User as SocketGuildUser;
             if (user.VoiceChannel == null)
@@ -98,10 +96,9 @@ namespace rJordanBot.Core.Commands
         }
 
         [Command("stop")]
+        [RequireMod]
         public async Task Stop()
         {
-            if (!(Context.User as SocketGuildUser).IsModerator()) return;
-
             if (Context.Channel is IDMChannel) return;
             SocketGuildUser user = Context.User as SocketGuildUser;
             if (user.VoiceChannel == null)
@@ -126,10 +123,9 @@ namespace rJordanBot.Core.Commands
         }
 
         [Command("skip")]
+        [RequireMod]
         public async Task Skip()
         {
-            if (!(Context.User as SocketGuildUser).IsModerator()) return;
-
             if (Context.Channel is IDMChannel) return;
             SocketGuildUser user = Context.User as SocketGuildUser;
             if (user.VoiceChannel == null)
@@ -154,10 +150,9 @@ namespace rJordanBot.Core.Commands
         }
 
         [Command("pause")]
+        [RequireMod]
         public async Task Pause()
         {
-            if (!(Context.User as SocketGuildUser).IsModerator()) return;
-
             if (Context.Channel is IDMChannel) return;
             SocketGuildUser user = Context.User as SocketGuildUser;
             if (user.VoiceChannel == null)
@@ -182,19 +177,17 @@ namespace rJordanBot.Core.Commands
         }
 
         [Command("queue"), Alias("q")]
+        [RequireMod]
         public async Task Queue(int page = 1)
         {
-            if (!(Context.User as SocketGuildUser).IsModerator() && !Context.User.Username.Contains("AnasTester")) return;
-
             if (Context.Channel is IDMChannel) return;
             await ReplyAsync(_musicService.Queue(page, Context.User));
         }
 
         [Command("loop"), Alias("l")]
+        [RequireMod]
         public async Task Loop()
         {
-            if (!(Context.User as SocketGuildUser).IsModerator()) return;
-
             if (Context.Channel is IDMChannel) return;
             SocketGuildUser user = Context.User as SocketGuildUser;
             if (user.VoiceChannel == null)
@@ -218,10 +211,9 @@ namespace rJordanBot.Core.Commands
         }
 
         [Command("seek")]
+        [RequireMod]
         public async Task Seek(string duration = null)
         {
-            if (!(Context.User as SocketGuildUser).IsModerator()) return;
-
             if (Context.Channel is IDMChannel) return;
             SocketGuildUser user = Context.User as SocketGuildUser;
             if (user.VoiceChannel == null)
@@ -251,10 +243,9 @@ namespace rJordanBot.Core.Commands
         }
 
         [Command("remove")]
+        [RequireMod]
         public async Task Remove(int index = 0)
         {
-            if (!(Context.User as SocketGuildUser).IsModerator()) return;
-
             if (Context.Channel is IDMChannel) return;
             SocketGuildUser user = Context.User as SocketGuildUser;
             if (user.VoiceChannel == null)
@@ -283,10 +274,9 @@ namespace rJordanBot.Core.Commands
         }
 
         [Command("qloop")]
+        [RequireMod]
         public async Task qLoop()
         {
-            if (!(Context.User as SocketGuildUser).IsModerator()) return;
-
             if (Context.Channel is IDMChannel) return;
             SocketGuildUser user = Context.User as SocketGuildUser;
             if (user.VoiceChannel == null)
@@ -310,10 +300,9 @@ namespace rJordanBot.Core.Commands
         }
 
         [Command("shuffle")]
+        [RequireMod]
         public async Task Shuffle()
         {
-            if (!(Context.User as SocketGuildUser).IsModerator()) return;
-
             if (Context.Channel is IDMChannel) return;
             SocketGuildUser user = Context.User as SocketGuildUser;
             if (user.VoiceChannel == null)
