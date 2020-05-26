@@ -5,6 +5,7 @@ using rJordanBot.Resources.Database;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -33,6 +34,15 @@ namespace rJordanBot.Core.Preconditions
                 else return Task.FromResult(PreconditionResult.FromError(Constants.IMacros.NoPerms));
             }
             else return Task.FromResult(PreconditionResult.FromError(Constants.IMacros.NoGuild));
+        }
+    }
+
+    public class RequireBot : PreconditionAttribute
+    { 
+        public override Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context, CommandInfo command, IServiceProvider services)
+        {
+            if (context.User.Id == context.Client.CurrentUser.Id) return Task.FromResult(PreconditionResult.FromSuccess());
+            else return Task.FromResult(PreconditionResult.FromError("User is not the bot."));
         }
     }
 }
