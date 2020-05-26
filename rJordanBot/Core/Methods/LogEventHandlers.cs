@@ -6,6 +6,7 @@ using rJordanBot.Resources.Database;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Victoria;
 
@@ -36,6 +37,9 @@ namespace rJordanBot.Core.Methods
             _client.RoleUpdated += RoleRenamed;
             _client.RoleUpdated += RoleRecolored;
             _client.RoleUpdated += RoleUpdated;
+            _client.GuildUpdated += EmoteCreated;
+            _client.GuildUpdated += EmoteDeleted;
+            _client.GuildUpdated += EmoteUpdated;
 
             return Task.CompletedTask;
         }
@@ -520,6 +524,82 @@ namespace rJordanBot.Core.Methods
 
             SocketGuild guild = role1.Guild;
             SocketTextChannel LogChannel = guild.Channels.FirstOrDefault(x => x.Id == LogID) as SocketTextChannel;
+            await LogChannel.SendMessageAsync("", false, embed.Build());
+        }
+
+        // Emote Created
+        public async Task EmoteCreated(SocketGuild guild1, SocketGuild guild2)
+        {
+            if (guild1.Emotes.Count >= guild2.Emotes.Count) return;
+
+            GuildEmote emote = guild1.Emotes.First();
+            foreach (GuildEmote new_ in guild2.Emotes)
+            {
+                if (!guild1.Emotes.Contains(new_)) emote = new_;
+            }
+
+            EmbedBuilder embed = new EmbedBuilder();
+            embed.WithTitle("Emote Created");
+            embed.WithColor(Constants.IColors.Green);
+            embed.WithDescription($"{emote.Name} > <:{emote.Name}:{emote.Id}>");
+            embed.WithFooter($"EmoteID: {emote.Id}");
+            embed.WithCurrentTimestamp();
+
+            SocketTextChannel LogChannel = guild1.Channels.FirstOrDefault(x => x.Id == LogID) as SocketTextChannel;
+            await LogChannel.SendMessageAsync("", false, embed.Build());
+        }
+
+        // Emote Deleted
+        public async Task EmoteDeleted(SocketGuild guild1, SocketGuild guild2)
+        {
+            if (guild1.Emotes.Count <= guild2.Emotes.Count) return;
+
+            GuildEmote emote = guild2.Emotes.First();
+            foreach (GuildEmote old in guild1.Emotes)
+            {
+                if (!guild2.Emotes.Contains(old)) emote = old;
+            }
+
+            EmbedBuilder embed = new EmbedBuilder();
+            embed.WithTitle("Emote Deleted");
+            embed.WithColor(Constants.IColors.Red);
+            embed.WithDescription(emote.Name);
+            embed.WithFooter($"EmoteID: {emote.Id}");
+            embed.WithCurrentTimestamp();
+
+            SocketTextChannel LogChannel = guild1.Channels.FirstOrDefault(x => x.Id == LogID) as SocketTextChannel;
+            await LogChannel.SendMessageAsync("", false, embed.Build());
+        }
+
+        // Emote Updated
+        public async Task EmoteUpdated(SocketGuild guild1, SocketGuild guild2)
+        {
+            if (guild1.Emotes == guild2.Emotes) return;
+            if (guild1.Emotes.Count != guild2.Emotes.Count) return;
+
+            ulong id = 0;
+
+            foreach (var oldemote in guild1.Emotes)
+            {
+                foreach (var newemote in guild2.Emotes)
+                {
+                    if (oldemote.Id == newemote.Id && oldemote.Name != newemote.Name) id = oldemote.Id;
+                }
+            }
+
+            GuildEmote emote1 = guild1.Emotes.First(x => x.Id == id);
+            GuildEmote emote2 = guild2.Emotes.First(x => x.Id == id);
+
+            EmbedBuilder embed = new EmbedBuilder();
+            embed.WithTitle("Emote Renamed");
+            embed.WithDescription($"<:{emote2.Name}:{emote2.Id}>");
+            embed.WithColor(Constants.IColors.Blue);
+            embed.AddField("Before", emote1.Name);
+            embed.AddField("After", emote2.Name);
+            embed.WithFooter($"EmoteID: {emote2.Id}");
+            embed.WithCurrentTimestamp();
+
+            SocketTextChannel LogChannel = guild1.Channels.FirstOrDefault(x => x.Id == LogID) as SocketTextChannel;
             await LogChannel.SendMessageAsync("", false, embed.Build());
         }
     }
