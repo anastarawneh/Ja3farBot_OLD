@@ -1,11 +1,13 @@
 ﻿using Discord;
 using Discord.Rest;
 using Discord.WebSocket;
+using Microsoft.EntityFrameworkCore;
 using rJordanBot.Resources.Database;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Victoria;
 
 namespace rJordanBot.Core.Methods
 {
@@ -29,6 +31,11 @@ namespace rJordanBot.Core.Methods
             _client.UserLeft += UserLeft;
             _client.ChannelUpdated += ChannelNameChanged;
             _client.MessagesBulkDeleted += MessagesBulkDeleted;
+            _client.RoleCreated += RoleCreated;
+            _client.RoleDeleted += RoleDeleted;
+            _client.RoleUpdated += RoleRenamed;
+            _client.RoleUpdated += RoleRecolored;
+            _client.RoleUpdated += RoleUpdated;
 
             return Task.CompletedTask;
         }
@@ -414,6 +421,106 @@ namespace rJordanBot.Core.Methods
             embed.AddField("Messages", messages);
 
             await ((channel as SocketGuildChannel).Guild.Channels.First(x => x.Id == LogID) as SocketTextChannel).SendMessageAsync("", false, embed.Build());
+        }
+
+        // Role Created
+        public async Task RoleCreated(SocketRole role)
+        {
+            EmbedBuilder embed = new EmbedBuilder();
+
+            embed.WithTitle("Role created");
+            embed.WithDescription(MentionUtils.MentionRole(role.Id));
+            if (role.Color != new Color(0, 0, 0)) embed.WithColor(role.Color);
+            else embed.WithColor(Constants.IColors.Blue);
+            embed.AddField("Mentionable", role.IsMentionable.ToString().CapitalizeFirst());
+            embed.AddField("Hoisted", role.IsHoisted.ToString().CapitalizeFirst());
+            embed.AddField("Position", role.Position);
+            embed.WithFooter($"RoleID: {role.Id}");
+            embed.WithCurrentTimestamp();
+
+            SocketGuild guild = role.Guild;
+            SocketTextChannel LogChannel = guild.Channels.FirstOrDefault(x => x.Id == LogID) as SocketTextChannel;
+            await LogChannel.SendMessageAsync("", false, embed.Build());
+        }
+
+        // Role Deleted
+        public async Task RoleDeleted(SocketRole role)
+        {
+            EmbedBuilder embed = new EmbedBuilder();
+
+            embed.WithTitle("Role deleted");
+            embed.WithDescription(role.Name);
+            embed.WithColor(Constants.IColors.Red);
+            embed.AddField("Mentionable", role.IsMentionable.ToString().CapitalizeFirst());
+            embed.AddField("Hoisted", role.IsHoisted.ToString().CapitalizeFirst());
+            embed.AddField("Position", role.Position);
+            embed.AddField("Created", Data.GetDuration(role.CreatedAt.DateTime.ToLocalTime(), DateTime.Now.ToLocalTime()).Duration());
+            embed.WithFooter($"RoleID: {role.Id}");
+            embed.WithCurrentTimestamp();
+
+            SocketGuild guild = role.Guild;
+            SocketTextChannel LogChannel = guild.Channels.FirstOrDefault(x => x.Id == LogID) as SocketTextChannel;
+            await LogChannel.SendMessageAsync("", false, embed.Build());
+        }
+
+        // Role Renamed
+        public async Task RoleRenamed(SocketRole role1, SocketRole role2)
+        {
+            if (role1.Name == role2.Name) return;
+            if (role1.Color != role2.Color) return;
+
+            EmbedBuilder embed = new EmbedBuilder();
+
+            embed.WithTitle("Role renamed");
+            embed.WithColor(Constants.IColors.Blue);
+            embed.AddField("Before", role1.Name);
+            embed.AddField("After", role2.Name);
+            embed.WithFooter($"RoleID: {role2.Id}");
+            embed.WithCurrentTimestamp();
+
+            SocketGuild guild = role1.Guild;
+            SocketTextChannel LogChannel = guild.Channels.FirstOrDefault(x => x.Id == LogID) as SocketTextChannel;
+            await LogChannel.SendMessageAsync("", false, embed.Build());
+        }
+
+        // Role Recolored
+        public async Task RoleRecolored(SocketRole role1, SocketRole role2)
+        {
+            if (role1.Color == role2.Color) return;
+            if (role1.Name != role2.Name) return;
+
+            EmbedBuilder embed = new EmbedBuilder();
+
+            embed.WithTitle("Role recolored");
+            embed.WithDescription(MentionUtils.MentionRole(role2.Id));
+            embed.WithColor(role2.Color);
+            embed.AddField("Before", role1.Color.GetRGB());
+            embed.AddField("After", role2.Color.GetRGB());
+            embed.WithFooter($"RoleID: {role2.Id}");
+            embed.WithCurrentTimestamp();
+
+            SocketGuild guild = role1.Guild;
+            SocketTextChannel LogChannel = guild.Channels.FirstOrDefault(x => x.Id == LogID) as SocketTextChannel;
+            await LogChannel.SendMessageAsync("", false, embed.Build());
+        }
+
+        // Role Updated (renamed AND colored)
+        public async Task RoleUpdated(SocketRole role1, SocketRole role2)
+        {
+            if (role1.Name == role2.Name || role1.Color == role2.Color) return;
+
+            EmbedBuilder embed = new EmbedBuilder();
+
+            embed.WithTitle("Role updated");
+            embed.WithColor(role2.Color);
+            embed.AddField("Before", $"**Name:** {role1.Name}\n**Color:** {role1.Color.GetRGB()}", true);
+            embed.AddField("After", $"**Name:** {role2.Name}\n**Color:** {role2.Color.GetRGB()}", true);
+            embed.WithFooter($"RoleID: {role2.Id}");
+            embed.WithCurrentTimestamp();
+
+            SocketGuild guild = role1.Guild;
+            SocketTextChannel LogChannel = guild.Channels.FirstOrDefault(x => x.Id == LogID) as SocketTextChannel;
+            await LogChannel.SendMessageAsync("", false, embed.Build());
         }
     }
 }
