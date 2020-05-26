@@ -20,7 +20,7 @@ namespace rJordanBot.Core.Commands
         public async Task Test()
         {
             // TEST CODE STARTS HERE
-            int x = int.Parse("lol throw me an exception");
+            
             // TEST CODE ENDS HERE
             IEmote yes = Constants.IEmojis.Tick;
             await Context.Message.AddReactionAsync(yes);
