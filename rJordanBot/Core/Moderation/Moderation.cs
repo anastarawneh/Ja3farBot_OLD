@@ -341,13 +341,14 @@ namespace rJordanBot.Core.Moderation
         }
 
         [Command("mutefix")]
-        [RequireMod]
+        [RequireMod(Group = "group")]
+        [RequireBot(Group = "group")]
         public async Task MuteFix(ulong msgID)
         {
             if (Context.Channel is IDMChannel) return;
             SocketGuildUser self = Context.User as SocketGuildUser;
 
-            SocketTextChannel modlog = Context.Guild.Channels.First(x => x.Id == Methods.Data.GetChnlId("moderation-log")) as SocketTextChannel;
+            SocketTextChannel modlog = Context.Guild.Channels.First(x => x.Id == Data.GetChnlId("moderation-log")) as SocketTextChannel;
             IMessage message = modlog.GetMessageAsync(msgID).Result;
             IEmbed embed = message.Embeds.First();
             if (embed.Title != "User Muted")

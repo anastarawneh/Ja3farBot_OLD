@@ -137,12 +137,12 @@ namespace rJordanBot
             if (message is SocketSystemMessage) return;
             SocketUserMessage Message = message as SocketUserMessage;
             SocketCommandContext Context = new SocketCommandContext(_client, Message);
-            string[] commands = { "resetchannels" };
+            string[] commands = { "resetchannels", "mutefix" };
 
             if (Context.Message == null || Context.Message.Content == "") return;
             if (Context.User.Id != _client.CurrentUser.Id) return;
             if (Context.Channel.Id != Data.GetChnlId("commands")) return;
-            if (!commands.Contains(Context.Message.Content.Substring(2))) return;
+            if (!commands.Contains(Context.Message.Content.Substring(2).Split(' ')[0])) return;
 
             int ArgPos = 0;
             if (!Message.HasStringPrefix("^^", ref ArgPos)) return;

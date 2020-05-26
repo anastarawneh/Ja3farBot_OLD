@@ -209,7 +209,6 @@ namespace rJordanBot.Core.Methods
         {
             _client.Ready -= MuteFixing;
 
-            string idList = "";
             SocketGuild guild = Constants.IGuilds.Jordan(_client);
             SocketTextChannel botlog = guild.Channels.First(x => x.Id == Data.GetChnlId("bot-log")) as SocketTextChannel;
             SocketTextChannel modlog = guild.Channels.First(x => x.Id == Data.GetChnlId("moderation-log")) as SocketTextChannel;
@@ -223,19 +222,11 @@ namespace rJordanBot.Core.Methods
                 {
                     if (message.Embeds.First().Title == "User Muted")
                     {
-                        idList += $"^mutefix {message.Id}\n";
+                        await (guild.Channels.First(x => x.Id == Data.GetChnlId("commands")) as SocketTextChannel)
+                            .SendMessageAsync($"^^mutefix {message.Id}");
                     }
                 }
             }
-
-            if (idList == "") return;
-
-            SocketTextChannel commands = guild.Channels.First(x => x.Id == Data.GetChnlId("mod-commands")) as SocketTextChannel;
-            await commands.SendMessageAsync($"We have one or more muted users, and I've lost track of time. Can you please enter the following commmand(s)?\n" +
-                $"```\n" +
-                $"{idList}\n" +
-                $"```\n" +
-                $"*This is temporary, until Anas makes sure this works fine and automates it.*");
         }
 
         public async Task JoinVerification(SocketGuildUser user)
