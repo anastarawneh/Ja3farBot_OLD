@@ -351,7 +351,7 @@ namespace rJordanBot.Core.Methods
             if (roles == "") roles = "None";
 
             EmbedBuilder embed = new EmbedBuilder();
-            if (user.IsBot)
+            if (!user.IsBot)
             {
                 embed.WithTitle($"User left");
                 embed.WithAuthor(user);
