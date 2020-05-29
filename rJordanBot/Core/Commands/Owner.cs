@@ -2,11 +2,11 @@
 using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.WebSocket;
+using Microsoft.EntityFrameworkCore.Design;
 using rJordanBot.Core.Methods;
 using rJordanBot.Resources.Database;
 using rJordanBot.Resources.Datatypes;
 using rJordanBot.Resources.Settings;
-using rJordanBot.Timers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,20 +21,10 @@ namespace rJordanBot.Core.Commands
         public async Task Test()
         {
             // TEST CODE STARTS HERE
-            Timer timer = new Timer();
-            timer.Interval = 10000;
-            await timer.Start();
-
-            timer.TimerDone += TimerDone;
-
+            
             // TEST CODE ENDS HERE
             IEmote yes = Constants.IEmojis.Tick;
             await Context.Message.AddReactionAsync(yes);
-        }
-
-        public async Task TimerDone(Timer timer)
-        {
-            await Context.Channel.SendMessageAsync($"Timer {timer} done!");
         }
 
         [Command("reload")]
