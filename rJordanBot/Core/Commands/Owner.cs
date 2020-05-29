@@ -262,15 +262,23 @@ namespace rJordanBot.Core.Commands
         public async Task Announce()
         {
             EmbedBuilder embed = new EmbedBuilder();
-            embed.WithTitle("We're rebranding!");
-            embed.WithDescription($"Good evening everyone. It's been long overdue, but as of today, this Discord server and the r/jordan subreddit are going in separate ways. We would like to thank the subreddit team for allowing this community to grow as it did, and we're looking forward to what the future holds for this server. There will be some slight changes in {MentionUtils.MentionChannel(Methods.Data.GetChnlId("welcome"))} and {MentionUtils.MentionChannel(Methods.Data.GetChnlId("rules"))}, so please make sure to reread them to stay up to date on our guidelines.");
+            embed.WithTitle("An update on our guidelines.");
+            embed.WithDescription("Good evening everyone, we hope you're enjoying the lockdown here. Due to the increased reports " +
+                "we're getting, we have decided to make some little changes to our rules. First of all, we updated Rule 2: No " +
+                "offensive content to include 'jokes' and 'friendly insults'. Any user can explicitly opt out of this by messaging " +
+                "us about it. Secondly, a reminder to everyone that we have a report function in our server bot, so if you're " +
+                "experiencing any offensive behavior from a user, or if you see any rule breaks in general, feel free to DM the " +
+                "bot with `^report`, or ping the moderator role for direct help. This applies everywhere on the server, in text or " +
+                "voice channels. Finally, regarding the starboard, if a message targets a specific user in bad faith, this user is " +
+                "allowed to report it and have it taken down, as an extension of rules 1 and 2. If the same message is put back up " +
+                "on the board, punitive action will be taken on the users who star it a second time.");
             embed.WithFooter("Please leave any feedback about this update in #feedback.");
             embed.WithColor(114, 137, 218);
 
             IUserMessage testmsg = await ReplyAsync("", false, embed.Build());
-            IUserMessage confirmationmessage = await ReplyAsync($"Please type `confirm` within 30 seconds to send this message to <#{Methods.Data.GetChnlId("announcements")}>.");
+            IUserMessage confirmationmessage = await ReplyAsync($"Please type `confirm` within 2 minutes to send this message to <#{Methods.Data.GetChnlId("announcements")}>.");
 
-            var reply = await NextMessageAsync(true, true, TimeSpan.FromSeconds(30));
+            var reply = await NextMessageAsync(true, true, TimeSpan.FromSeconds(120));
             if (reply == null)
             {
                 await testmsg.DeleteAsync();
