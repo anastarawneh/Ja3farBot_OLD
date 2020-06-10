@@ -306,7 +306,7 @@ namespace rJordanBot.Core.Commands
             public class UserInfo : InteractiveBase<SocketCommandContext>
             {
                 [Command("add")]
-                public async Task Add(SocketGuildUser user)
+                public async Task Add([Remainder]SocketGuildUser user)
                 {
                     using SqliteDbContext DbContext = new SqliteDbContext();
                     user.ToUser();
@@ -354,7 +354,7 @@ namespace rJordanBot.Core.Commands
                 }
 
                 [Command("type"), Alias("t")]
-                public async Task Type(SocketGuildUser user)
+                public async Task Type([Remainder]SocketGuildUser user)
                 {
                     Moderator mod = user.ToModerator();
                     if (mod == null)
