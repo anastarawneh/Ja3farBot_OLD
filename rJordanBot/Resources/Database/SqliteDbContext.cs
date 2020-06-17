@@ -19,13 +19,13 @@ namespace rJordanBot.Resources.Database
         protected override void OnConfiguring(DbContextOptionsBuilder Options)
         {
             string ans = Environment.GetEnvironmentVariable("SystemType");
-            string DbLocation = "";
+            string DbLocation;
             switch (ans)
             {
                 default:
                     break;
                 case "aws":
-                    DbLocation = Path.Combine("Data", "Database.sqlite");
+                    DbLocation = Environment.GetEnvironmentVariable("SettingsLocation").Replace("Settings.json", "Database.sqlite");
                     Options.UseSqlite($"DataSource={DbLocation}");
                     break;
                 case "win":

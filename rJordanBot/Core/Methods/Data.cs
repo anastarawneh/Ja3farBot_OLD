@@ -23,7 +23,7 @@ namespace rJordanBot.Core.Methods
             string JSON = "";
             //Assembly.GetEntryAssembly().Location = /home/ubuntu/linux-x64/publish/rJordanBot.dll; (ON AWS)
 
-            string SettingsLocation = "";
+            string SettingsLocation;
             switch (Assembly.GetEntryAssembly().Location)
             {
                 default:
@@ -31,9 +31,9 @@ namespace rJordanBot.Core.Methods
                     SettingsLocation = Assembly.GetEntryAssembly().Location.Replace(@"bin\Debug\netcoreapp3.0\rJordanBot.dll", @"Data\Settings.json");
                     Environment.SetEnvironmentVariable("SystemType", "win");
                     break;
-                case "/home/ubuntu/linux-x64/publish/rJordanBot.dll":
+                case "/home/ubuntu/rJordanBot/publish/rJordanBot.dll":
                     Console.WriteLine("The bot is running remotely on AWS.");
-                    SettingsLocation = Path.Combine("Data", "Settings.json");
+                    SettingsLocation = Path.Combine("rJordanBot", "Data", "Settings.json");
                     Environment.SetEnvironmentVariable("SystemType", "aws");
                     break;
             }
