@@ -2,7 +2,6 @@
 using Discord.Commands;
 using Discord.WebSocket;
 using rJordanBot.Core.Methods;
-using rJordanBot.Resources.Settings;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,7 +17,6 @@ namespace rJordanBot.Resources.Services
         private ITextChannel _logChannel;
         private bool _serverLog = false;
         private bool _hasServer = false;
-        private bool rateLimited = false;
 
         public LoggerService(DiscordSocketClient client, CommandService cmdService, LavaNode lavaNode)
         {
@@ -53,8 +51,6 @@ namespace rJordanBot.Resources.Services
             string errormsg = $"[{DateTime.Now} at {logMessage.Source}] {logMessage.Message}";
             string errormsg_ = $"[{DateTime.Now} at {logMessage.Source}] {logMessage.Message}";
             if (logMessage.Severity == LogSeverity.Warning) errormsg_ = $"[{DateTime.Now} at {logMessage.Source}] **{logMessage.Message}**";
-            if (logMessage.Message.Contains("Rate limit triggered")) rateLimited = true;
-
             if (logMessage.Exception != null)
             {
                 await ExceptionLog(logMessage);
@@ -62,20 +58,7 @@ namespace rJordanBot.Resources.Services
             }
 
             Console.WriteLine(errormsg);
-            
-            int c = 0;
-            if (rateLimited)
-            {
-                if (c == 0) await _logChannel.SendMessageAsync($"Hey {MentionUtils.MentionUser(ESettings.Owner)}! I'm rate-limited! I'm not logging anymore.");
-                c++;
-                return;
-            }
-            else
-            {
-                if (_hasServer && _serverLog) await _logChannel.SendMessageAsync(errormsg_);
-                c = 0;
-            }
-
+            if (_hasServer && _serverLog) await _logChannel.SendMessageAsync(errormsg_);
             Console.ResetColor();
         }
 
@@ -89,8 +72,7 @@ namespace rJordanBot.Resources.Services
             if (ex.ToString().Contains("WebSocket connection was closed")) errormsg_ = $"[{DateTime.Now} at ExceptionHandler] WebSocket connection was closed";
 
             Console.WriteLine(errormsg);
-            if (_hasServer && _serverLog && !rateLimited) await _logChannel.SendMessageAsync(errormsg_);
-
+            if (_hasServer && _serverLog) await _logChannel.SendMessageAsync(errormsg_);
             Console.ResetColor();
         }
 
@@ -152,8 +134,5 @@ namespace rJordanBot.Resources.Services
 
             await Channel.SendMessageAsync(errormsg);
         }
-
-
-        public void ReopenLogs() => rateLimited = false;
     }
 }
