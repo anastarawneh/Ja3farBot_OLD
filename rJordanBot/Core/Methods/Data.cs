@@ -272,8 +272,8 @@ namespace rJordanBot.Core.Methods
         public static RoleSetting GetRoleSetting(string role)
         {
             string ans = Environment.GetEnvironmentVariable("SystemType");
-            string XmlLocation = "";
-            switch (ans)
+            string XmlLocation = Environment.GetEnvironmentVariable("SettingsLocation").Replace("Settings.json", "RoleMessages.xml");
+            /*switch (ans)
             {
                 default:
                     break;
@@ -283,7 +283,7 @@ namespace rJordanBot.Core.Methods
                 case "aws":
                     XmlLocation = Path.Combine("Data", "RoleMessages.xml");
                     break;
-            }
+            }*/
 
             if (!File.Exists(XmlLocation))
                 return null;
@@ -336,8 +336,8 @@ namespace rJordanBot.Core.Methods
         public static RoleSetting GetEmojiRoleSetting(string emoji)
         {
             string ans = Environment.GetEnvironmentVariable("SystemType");
-            string XmlLocation = "";
-            switch (ans)
+            string XmlLocation = Environment.GetEnvironmentVariable("SettingsLocation").Replace("Settings.json", "RoleMessages.xml");
+            /*switch (ans)
             {
                 default:
                     break;
@@ -347,7 +347,7 @@ namespace rJordanBot.Core.Methods
                 case "aws":
                     XmlLocation = Path.Combine("Data", "RoleMessages.xml");
                     break;
-            }
+            }*/
 
             FileStream Stream = new FileStream(XmlLocation, FileMode.Open, FileAccess.Read);
             XmlDocument Doc = new XmlDocument();
