@@ -357,6 +357,21 @@ namespace rJordanBot.Core.Moderation
                 return;
             }
             SocketGuildUser user = Context.Guild.GetUser(ulong.Parse(embed.Footer.Value.Text.Replace("UserID: ", "")));
+
+            ulong id = ulong.Parse(embed.Footer.Value.Text.Replace("UserID: ", ""));
+            if (Context.Guild.GetUser(id) == null)
+            {
+                EmbedBuilder embedBuilder = message.Embeds.First().ToEmbedBuilder();
+
+                embedBuilder.WithColor(0, 255, 0);
+                embedBuilder.WithTitle("User Muted => User Unmuted");
+                embedBuilder.Fields.First(x => x.Name == "Duration").Value += $" (unmuted manually by {Context.Client.CurrentUser.Mention}, user left)";
+                await (message as IUserMessage).ModifyAsync(x => x.Embed = embedBuilder.Build());
+
+                await Context.Message.AddReactionAsync(Constants.IEmojis.Tick);
+                return;
+            }
+
             DateTimeOffset mutestart = message.Timestamp.ToLocalTime();
             DateTimeOffset mutefinish = mutestart;
             string timestring = embed.Fields.First(x => x.Name == "Duration").Value;
