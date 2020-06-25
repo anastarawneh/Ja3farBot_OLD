@@ -25,7 +25,7 @@ namespace rJordanBot.Core.Methods
             _client.UserLeft += JSON_UserLeft;
             _client.MessageReceived += InviteDeletion;
             _client.Ready += MuteFixing;
-            _client.UserJoined += JoinVerification;
+            //_client.UserJoined += JoinVerification;
             _client.GuildMemberUpdated += Greeting_GuildMemberUpdated;
 
             return Task.CompletedTask;
@@ -229,12 +229,12 @@ namespace rJordanBot.Core.Methods
             }
         }
 
-        public async Task JoinVerification(SocketGuildUser user)
+        /*public async Task JoinVerification(SocketGuildUser user)
         {
             if (user.IsBot) return;
             SocketRole role = Constants.IGuilds.Jordan(_client).Roles.First(x => x.Id == 705470408522072086);
             await user.AddRoleAsync(role);
-        }
+        }*/
 
         public async Task Greeting_GuildMemberUpdated(SocketGuildUser user1, SocketGuildUser user2)
         {
