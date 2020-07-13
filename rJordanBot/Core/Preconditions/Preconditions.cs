@@ -1,7 +1,9 @@
-﻿using Discord.Commands;
+﻿using Discord;
+using Discord.Commands;
 using Discord.WebSocket;
 using rJordanBot.Core.Methods;
 using rJordanBot.Resources.Database;
+using rJordanBot.Resources.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,6 +57,18 @@ namespace rJordanBot.Core.Preconditions
                 && !(context.User.Id == 362299141587599360)
                 && !(context.User as SocketGuildUser).IsModerator()
                 && !(context.Channel is IDMChannel)) return Task.FromResult(PreconditionResult.FromError("This command is restricted to #bot-commands."));
+            else return Task.FromResult(PreconditionResult.FromSuccess());
+        }
+    }
+
+    public class MinecraftCommand : PreconditionAttribute
+    {
+        public override Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context, CommandInfo command, IServiceProvider services)
+        {
+            if (context.Channel.Id == Data.GetChnlId("mc-chat")
+                && !(context.User.Id == ESettings.Owner)
+                && !(context.User.Id == 362299141587599360)
+                && !(context.User as SocketGuildUser).IsModerator()) return Task.FromResult(PreconditionResult.FromError("This command is restricted to #mc-chat."));
             else return Task.FromResult(PreconditionResult.FromSuccess());
         }
     }

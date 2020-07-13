@@ -59,4 +59,10 @@
     <Folder Include="Resources\Extensions\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="MulticraftLib">
+      <HintPath>..\..\MulticraftLib\bin\Release\netstandard2.0\MulticraftLib.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

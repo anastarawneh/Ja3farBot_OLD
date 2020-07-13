@@ -3,6 +3,7 @@ using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
+using MulticraftLib;
 using rJordanBot.Core.Methods;
 using rJordanBot.Resources.Database;
 using rJordanBot.Resources.Services;
@@ -28,6 +29,11 @@ namespace rJordanBot
         private async Task MainAsync()
         {
             await Data.InitJSON();
+            if (!Multicraft.Initialize(Environment.GetEnvironmentVariable("SystemType"), BotType.Ja3farBot))
+            {
+                Console.WriteLine("FALSE");
+                return;
+            }
 
             _client = new DiscordSocketClient(new DiscordSocketConfig
             {
@@ -108,7 +114,6 @@ namespace rJordanBot
             if (Environment.GetEnvironmentVariable("SystemType") == "win" && Context.User != Constants.IGuilds.Jordan(Context).Owner) return;
             if (MessageParam.Content.EndsWith('^')) return;
 
-            int ArgPos = 0;
             if (!(Message.HasStringPrefix("^", ref ArgPos)/* || Message.HasMentionPrefix(Client.CurrentUser, ref ArgPos)*/)) return;
 
             IResult Result = await _cmdService.ExecuteAsync(Context, ArgPos, _provider);
