@@ -3,6 +3,7 @@ using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.Rest;
 using Discord.WebSocket;
+using rJordanBot.Core.Preconditions;
 using rJordanBot.Resources.Settings;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace rJordanBot.Core.Commands
     public class User_cmd : InteractiveBase<SocketCommandContext>
     {
         [Command("help")]
+        [RequireBotChannel]
         public async Task Help()
         {
             await ReplyAsync(
@@ -259,6 +261,7 @@ namespace rJordanBot.Core.Commands
         }
 
         [Command("music"), Alias("music help")]
+        [RequireBotChannel]
         public async Task MusicHelp()
         {
             await ReplyAsync(

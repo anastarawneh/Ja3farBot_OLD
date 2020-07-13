@@ -4,11 +4,13 @@ using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.EntityFrameworkCore.Design;
 using rJordanBot.Core.Methods;
+using rJordanBot.Core.Preconditions;
 using rJordanBot.Resources.Database;
 using rJordanBot.Resources.Datatypes;
 using rJordanBot.Resources.Settings;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,6 +20,7 @@ namespace rJordanBot.Core.Commands
     {
         [Command("test", RunMode = RunMode.Async)]
         [RequireOwner]
+        [RequireBotChannel]
         public async Task Test()
         {
             // TEST CODE STARTS HERE
@@ -29,6 +32,7 @@ namespace rJordanBot.Core.Commands
 
         [Command("reload")]
         [RequireOwner]
+        [RequireBotChannel]
         public async Task Reload()
         {
             await Data.ReloadJSON();
@@ -37,6 +41,7 @@ namespace rJordanBot.Core.Commands
 
         [Command("deldm")]
         [RequireOwner]
+        [RequireBotChannel]
         public async Task DelDM(int msgcount)
         {
             IDMChannel dm = await Context.User.GetOrCreateDMChannelAsync();
@@ -51,6 +56,7 @@ namespace rJordanBot.Core.Commands
 
         [Command("ping")]
         [RequireOwner]
+        [RequireBotChannel]
         public async Task Ping()
         {
             string ans = Environment.GetEnvironmentVariable("SystemType");
@@ -75,6 +81,7 @@ namespace rJordanBot.Core.Commands
 
         [Group("roleembed"), Alias("re")]
         [RequireOwner]
+        [RequireBotChannel]
         public class RoleEmbed : InteractiveBase<SocketCommandContext>
         {
             [Command("create")]
@@ -218,6 +225,7 @@ namespace rJordanBot.Core.Commands
 
         [Command("botstop")]
         [RequireOwner]
+        [RequireBotChannel]
         public async Task Stop()
         {
             SocketTextChannel channel = Constants.IGuilds.Jordan(Context).Channels.FirstOrDefault(x => x.Id == Methods.Data.GetChnlId("bot-log")) as SocketTextChannel;
@@ -231,6 +239,7 @@ namespace rJordanBot.Core.Commands
 
         [Command("setgame"), Alias("sg")]
         [RequireOwner]
+        [RequireBotChannel]
         public async Task SetGame(string state, [Remainder]string game = null)
         {
             ActivityType activity = new ActivityType();
@@ -249,6 +258,7 @@ namespace rJordanBot.Core.Commands
 
         [Command("announce")]
         [RequireOwner]
+        [RequireBotChannel]
         public async Task Announce()
         {
             EmbedBuilder embed = new EmbedBuilder();
@@ -292,6 +302,7 @@ namespace rJordanBot.Core.Commands
 
         [Command("say")]
         [RequireOwner]
+        [RequireBotChannel]
         public async Task Say(SocketTextChannel channel, [Remainder] string message)
         {
             await channel.SendMessageAsync(message);
@@ -300,6 +311,7 @@ namespace rJordanBot.Core.Commands
 
         [Group("db")]
         [RequireOwner]
+        [RequireBotChannel]
         public class DB : InteractiveBase<SocketCommandContext>
         {
             [Group("user")]
@@ -369,6 +381,7 @@ namespace rJordanBot.Core.Commands
 
         [Command("giveaway", RunMode = RunMode.Async)]
         [RequireOwner]
+        [RequireBotChannel]
         public async Task Giveaway(string time, [Remainder] string prize)
         {
             int Seconds;
@@ -473,6 +486,7 @@ namespace rJordanBot.Core.Commands
 
         [Command("reconnect", RunMode = RunMode.Async)]
         [RequireOwner]
+        [RequireBotChannel]
         public async Task Reconnect()
         {
             DiscordSocketClient client = Context.Client;

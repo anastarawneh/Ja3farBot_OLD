@@ -1,5 +1,6 @@
 ﻿using Discord.Addons.Interactive;
 using Discord.Commands;
+using rJordanBot.Core.Preconditions;
 using System.Threading.Tasks;
 
 namespace rJordanBot.Core.Commands
@@ -7,6 +8,7 @@ namespace rJordanBot.Core.Commands
     public class Socials : InteractiveBase<SocketCommandContext>
     {
         [Group("socials"), Alias("social")]
+        [RequireBotChannel]
         public class SocialsGroup : InteractiveBase<SocketCommandContext>
         {
             [Command(""), Alias("help")]

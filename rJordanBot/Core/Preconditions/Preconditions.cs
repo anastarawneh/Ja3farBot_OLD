@@ -45,4 +45,17 @@ namespace rJordanBot.Core.Preconditions
             else return Task.FromResult(PreconditionResult.FromError("User is not the bot."));
         }
     }
+
+    public class RequireBotChannel : PreconditionAttribute
+    {
+        public override Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context, CommandInfo command, IServiceProvider services)
+        {
+            if (!(context.Channel.Id == Data.GetChnlId("bot-commands"))
+                && !(context.User.Id == ESettings.Owner)
+                && !(context.User.Id == 362299141587599360)
+                && !(context.User as SocketGuildUser).IsModerator()
+                && !(context.Channel is IDMChannel)) return Task.FromResult(PreconditionResult.FromError("This command is restricted to #bot-commands."));
+            else return Task.FromResult(PreconditionResult.FromSuccess());
+        }
+    }
 }

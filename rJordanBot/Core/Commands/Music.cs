@@ -21,6 +21,7 @@ namespace rJordanBot.Core.Commands
 
         [Command("join")]
         [RequireMod]
+        [RequireBotChannel]
         public async Task Join()
         {
             if (Context.Channel is IDMChannel) return;
@@ -43,6 +44,7 @@ namespace rJordanBot.Core.Commands
 
         [Command("leave"), Alias("dc")]
         [RequireMod]
+        [RequireBotChannel]
         public async Task Leave()
         {
             if (Context.Channel is IDMChannel) return;
@@ -70,6 +72,7 @@ namespace rJordanBot.Core.Commands
 
         [Command("play"), Alias("p")]
         [RequireMod]
+        [RequireBotChannel]
         public async Task Play([Remainder]string query = null)
         {
             if (Context.Channel is IDMChannel) return;
@@ -97,6 +100,7 @@ namespace rJordanBot.Core.Commands
 
         [Command("stop")]
         [RequireMod]
+        [RequireBotChannel]
         public async Task Stop()
         {
             if (Context.Channel is IDMChannel) return;
@@ -124,6 +128,7 @@ namespace rJordanBot.Core.Commands
 
         [Command("skip")]
         [RequireMod]
+        [RequireBotChannel]
         public async Task Skip()
         {
             if (Context.Channel is IDMChannel) return;
@@ -151,6 +156,7 @@ namespace rJordanBot.Core.Commands
 
         [Command("pause")]
         [RequireMod]
+        [RequireBotChannel]
         public async Task Pause()
         {
             if (Context.Channel is IDMChannel) return;
@@ -178,6 +184,7 @@ namespace rJordanBot.Core.Commands
 
         [Command("queue"), Alias("q")]
         [RequireMod]
+        [RequireBotChannel]
         public async Task Queue(int page = 1)
         {
             if (Context.Channel is IDMChannel) return;
@@ -186,6 +193,7 @@ namespace rJordanBot.Core.Commands
 
         [Command("loop"), Alias("l")]
         [RequireMod]
+        [RequireBotChannel]
         public async Task Loop()
         {
             if (Context.Channel is IDMChannel) return;
@@ -212,6 +220,7 @@ namespace rJordanBot.Core.Commands
 
         [Command("seek")]
         [RequireMod]
+        [RequireBotChannel]
         public async Task Seek(string duration = null)
         {
             if (Context.Channel is IDMChannel) return;
@@ -244,6 +253,7 @@ namespace rJordanBot.Core.Commands
 
         [Command("remove")]
         [RequireMod]
+        [RequireBotChannel]
         public async Task Remove(int index = 0)
         {
             if (Context.Channel is IDMChannel) return;
@@ -275,6 +285,7 @@ namespace rJordanBot.Core.Commands
 
         [Command("qloop")]
         [RequireMod]
+        [RequireBotChannel]
         public async Task qLoop()
         {
             if (Context.Channel is IDMChannel) return;
@@ -301,6 +312,7 @@ namespace rJordanBot.Core.Commands
 
         [Command("shuffle")]
         [RequireMod]
+        [RequireBotChannel]
         public async Task Shuffle()
         {
             if (Context.Channel is IDMChannel) return;

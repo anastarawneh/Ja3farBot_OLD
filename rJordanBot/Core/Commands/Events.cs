@@ -4,6 +4,7 @@ using Discord.Commands;
 using Discord.Rest;
 using Discord.WebSocket;
 using rJordanBot.Core.Methods;
+using rJordanBot.Core.Preconditions;
 using rJordanBot.Resources.Database;
 using rJordanBot.Resources.Settings;
 using System;
@@ -16,6 +17,7 @@ namespace rJordanBot.Core.Commands
     public class Events : InteractiveBase
     {
         [Group("event"), Alias("events")]
+        [RequireBotChannel]
         public class EventsGroup : InteractiveBase<SocketCommandContext>
         {
             [Command, Alias("help")]

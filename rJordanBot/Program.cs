@@ -100,10 +100,11 @@ namespace rJordanBot
             if (MessageParam is SocketSystemMessage) return;
             SocketUserMessage Message = MessageParam as SocketUserMessage;
             SocketCommandContext Context = new SocketCommandContext(_client, Message);
+            int ArgPos = 0;
 
             if (Context.Message == null || Context.Message.Content == "") return;
             if (Context.User.IsBot) return;
-            if (!(Context.Channel.Id == Data.GetChnlId("bot-commands")) && !(Context.User.Id == ESettings.Owner) && !(Context.User.Id == 362299141587599360) && !(Context.User as SocketGuildUser).IsModerator() && !(Context.Channel is IDMChannel)) return;
+            
             if (Environment.GetEnvironmentVariable("SystemType") == "win" && Context.User != Constants.IGuilds.Jordan(Context).Owner) return;
             if (MessageParam.Content.EndsWith('^')) return;
 
