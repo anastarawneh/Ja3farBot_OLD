@@ -65,7 +65,7 @@ namespace rJordanBot.Core.Preconditions
     {
         public override Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context, CommandInfo command, IServiceProvider services)
         {
-            if (context.Channel.Id == Data.GetChnlId("mc-chat")
+            if (context.Channel.Id != Data.GetChnlId("mc-chat")
                 && !(context.User.Id == ESettings.Owner)
                 && !(context.User.Id == 362299141587599360)
                 && !(context.User as SocketGuildUser).IsModerator()) return Task.FromResult(PreconditionResult.FromError("This command is restricted to #mc-chat."));
