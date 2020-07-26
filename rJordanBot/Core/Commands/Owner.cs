@@ -275,7 +275,7 @@ namespace rJordanBot.Core.Commands
             embed.WithColor(114, 137, 218);
 
             IUserMessage testmsg = await ReplyAsync("", false, embed.Build());
-            IUserMessage confirmationmessage = await ReplyAsync($"Please type `confirm` within 2 minutes to send this message to <#{Methods.Data.GetChnlId("announcements")}>.");
+            IUserMessage confirmationmessage = await ReplyAsync($"Please type `confirm` within 2 minutes to send this message to <#{Data.GetChnlId("announcements")}>.");
 
             var reply = await NextMessageAsync(true, true, TimeSpan.FromSeconds(120));
             if (reply == null)
@@ -288,7 +288,7 @@ namespace rJordanBot.Core.Commands
                 {
                     case "confirm":
                         await testmsg.DeleteAsync();
-                        SocketTextChannel AnnouncementChannel = Constants.IGuilds.Jordan(Context).Channels.FirstOrDefault(x => x.Id == Methods.Data.GetChnlId("announcements")) as SocketTextChannel;
+                        SocketTextChannel AnnouncementChannel = Constants.IGuilds.Jordan(Context).Channels.FirstOrDefault(x => x.Id == Data.GetChnlId("announcements")) as SocketTextChannel;
                         await AnnouncementChannel.SendMessageAsync("@everyone", false, embed.Build());
                         //await AnnouncementChannel.SendMessageAsync("", false, embed.Build());
                         break;
