@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using static rJordanBot.Resources.Datatypes.Setting;
 
 namespace rJordanBot.Core.Commands
 {
@@ -261,17 +262,15 @@ namespace rJordanBot.Core.Commands
         [RequireBotChannel]
         public async Task Announce()
         {
+            Announcement ann = ESettings.Announcement;
+
             EmbedBuilder embed = new EmbedBuilder();
-            embed.WithTitle("An update on our guidelines.");
-            embed.WithDescription("Good evening everyone, we hope you're enjoying the lockdown here. Due to the increased reports " +
-                "we're getting, we have decided to make some little changes to our rules. First of all, we updated Rule 2: No " +
-                "offensive content to include 'jokes' and 'friendly insults'. Any user can explicitly opt out of this by messaging " +
-                "us about it. Secondly, a reminder to everyone that we have a report function in our server bot, so if you're " +
-                "experiencing any offensive behavior from a user, or if you see any rule breaks in general, feel free to DM the " +
-                "bot with `^report`, or ping the moderator role for direct help. This applies everywhere on the server, in text or " +
-                "voice channels. Finally, regarding the starboard, if a message targets a specific user in bad faith, this user is " +
-                "allowed to report it and have it taken down, as an extension of rules 1 and 2. If the same message is put back up " +
-                "on the board, punitive action will be taken on the users who star it a second time.");
+            embed.WithTitle(ann.title);
+            embed.WithDescription(ann.desc);
+            foreach (Announcement.Field field in ann.fields)
+            {
+                embed.AddField(field.title, field.content);
+            }
             embed.WithFooter("Please leave any feedback about this update in #feedback.");
             embed.WithColor(114, 137, 218);
 

@@ -46,6 +46,7 @@ namespace rJordanBot.Core.Methods
             }
 
             Setting Settings = JsonConvert.DeserializeObject<Setting>(JSON);
+
             ESettings.Token = Settings.token;
             ESettings.Owner = Settings.owner;
             ESettings.ReportBanned = Settings.reportbanned;
@@ -54,6 +55,7 @@ namespace rJordanBot.Core.Methods
             ESettings.EventsActive = Settings.eventsactive;
             ESettings.InviteWhitelist = Settings.invitewhitelist;
             ESettings.VerifyID = Settings.verifyid;
+            ESettings.Announcement = Settings.announcement;
 
             return Task.CompletedTask;
         }
@@ -79,6 +81,7 @@ namespace rJordanBot.Core.Methods
             ESettings.EventsActive = Settings.eventsactive;
             ESettings.InviteWhitelist = Settings.invitewhitelist;
             ESettings.VerifyID = Settings.verifyid;
+            ESettings.Announcement = Settings.announcement;
 
             return Task.CompletedTask;
         }

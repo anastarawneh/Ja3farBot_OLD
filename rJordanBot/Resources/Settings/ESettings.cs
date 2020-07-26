@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using static rJordanBot.Resources.Datatypes.Setting;
 
 namespace rJordanBot.Resources.Settings
 {
@@ -12,5 +13,6 @@ namespace rJordanBot.Resources.Settings
         public static bool EventsActive;
         public static List<string> InviteWhitelist;
         public static ulong VerifyID;
+        public static Announcement Announcement;
     }
 }

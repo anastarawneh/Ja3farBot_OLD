@@ -12,6 +12,20 @@ namespace rJordanBot.Resources.Datatypes
         public bool eventsactive { get; set; }
         public List<string> invitewhitelist { get; set; }
         public ulong verifyid { get; set; }
+        public Announcement announcement { get; set; }
+
+        public class Announcement
+        {
+            public string title { get; set; }
+            public string desc { get; set; }
+            public Field[] fields { get; set; }
+
+            public class Field
+            {
+                public string title { get; set; }
+                public string content { get; set; }
+            }
+        }
     }
 
     public class RoleSetting
