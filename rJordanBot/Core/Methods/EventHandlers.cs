@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Discord.Rest;
 using Discord.WebSocket;
 using rJordanBot.Resources.Database;
 using rJordanBot.Resources.Datatypes;
@@ -34,25 +35,21 @@ namespace rJordanBot.Core.Methods
 
         public async Task Roles_ReactionAdded(Cacheable<IUserMessage, ulong> cacheable, ISocketMessageChannel channel, SocketReaction reaction)
         {
-            if (channel is IDMChannel)
-            {
-                return;
-            }
-            if (reaction.User.Value.IsBot) return;
+            if (channel is IDMChannel) return;
 
+            SocketGuildUser user = Constants.IGuilds.Jordan(_client).GetUser(reaction.UserId);
+            
             SocketTextChannel channel_ = channel as SocketTextChannel;
-            if (channel_.Guild == null) return;
             SocketGuild guild = channel_.Guild;
-            if (channel_.Id == Data.GetChnlId("role-selection") && !reaction.User.Value.IsBot)
+            if (channel_.Id == Data.GetChnlId("role-selection") && !user.IsBot)
             {
                 RoleSetting role = new RoleSetting();
                 role = Data.GetEmojiRoleSetting(reaction.Emote.Name);
 
                 IMessage msg = channel_.GetMessageAsync(role.id).Result;
                 IUserMessage msg_ = msg as IUserMessage;
-                await msg_.RemoveReactionAsync(reaction.Emote, reaction.User.Value);
+                await msg_.RemoveReactionAsync(reaction.Emote, user);
 
-                SocketGuildUser user = reaction.User.Value as SocketGuildUser;
                 foreach (SocketRole role_ in user.Roles)
                 {
                     if (role_.Id == role.roleid)
@@ -78,11 +75,14 @@ namespace rJordanBot.Core.Methods
         {
             if (channel is IDMChannel) return;
             if ((channel as SocketTextChannel).Name != "events") return;
-            if (reaction.User.Value.IsBot) return;
+
+            SocketGuildUser user = Constants.IGuilds.Jordan(_client).GetUser(reaction.UserId);
+
+            if (user.IsBot) return;
             IEmbed embed = cacheable.GetOrDownloadAsync().Result.Embeds.First();
             if (embed.Fields.First(x => x.Name == "Location").Value == "Discord") return;
 
-            if ((reaction.User.Value as SocketGuildUser).ToUser().Verified)
+            if (user.ToUser().Verified)
             {
                 // User is allowed.
                 return;
@@ -105,7 +105,7 @@ namespace rJordanBot.Core.Methods
                 IMessage msg = (channel as SocketTextChannel).GetMessageAsync(cacheable.Id).Result;
                 await (msg as IUserMessage).RemoveReactionAsync(reaction.Emote, reaction.User.Value);
 
-                IDMChannel dm = reaction.User.Value.GetOrCreateDMChannelAsync().Result;
+                IDMChannel dm = user.GetOrCreateDMChannelAsync().Result;
                 await dm.SendMessageAsync(":x: Please verify your age using the Event Verification System before using events.");
                 return;
             }
