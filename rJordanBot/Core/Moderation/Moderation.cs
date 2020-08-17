@@ -124,7 +124,7 @@ namespace rJordanBot.Core.Moderation
         }
 
         [Command("mute")]
-        [RequireFuncMod]
+        [RequireMod]
         public async Task Mute(SocketGuildUser user, string time, [Remainder] string reason = null)
         {
             int seconds;
@@ -189,7 +189,7 @@ namespace rJordanBot.Core.Moderation
         }
 
         [Command("unmute")]
-        [RequireFuncMod]
+        [RequireMod]
         public async Task Unmute(SocketGuildUser user)
         {
             IReadOnlyCollection<SocketRole> roles = user.Roles;
