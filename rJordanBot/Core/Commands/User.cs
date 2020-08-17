@@ -99,7 +99,7 @@ namespace rJordanBot.Core.Commands
                 else if (msglist.Count() != 0) break;
                 else
                 {
-                    await ReplyAsync(":x: Please specify at least one user.");
+                    await ReplyAsync(":x: Please specify at least one message.");
                     goto messages2;
                 }
                 IEmote emote = new Emoji("✅");
@@ -108,7 +108,7 @@ namespace rJordanBot.Core.Commands
 
             //Get notes
             await ReplyAsync("Any notes you want to add? Type `none` if not.");
-            string notes = "";
+            string notes = "N/A";
         notes2:
             msg = await NextMessageAsync(true, true, TimeSpan.FromSeconds(120));
             if (msg == null) goto notes2;
