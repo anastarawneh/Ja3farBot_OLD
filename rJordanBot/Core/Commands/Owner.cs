@@ -494,5 +494,33 @@ namespace rJordanBot.Core.Commands
             await client.LoginAsync(TokenType.Bot, ESettings.Token);
             await client.StartAsync();
         }
+
+        [Command("modifyrule")]
+        [RequireOwner]
+        public async Task ModifyRule(int index, [Remainder] string text)
+        {
+            ITextChannel channel = Context.Guild.GetTextChannel(Data.GetChnlId("rules"));
+            IUserMessage message = channel.GetMessagesAsync(1).FlattenAsync().Result.First() as IUserMessage;
+
+            EmbedBuilder embed = message.Embeds.First().ToEmbedBuilder();
+            embed.Fields[index - 1].Value = text;
+
+            IUserMessage confirmationmessage = await ReplyAsync($"Please `confirm` this change:\n**{embed.Fields[index - 1].Name}** {embed.Fields[index - 1].Value}");
+            var reply = await NextMessageAsync(true, true, TimeSpan.FromSeconds(120));
+            if (reply == null)
+            {
+                await confirmationmessage.AddReactionAsync(new Emoji("❌"));
+                return;
+            }
+            else switch (reply.Content)
+                {
+                    case "confirm":
+                        await message.ModifyAsync(x => x.Embed = embed.Build());
+                        break;
+                    default:
+                        await confirmationmessage.AddReactionAsync(new Emoji("❌"));
+                        return;
+                }
+        }
     }
 }
