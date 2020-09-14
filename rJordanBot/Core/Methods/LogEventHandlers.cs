@@ -429,7 +429,7 @@ namespace rJordanBot.Core.Methods
             IEnumerable<Cacheable<IMessage, ulong>> revcollection = collection.Reverse();
             foreach (Cacheable<IMessage, ulong> cacheable in revcollection)
             {
-                IMessage message = cacheable.Value;
+                IMessage message = cacheable.GetOrDownloadAsync().Result;
                 if (message.Content != null) messages += $"[<@{message.Author.Id}>]: {message.Content}\n";
             }
 
