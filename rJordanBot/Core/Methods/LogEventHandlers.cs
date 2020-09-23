@@ -432,10 +432,17 @@ namespace rJordanBot.Core.Methods
                 IMessage message = cacheable.GetOrDownloadAsync().Result;
                 if (message.Content != null) messages += $"[<@{message.Author.Id}>]: {message.Content}\n";
             }
+            if (messages.Count() < 1024)
+            {
+                embed.AddField("Messages", messages);
 
-            embed.AddField("Messages", messages);
-
-            await ((channel as SocketGuildChannel).Guild.Channels.First(x => x.Id == LogID) as SocketTextChannel).SendMessageAsync("", false, embed.Build());
+                await ((channel as SocketGuildChannel).Guild.Channels.First(x => x.Id == LogID) as SocketTextChannel).SendMessageAsync("", false, embed.Build());
+            }
+            else
+            {
+                await ((channel as SocketGuildChannel).Guild.Channels.First(x => x.Id == LogID) as SocketTextChannel).SendMessageAsync($"**Messages bulk deleted in {MentionUtils.MentionChannel(channel.Id)}:**\n" +
+                    $"{messages}\n");
+            }
         }
 
         // Role Created
