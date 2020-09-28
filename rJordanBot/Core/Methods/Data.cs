@@ -56,6 +56,7 @@ namespace rJordanBot.Core.Methods
             ESettings.InviteWhitelist = Settings.invitewhitelist;
             ESettings.VerifyID = Settings.verifyid;
             ESettings.Announcement = Settings.announcement;
+            ESettings.Covid = Settings.covid;
 
             return Task.CompletedTask;
         }
@@ -82,6 +83,7 @@ namespace rJordanBot.Core.Methods
             ESettings.InviteWhitelist = Settings.invitewhitelist;
             ESettings.VerifyID = Settings.verifyid;
             ESettings.Announcement = Settings.announcement;
+            ESettings.Covid = Settings.covid;
 
             return Task.CompletedTask;
         }

@@ -3,12 +3,14 @@ using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.Rest;
 using Discord.WebSocket;
+using rJordanBot.Core.Methods;
 using rJordanBot.Core.Preconditions;
 using rJordanBot.Resources.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static rJordanBot.Resources.Datatypes.Setting;
 
 namespace rJordanBot.Core.Commands
 {
@@ -275,6 +277,36 @@ namespace rJordanBot.Core.Commands
                 "``^loop``: Loops the current track.\n" +
                 "``^queue``: Views the current queue."
             );
+        }
+
+        [Command("covid")]
+        [RequireBotChannel]
+        public async Task CovidStats()
+        {
+            COVID stats = ESettings.Covid;
+            EmbedBuilder embed = new EmbedBuilder();
+            embed.WithTitle($"COVID-19 stats for {DateTime.Today.ToString("dd/MM/yyyy")}");
+            embed.WithColor(Constants.IColors.Blurple);
+            embed.WithDescription($"{stats.locals} new local cases, {stats.casualties} casualties and {stats.recoveries} recoveries.");
+            embed.AddField("Amman", stats.amman, true);
+            embed.AddField("Irbid", stats.irbid, true);
+            embed.AddField("Zarqa", stats.zarqa, true);
+            embed.AddField("Mafraq", stats.mafraq, true);
+            embed.AddField("Ajloun", stats.ajloun, true);
+            embed.AddField("Jerash", stats.jerash, true);
+            embed.AddField("Madaba", stats.madaba, true);
+            embed.AddField("Balqa", stats.balqa, true);
+            embed.AddField("Karak", stats.karak, true);
+            embed.AddField("Tafileh", stats.tafileh, true);
+            embed.AddField("Ma'an", stats.maan, true);
+            embed.AddField("Aqaba", stats.aqaba, true);
+            embed.WithFooter($"Total cases: {stats.totalcases} - Total casualties: {stats.totalcasualties}");
+            await ReplyAsync("", false, embed.Build());
+
+            if (Context.Channel.Name == "news")
+            {
+                await Context.Message.DeleteAsync();
+            }
         }
     }
 }
