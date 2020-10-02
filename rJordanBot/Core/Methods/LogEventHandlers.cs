@@ -420,6 +420,8 @@ namespace rJordanBot.Core.Methods
         // Messages Bulk Deleted
         public async Task MessagesBulkDeleted(IReadOnlyCollection<Cacheable<IMessage, ulong>> collection, ISocketMessageChannel channel)
         {
+            if (channel.Id == Data.GetChnlId("verification")) return;
+
             string messages = "";
             EmbedBuilder embed = new EmbedBuilder();
             embed.WithTitle($"Messages bulk deleted in #{channel}");

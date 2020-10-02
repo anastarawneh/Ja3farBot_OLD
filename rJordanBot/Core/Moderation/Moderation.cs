@@ -10,6 +10,7 @@ using rJordanBot.Resources.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Threading.Tasks;
 
 namespace rJordanBot.Core.Moderation
@@ -454,6 +455,37 @@ namespace rJordanBot.Core.Moderation
             IEnumerable<IMessage> messages = channel.GetMessagesAsync().FlattenAsync().Result;
             int count = messages.Count() - 1;
             var deletable = channel.GetMessagesAsync(count).FlattenAsync().Result;
+
+            // copied code from LogEventHandlers.cs
+
+            ulong LogID = Data.GetChnlId("ja3far-logs");
+            string messagestring = "";
+
+            EmbedBuilder embed = new EmbedBuilder();
+            embed.WithTitle($"Messages bulk deleted in #{channel}");
+            embed.WithColor(Constants.IColors.Red);
+            embed.WithCurrentTimestamp();
+
+            IEnumerable<IMessage> collection = messages;
+            IEnumerable<IMessage> revcollection = collection.Reverse();
+            foreach (IMessage msg in revcollection)
+            {
+                if (msg.Content != null) messagestring += $"[<@{msg.Author.Id}>]: {msg.Content}\n";
+            }
+            if (messagestring.Count() < 1024)
+            {
+                embed.AddField("Messages", messagestring);
+
+                await ((channel as SocketGuildChannel).Guild.Channels.First(x => x.Id == LogID) as SocketTextChannel).SendMessageAsync("", false, embed.Build());
+            }
+            else
+            {
+                await ((channel as SocketGuildChannel).Guild.Channels.First(x => x.Id == LogID) as SocketTextChannel).SendMessageAsync($"**Messages bulk deleted in {MentionUtils.MentionChannel(channel.Id)}:**\n" +
+                    $"{messagestring}\n");
+            }
+
+            // end copied code
+
             await channel.DeleteMessagesAsync(deletable);
         }
     }
