@@ -318,7 +318,7 @@ namespace rJordanBot.Core.Moderation
                 await ReplyAsync("", false, embed.Build());
             }
 
-            [Command("list")]
+            /*[Command("list")]
             public async Task List(int page = 1)
             {
                 using SqliteDbContext DbContext = new SqliteDbContext();
@@ -352,7 +352,7 @@ namespace rJordanBot.Core.Moderation
 
                 //await ReplyAsync(list);
                 await ReplyAsync("", false, embed.Build());
-            }
+            }*/
         }
 
         [Command("mutefix")]
