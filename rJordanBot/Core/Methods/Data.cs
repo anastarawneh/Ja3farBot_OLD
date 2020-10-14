@@ -93,55 +93,6 @@ namespace rJordanBot.Core.Methods
             return Task.CompletedTask;
         }
 
-        public static int GetStrikes(ulong UserId)
-        {
-            using SqliteDbContext DbContext = new SqliteDbContext();
-            if (DbContext.Strikes.Where(x => x.UserId == UserId).Count() < 1)
-            {
-                return 0;
-            }
-            return DbContext.Strikes.Where(x => x.UserId == UserId).Select(x => x.Amount).FirstOrDefault();
-        }
-
-        public static async Task SaveStrikes(ulong UserId, int Amount)
-        {
-            using SqliteDbContext DbContext = new SqliteDbContext();
-            if (DbContext.Strikes.Where(x => x.UserId == UserId).Count() < 1)
-            {
-                DbContext.Strikes.Add(new Strike
-                {
-                    UserId = UserId,
-                    Amount = Amount
-                });
-            }
-            else
-            {
-                Strike Current = DbContext.Strikes.Where(x => x.UserId == UserId).FirstOrDefault();
-                Current.Amount += Amount;
-                DbContext.Strikes.Update(Current);
-            }
-            await DbContext.SaveChangesAsync();
-        }
-
-        public static async Task SetStrikes(ulong UserId, int Amount)
-        {
-            using SqliteDbContext DbContext = new SqliteDbContext();
-            if (DbContext.Strikes.Where(x => x.UserId == UserId).Count() < 1)
-            {
-                DbContext.Strikes.Add(new Strike
-                {
-                    UserId = UserId,
-                    Amount = Amount
-                });
-            }
-            else
-            {
-                Strike Current = DbContext.Strikes.First(x => x.UserId == UserId);
-                Current.Amount = Amount;
-                DbContext.Strikes.Update(Current);
-            }
-            await DbContext.SaveChangesAsync();
-        }
         public static ulong GetChnlId(string Name)
         {
             using (SqliteDbContext DbContext = new SqliteDbContext())
