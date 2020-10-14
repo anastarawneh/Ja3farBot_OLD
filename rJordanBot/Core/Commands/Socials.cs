@@ -1,6 +1,7 @@
 ﻿using Discord.Addons.Interactive;
 using Discord.Commands;
 using rJordanBot.Core.Preconditions;
+using rJordanBot.Resources.MySQL;
 using System.Threading.Tasks;
 
 namespace rJordanBot.Core.Commands
@@ -32,7 +33,7 @@ namespace rJordanBot.Core.Commands
 
                 await ReplyAsync(":white_check_mark: Your socials have been updated.");
 
-                await Methods.Data.SetSocials(Context.User.Id, site, link, Context);
+                await SocialFunctions.SetSocials(Context.User.Id, site, link, Context);
             }
         }
     }
