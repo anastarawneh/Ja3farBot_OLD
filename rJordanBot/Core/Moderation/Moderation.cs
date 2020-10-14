@@ -1,4 +1,5 @@
-﻿using Discord;
+﻿using Dapper;
+using Discord;
 using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.Rest;
@@ -6,6 +7,7 @@ using Discord.WebSocket;
 using rJordanBot.Core.Methods;
 using rJordanBot.Core.Preconditions;
 using rJordanBot.Resources.Database;
+using rJordanBot.Resources.MySQL;
 using rJordanBot.Resources.Settings;
 using System;
 using System.Collections.Generic;
@@ -60,7 +62,7 @@ namespace rJordanBot.Core.Moderation
             }
             if (roles == "") roles = "None";
 
-            int strikes = Data.GetStrikes(userInfo.Id);
+            int warnings = await WarningFunctions.getWarningCount(userInfo.Id);
 
             User user_ = DbContext.Users.First(x => x.ID == param.Id) ?? new User { ID = 0, Verified = false };
             bool verified = user_.Verified;
@@ -73,7 +75,7 @@ namespace rJordanBot.Core.Moderation
             embed.AddField("ID", userInfo.Id);
             embed.AddField("Roles", roles);
             embed.AddField("Status", userInfo.Status);
-            embed.AddField("Warnings", strikes);
+            embed.AddField("Warnings", warnings);
             embed.AddField("Verified", verified);
 
             await ReplyAsync("", false, embed.Build());
@@ -235,7 +237,6 @@ namespace rJordanBot.Core.Moderation
             [Command("add"), Alias("")]
             public async Task AddWarning(SocketGuildUser user = null, [Remainder] string reason = null)
             {
-                // Checks
                 if (user == null)
                 {
                     await ReplyAsync(":x: Please mention a user to be warned. `^warn <user> <reason>`");
@@ -247,26 +248,10 @@ namespace rJordanBot.Core.Moderation
                     return;
                 }
 
-                // Execution
+                int warnings = await WarningFunctions.getWarningCount(user.Id);
 
-                using SqliteDbContext DbContext = new SqliteDbContext();
-                if (DbContext.Strikes.Where(x => x.UserId == user.Id).Count() < 1)
-                {
-                    DbContext.Strikes.Add(new Strike
-                    {
-                        UserId = user.Id,
-                        Amount = 0
-                    });
-                    await DbContext.SaveChangesAsync();
-                }
-                Strike strikeEntry = DbContext.Strikes.First(x => x.UserId == user.Id);
-                strikeEntry.Amount++;
-                DbContext.Update(strikeEntry);
-                await DbContext.SaveChangesAsync();
-
-                // Response
                 await Context.Message.DeleteAsync();
-                IUserMessage response = await ReplyAsync($":white_check_mark: User {user.Mention} has been warned for `{reason}`. Total warnings: `{strikeEntry.Amount}`.");
+                IUserMessage response = await ReplyAsync($":white_check_mark: User {user.Mention} has been warned for `{reason}`. Total warnings: `{warnings + 1}`.");
                 EmbedBuilder embed = new EmbedBuilder();
                 embed.WithTitle("Warning issued");
                 embed.WithAuthor(Context.User);
@@ -278,8 +263,18 @@ namespace rJordanBot.Core.Moderation
                 embed.WithFooter($"UserID: {user.Id}");
 
                 SocketGuild guild = Constants.IGuilds.Jordan(Context);
-                SocketTextChannel logChannel = guild.Channels.First(x => x.Id == Methods.Data.GetChnlId("moderation-log")) as SocketTextChannel;
-                await logChannel.SendMessageAsync("", false, embed.Build());
+                SocketTextChannel logChannel = guild.Channels.First(x => x.Id == Data.GetChnlId("moderation-log")) as SocketTextChannel;
+                RestUserMessage logMsg = await logChannel.SendMessageAsync("", false, embed.Build());
+
+                await new Warning
+                {
+                    UserID = user.Id,
+                    ChannelID = response.Channel.Id,
+                    MessageID = response.Id,
+                    Timestamp = response.Timestamp.ToUnixTimeSeconds(),
+                    Reason = reason,
+                    ModID = Context.User.Id
+                }.saveWarning();
             }
 
             [Command("get")]
@@ -293,15 +288,34 @@ namespace rJordanBot.Core.Moderation
                 }
 
                 // Execution
-                switch (Methods.Data.GetStrikes(user.Id))
+                IEnumerable<Warning> warnings = await user.getWarnings();
+                int warningCount = await user.getWarningCount();
+                EmbedBuilder embed = new EmbedBuilder();
+                embed.WithTitle("Warning list");
+                embed.WithAuthor(user);
+                embed.WithColor(Constants.IColors.Blurple);
+                switch (warningCount)
                 {
                     case 1:
-                        await ReplyAsync($":white_check_mark: User {user.Mention} has `{Methods.Data.GetStrikes(user.Id)}` warning.");
+                        embed.WithDescription($"User has 1 warning.");
                         break;
                     default:
-                        await ReplyAsync($":white_check_mark: User {user.Mention} has `{Methods.Data.GetStrikes(user.Id)}` warnings.");
+                        embed.WithDescription($"User has {warningCount} warnings.");
                         break;
                 }
+                foreach (Warning warning in warnings)
+                {
+                    DateTimeOffset timestamp = DateTimeOffset.FromUnixTimeSeconds(warning.Timestamp).AddHours(3);
+                    string link = Context.Guild.GetTextChannel(warning.ChannelID).GetMessageAsync(warning.MessageID).Result.GetJumpUrl();
+                    string field = 
+                        $"Mod: <@{warning.ModID}>\n" +
+                        $"Reason: {warning.Reason}\n" +
+                        $"Timestamp: {timestamp:d/M/yyyy} at {timestamp:h:mm tt}\n" +
+                        $"[Link to message]({link})";
+                    embed.AddField($"WarningID: {warning.WarningID}", field);
+                }
+
+                await ReplyAsync("", false, embed.Build());
             }
 
             [Command("list")]
