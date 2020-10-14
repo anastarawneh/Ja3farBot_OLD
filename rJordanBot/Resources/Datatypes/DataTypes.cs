@@ -86,33 +86,6 @@ namespace rJordanBot.Resources.Datatypes
         }
     }
 
-    public class StarboardMessage
-    {
-        public IUserMessage message { get; set; }
-        public SocketTextChannel channel { get; set; }
-        public IUser author { get; set; }
-        public int stars { get; set; }
-        public ulong starboardid { get; set; }
-
-        public Task Save()
-        {
-            using SqliteDbContext DbContext = new SqliteDbContext();
-            Starboard starboard = new Starboard
-            {
-                MsgID = message.Id,
-                ChannelID = channel.Id,
-                UserID = author.Id,
-                SBMessageID = starboardid
-            };
-
-            if (stars >= ESettings.StarboardMin && !DbContext.Starboards.Contains(starboard)) DbContext.Starboards.Add(starboard);
-            else if (DbContext.Starboards.Contains(starboard) && stars < ESettings.StarboardMin) DbContext.Starboards.Remove(starboard);
-            DbContext.SaveChanges();
-
-            return Task.CompletedTask;
-        }
-    }
-
     public class Suggestion
     {
         public IUserMessage message { get; set; }

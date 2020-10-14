@@ -570,8 +570,6 @@ namespace rJordanBot.Core.Methods
 
         public static async Task UpdateStarboard(StarboardMessage starboardMessage)
         {
-            using SqliteDbContext DbContext = new SqliteDbContext();
-
             Starboard starboard = new Starboard
             {
                 MsgID = starboardMessage.message.Id,
@@ -583,7 +581,7 @@ namespace rJordanBot.Core.Methods
             SocketTextChannel starboardChannel = guild.Channels.FirstOrDefault(x => x.Id == GetChnlId("starboard")) as SocketTextChannel;
 
             // If starboard message does not exist
-            if (!DbContext.Starboards.Contains(starboard) && starboardMessage.stars >= ESettings.StarboardMin)
+            if (!starboardMessage.starboardExists() && starboardMessage.stars >= ESettings.StarboardMin)
             {
                 SocketTextChannel channel = guild.Channels.First(x => x.Id == starboardMessage.channel.Id) as SocketTextChannel;
                 string link = channel.GetMessageAsync(starboardMessage.message.Id).Result.GetJumpUrl();
@@ -602,9 +600,9 @@ namespace rJordanBot.Core.Methods
                 await starboardMessage.Save();
             }
             // If starboard message exists and needs editing
-            else if (DbContext.Starboards.Contains(starboard) && starboardMessage.stars >= ESettings.StarboardMin)
+            else if (starboardMessage.starboardExists() && starboardMessage.stars >= ESettings.StarboardMin)
             {
-                Starboard starboard1 = DbContext.Starboards.FirstOrDefault(x => x.MsgID == starboardMessage.message.Id);
+                Starboard starboard1 = await StarboardFunctions.getStarboardByMsgID(starboardMessage.message.Id);
 
                 IUserMessage msg = starboardChannel.GetMessageAsync(starboard1.SBMessageID).Result as IUserMessage;
                 await msg.ModifyAsync(x => x.Content = $"{starboardMessage.stars} :star2:");
@@ -612,9 +610,9 @@ namespace rJordanBot.Core.Methods
                 await starboardMessage.Save();
             }
             // If starboard message needs removal
-            else if (DbContext.Starboards.Contains(starboard) && starboardMessage.stars < ESettings.StarboardMin)
+            else if (starboardMessage.starboardExists() && starboardMessage.stars < ESettings.StarboardMin)
             {
-                Starboard starboard1 = DbContext.Starboards.FirstOrDefault(x => x.MsgID == starboardMessage.message.Id);
+                Starboard starboard1 = await StarboardFunctions.getStarboardByMsgID(starboardMessage.message.Id);
 
                 IUserMessage msg = starboardChannel.GetMessageAsync(starboard1.SBMessageID).Result as IUserMessage;
                 await msg.DeleteAsync();
