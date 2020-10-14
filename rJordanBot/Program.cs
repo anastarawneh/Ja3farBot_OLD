@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MulticraftLib;
 using rJordanBot.Core.Methods;
 using rJordanBot.Resources.Database;
+using rJordanBot.Resources.MySQL;
 using rJordanBot.Resources.Services;
 using rJordanBot.Resources.Settings;
 using System;
@@ -29,6 +30,7 @@ namespace rJordanBot
         private async Task MainAsync()
         {
             await Data.InitJSON();
+            await MySQL.Initialize();
             if (!Multicraft.Initialize(Environment.GetEnvironmentVariable("SystemType"), BotType.Ja3farBot))
             {
                 Console.WriteLine("FALSE");

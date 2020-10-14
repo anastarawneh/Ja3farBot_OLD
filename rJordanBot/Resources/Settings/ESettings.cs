@@ -15,6 +15,10 @@ namespace rJordanBot.Resources.Settings
         public static List<string> InviteWhitelist;
         public static ulong VerifyID;
         public static Announcement Announcement;
+        public static string mysql_server;
+        public static string mysql_username;
+        public static string mysql_password;
+        public static string mysql_dbname;
         public static COVID Covid;
     }
 }

@@ -13,6 +13,10 @@ namespace rJordanBot.Resources.Datatypes
         public List<string> invitewhitelist { get; set; }
         public ulong verifyid { get; set; }
         public Announcement announcement { get; set; }
+        public string mysql_server { get; set; }
+        public string mysql_username { get; set; }
+        public string mysql_password { get; set; }
+        public string mysql_dbname { get; set; }
         public COVID covid { get; set; }
 
         public class Announcement

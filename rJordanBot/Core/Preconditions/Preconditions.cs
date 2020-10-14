@@ -2,7 +2,7 @@
 using Discord.Commands;
 using Discord.WebSocket;
 using rJordanBot.Core.Methods;
-using rJordanBot.Resources.Database;
+using rJordanBot.Resources.MySQL;
 using rJordanBot.Resources.Settings;
 using System;
 using System.Collections.Generic;

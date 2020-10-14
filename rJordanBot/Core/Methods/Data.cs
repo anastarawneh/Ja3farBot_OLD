@@ -5,6 +5,7 @@ using Discord.WebSocket;
 using Newtonsoft.Json;
 using rJordanBot.Resources.Database;
 using rJordanBot.Resources.Datatypes;
+using rJordanBot.Resources.MySQL;
 using rJordanBot.Resources.Settings;
 using System;
 using System.Collections.Generic;
@@ -56,8 +57,12 @@ namespace rJordanBot.Core.Methods
             ESettings.InviteWhitelist = Settings.invitewhitelist;
             ESettings.VerifyID = Settings.verifyid;
             ESettings.Announcement = Settings.announcement;
+            ESettings.mysql_server = Settings.mysql_server;
+            ESettings.mysql_username = Settings.mysql_username;
+            ESettings.mysql_password = Settings.mysql_password;
+            ESettings.mysql_dbname = Settings.mysql_dbname;
             ESettings.Covid = Settings.covid;
-
+            
             return Task.CompletedTask;
         }
 

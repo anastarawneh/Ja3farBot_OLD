@@ -3,6 +3,7 @@ using Discord.Rest;
 using Discord.WebSocket;
 using rJordanBot.Resources.Database;
 using rJordanBot.Resources.Datatypes;
+using rJordanBot.Resources.MySQL;
 using rJordanBot.Resources.Settings;
 using System;
 using System.Collections.Generic;
