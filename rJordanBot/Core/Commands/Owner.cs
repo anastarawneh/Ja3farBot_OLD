@@ -1,12 +1,16 @@
-﻿using Discord;
+﻿using Dapper;
+using Discord;
 using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.EntityFrameworkCore.Query.Internal;
+using MySql.Data.MySqlClient;
 using rJordanBot.Core.Methods;
 using rJordanBot.Core.Preconditions;
 using rJordanBot.Resources.Database;
 using rJordanBot.Resources.Datatypes;
+using rJordanBot.Resources.MySQL;
 using rJordanBot.Resources.Settings;
 using System;
 using System.Collections.Generic;
@@ -349,12 +353,17 @@ namespace rJordanBot.Core.Commands
                 [Command("list"), Alias("l")]
                 public async Task List()
                 {
-                    using SqliteDbContext DbContext = new SqliteDbContext();
+                    using var connection = MySQL.getConnection();
+                    await connection.OpenAsync();
                     string list = "";
+
+                    string query = "SELECT * FROM Moderators";
+                    IEnumerable<Moderator> mods = await connection.QueryAsync<Moderator>(query);
+
                     EmbedBuilder embed = new EmbedBuilder();
                     embed.WithColor(0, 255, 0);
                     embed.WithTitle("List of moderators in database");
-                    foreach (Moderator mod in DbContext.Moderators)
+                    foreach (Moderator mod in mods)
                     {
                         SocketGuildUser user = Constants.IGuilds.Jordan(Context).Users.First(x => x.Id == mod.ID);
                         list += $"{user}\n";
