@@ -3,7 +3,8 @@ using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.WebSocket;
 using rJordanBot.Core.Methods;
-using rJordanBot.Resources.Database;
+using rJordanBot.Core.Preconditions;
+using rJordanBot.Resources.MySQL;
 using rJordanBot.Resources.Settings;
 using System;
 using System.Linq;
@@ -17,10 +18,9 @@ namespace rJordanBot.Core.Moderation
         public class EventsMod : InteractiveBase
         {
             [Command("verify"), Alias("v")]
+            [RequireOwner]
             public async Task Verify([Remainder]IUser user = null)
             {
-                if (Context.User.Id != ESettings.Owner) return;
-
                 ulong id = user.Id;
 
                 if (user is null)
@@ -39,9 +39,7 @@ namespace rJordanBot.Core.Moderation
                 eVerified.Denied.Remove(id);
                 Data.Data.UpdateVerified();*/
 
-                using SqliteDbContext DbContext = new SqliteDbContext();
-                (user as SocketGuildUser).ToUser().Verified = true;
-                await DbContext.SaveChangesAsync();
+                await (user as SocketGuildUser).ToUser().SetVerified(true);
 
                 await ReplyAsync($"{user.Mention} is now verified.");
 
@@ -50,9 +48,9 @@ namespace rJordanBot.Core.Moderation
             }
 
             [Command("unverify"), Alias("uv", "deny")]
+            [RequireOwner]
             public async Task Unverify([Remainder]IUser user = null)
             {
-                if (Context.User != Constants.IGuilds.Jordan(Context).Owner) return;
                 ulong id = user.Id;
 
                 if (user is null)
@@ -71,9 +69,7 @@ namespace rJordanBot.Core.Moderation
                 eVerified.Allowed.Remove(id);
                 Data.Data.UpdateVerified();*/
 
-                using SqliteDbContext DbContext = new SqliteDbContext();
-                (user as SocketGuildUser).ToUser().Verified = false;
-                await DbContext.SaveChangesAsync();
+                await (user as SocketGuildUser).ToUser().SetVerified(false);
 
                 await ReplyAsync($"{user.Mention} is now denied.");
 
@@ -82,9 +78,9 @@ namespace rJordanBot.Core.Moderation
             }
 
             [Command("get"), Alias("g", "is")]
+            [RequireOwner]
             public async Task Get([Remainder]IUser user = null)
             {
-                if (Context.User != Constants.IGuilds.Jordan(Context).Owner) return;
                 if (user is null)
                 {
                     await ReplyAsync(":x: Please enter a user.");
@@ -97,6 +93,7 @@ namespace rJordanBot.Core.Moderation
             }
 
             [Command("delete"), Alias("del", "d")]
+            [RequireOwner]
             public async Task Delete([Remainder]IUser user = null)
             {
                 await ReplyAsync(":x: This command doesn't work anymore. See `^eventsmod unverify`.");
@@ -128,16 +125,13 @@ namespace rJordanBot.Core.Moderation
             }
 
             [Command("list"), Alias("l")]
+            [RequireMod]
             public async Task List()
             {
-                using SqliteDbContext DbContext = new SqliteDbContext();
-                SocketRole modrole = Constants.IGuilds.Jordan(Context).Roles.FirstOrDefault(x => x.Name == "Discord Mods");
-                if (!(Context.User as SocketGuildUser).Roles.Contains(modrole)) return;
-
                 string userlist = "None";
 
-                if (DbContext.Users.Count() > 1) userlist = "";
-                foreach (User user in DbContext.Users)
+                if (UserFunctions.List().Count() > 1) userlist = "";
+                foreach (User user in UserFunctions.List())
                 {
                     if (user.Verified) userlist = userlist + Constants.IGuilds.Jordan(Context).Users.FirstOrDefault(x => x.Id == user.ID) + "\n";
                 }

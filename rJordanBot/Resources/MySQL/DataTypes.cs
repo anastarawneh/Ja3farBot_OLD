@@ -44,6 +44,13 @@ namespace rJordanBot.Resources.MySQL
         public ulong starboardid { get; set; }
     }
     /* --- */
+    public class User
+    {
+        public ulong ID { get; set; }
+        public bool Verified { get; set; }
+        public bool SuggestionDenied { get; set; }
+    }
+    /* --- */
     public class Warning
     {
         public ulong WarningID { get; set; }

@@ -13,7 +13,7 @@ namespace rJordanBot.Resources.Database
         public DbSet<Invite> Invites { get; set; }
         public DbSet<UserInvite> UserInvites { get; set; }
         // public DbSet<Starboard_OLD> Starboards { get; set; }
-        public DbSet<User> Users { get; set; }
+        // public DbSet<User_OLD> Users { get; set; }
         // public DbSet<Moderator_OLD> Moderators { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder Options)

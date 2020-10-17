@@ -197,6 +197,59 @@ namespace rJordanBot.Resources.MySQL
         }
     }
 
+    public static class UserFunctions
+    {
+        public static bool IsRegistered(this SocketGuildUser user)
+        {
+            using var connection = MySQL.getConnection();
+            string query = $"SELECT COUNT(1) FROM Users WHERE ID={user.Id}";
+            
+            long result = connection.ExecuteScalarAsync<long>(query).Result;
+
+            return result > 0;
+        }
+
+        private static User Register(this SocketGuildUser user)
+        {
+            using var connection = MySQL.getConnection();
+            string query = $"INSERT INTO Users (ID) VALUES ({user.Id})";
+            connection.ExecuteAsync(query);
+
+            query = $"SELECT * FROM Users WHERE ID={user.Id}";
+            return connection.QueryFirst<User>(query);
+        }
+
+        public static User ToUser(this SocketGuildUser user)
+        {
+            using var connection = MySQL.getConnection();
+            string query = $"SELECT * FROM Users WHERE ID={user.Id}";
+
+            if (user.IsRegistered()) return connection.Query<User>(query).FirstOrDefault();
+            else return user.Register();
+        }
+
+        public static IEnumerable<User> List()
+        {
+            using var connection = MySQL.getConnection();
+            string query = $"SELECT * FROM Users";
+            return connection.Query<User>(query);
+        }
+
+        public static async Task Delete(this User user)
+        {
+            using var connection = MySQL.getConnection();
+            string query = $"DELETE FROM Users WHERE ID={user.ID}";
+            await connection.ExecuteAsync(query);
+        }
+
+        public static async Task SetVerified(this User user, bool verified)
+        {
+            using var connection = MySQL.getConnection();
+            string query = $"UPDATE Users SET EventVerified={verified} WHERE ID={user.ID}";
+            await connection.ExecuteAsync(query);
+        }
+    }
+
     public static class WarningFunctions
     {
         public static async Task<int> getWarningCount(ulong UserID)

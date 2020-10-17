@@ -1,7 +1,6 @@
 ﻿using Discord;
 using Discord.Rest;
 using Discord.WebSocket;
-using rJordanBot.Resources.Database;
 using rJordanBot.Resources.Datatypes;
 using rJordanBot.Resources.MySQL;
 using rJordanBot.Resources.Settings;
@@ -163,7 +162,6 @@ namespace rJordanBot.Core.Methods
 
         public async Task JSON_UserLeft(SocketGuildUser user)
         {
-            using SqliteDbContext DbContext = new SqliteDbContext();
             SocketGuild guild = user.Guild;
             SocketTextChannel channel = guild.Channels.FirstOrDefault(x => x.Id == Data.GetChnlId("bot-log")) as SocketTextChannel;
 
@@ -182,12 +180,11 @@ namespace rJordanBot.Core.Methods
                 await channel.SendMessageAsync($"[{DateTime.Now} at Events] {user.Mention} was removed from the event denied list for leaving.");
             }*/
 
-            foreach (Resources.Database.User item in DbContext.Users)
+            foreach (User item in UserFunctions.List())
             {
                 if (item.ID == user.Id)
                 {
-                    DbContext.Remove(item);
-                    await DbContext.SaveChangesAsync();
+                    await item.Delete();
                 }
             }
         }

@@ -6,7 +6,6 @@ using Discord.Rest;
 using Discord.WebSocket;
 using rJordanBot.Core.Methods;
 using rJordanBot.Core.Preconditions;
-using rJordanBot.Resources.Database;
 using rJordanBot.Resources.MySQL;
 using rJordanBot.Resources.Settings;
 using System;
@@ -52,7 +51,6 @@ namespace rJordanBot.Core.Moderation
             }
 
             IUser userInfo = param as IUser;
-            using SqliteDbContext DbContext = new SqliteDbContext();
 
             string roles = "";
             List<SocketRole> roles_ = (userInfo as SocketGuildUser).Roles.ToList();
@@ -64,7 +62,7 @@ namespace rJordanBot.Core.Moderation
 
             int warnings = await WarningFunctions.getWarningCount(userInfo.Id);
 
-            User user_ = DbContext.Users.First(x => x.ID == param.Id) ?? new User { ID = 0, Verified = false };
+            User user_ = (userInfo as SocketGuildUser).ToUser();
             bool verified = user_.Verified;
 
             EmbedBuilder embed = new EmbedBuilder();

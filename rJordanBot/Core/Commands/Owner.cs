@@ -326,18 +326,21 @@ namespace rJordanBot.Core.Commands
                     using SqliteDbContext DbContext = new SqliteDbContext();
                     user.ToUser();
 
-                    await ReplyAsync($":white_check_mark: User {user.Mention} was added to the JSON file.");
+                    await ReplyAsync($":white_check_mark: User {user.Mention} was added to the database.");
                 }
 
                 [Command("list"), Alias("l")]
                 public async Task List()
                 {
-                    using SqliteDbContext DbContext = new SqliteDbContext();
+                    using MySqlConnection connection = MySQL.getConnection();
                     string list = "";
+                    string query = $"SELECT * FROM Users";
+                    IEnumerable<User> users = await connection.QueryAsync<User>(query);
+
                     EmbedBuilder embed = new EmbedBuilder();
                     embed.WithColor(0, 255, 0);
                     embed.WithTitle("List of users in database");
-                    foreach (User user in DbContext.Users)
+                    foreach (User user in users)
                     {
                         list += $"{Context.Guild.GetUser(user.ID)}\n";
                     }
