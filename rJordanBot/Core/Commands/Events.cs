@@ -54,7 +54,7 @@ namespace rJordanBot.Core.Commands
                     return;
                 }
 
-                if (!(Context.User as SocketGuildUser).ToUser().Verified)
+                if (!(Context.User as SocketGuildUser).ToUser().EventVerified)
                 {
                     await ReplyAsync(":x: You need to be verified to be able to use the Events system.");
                     return;
@@ -238,7 +238,7 @@ namespace rJordanBot.Core.Commands
                     await ReplyAsync(":x: For your own privacy, please use the event verification system in DMs.");
                     return;
                 }
-                if ((Context.User as SocketGuildUser).ToUser().Verified)
+                if ((Context.User as SocketGuildUser).ToUser().EventVerified)
                 {
                     await ReplyAsync(":x: You are already verified.");
                     return;

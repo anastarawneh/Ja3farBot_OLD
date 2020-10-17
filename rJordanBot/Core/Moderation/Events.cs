@@ -29,7 +29,7 @@ namespace rJordanBot.Core.Moderation
                     return;
                 }
 
-                if ((user as SocketGuildUser).ToUser().Verified)
+                if ((user as SocketGuildUser).ToUser().EventVerified)
                 {
                     await ReplyAsync(":x: User is already verified.");
                     return;
@@ -59,7 +59,7 @@ namespace rJordanBot.Core.Moderation
                     return;
                 }
 
-                if (!(user as SocketGuildUser).ToUser().Verified)
+                if (!(user as SocketGuildUser).ToUser().EventVerified)
                 {
                     await ReplyAsync(":x: User is already denied.");
                     return;
@@ -87,7 +87,7 @@ namespace rJordanBot.Core.Moderation
                     return;
                 }
 
-                if ((user as SocketGuildUser).ToUser().Verified) await ReplyAsync($":white_check_mark: {user.Mention} is verified.");
+                if ((user as SocketGuildUser).ToUser().EventVerified) await ReplyAsync($":white_check_mark: {user.Mention} is verified.");
                 //else if (eVerified.Denied.Contains(user.Id)) await ReplyAsync($":white_check_mark: {user.Mention} is denied.");
                 else await ReplyAsync($":x: {user.Mention} is not verified.");
             }
@@ -133,7 +133,7 @@ namespace rJordanBot.Core.Moderation
                 if (UserFunctions.List().Count() > 1) userlist = "";
                 foreach (User user in UserFunctions.List())
                 {
-                    if (user.Verified) userlist = userlist + Constants.IGuilds.Jordan(Context).Users.FirstOrDefault(x => x.Id == user.ID) + "\n";
+                    if (user.EventVerified) userlist = userlist + Constants.IGuilds.Jordan(Context).Users.FirstOrDefault(x => x.Id == user.ID) + "\n";
                 }
 
                 EmbedBuilder embed = new EmbedBuilder();

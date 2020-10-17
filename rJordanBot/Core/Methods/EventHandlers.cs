@@ -82,7 +82,7 @@ namespace rJordanBot.Core.Methods
             IEmbed embed = cacheable.GetOrDownloadAsync().Result.Embeds.First();
             if (embed.Fields.First(x => x.Name == "Location").Value == "Discord") return;
 
-            if (user.ToUser().Verified)
+            if (user.ToUser().EventVerified)
             {
                 // User is allowed.
                 return;

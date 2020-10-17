@@ -63,7 +63,7 @@ namespace rJordanBot.Core.Moderation
             int warnings = await WarningFunctions.getWarningCount(userInfo.Id);
 
             User user_ = (userInfo as SocketGuildUser).ToUser();
-            bool verified = user_.Verified;
+            bool verified = user_.EventVerified;
 
             EmbedBuilder embed = new EmbedBuilder();
             embed.WithColor(40, 200, 150);

@@ -47,7 +47,7 @@ namespace rJordanBot.Resources.MySQL
     public class User
     {
         public ulong ID { get; set; }
-        public bool Verified { get; set; }
+        public bool EventVerified { get; set; }
         public bool SuggestionDenied { get; set; }
     }
     /* --- */
