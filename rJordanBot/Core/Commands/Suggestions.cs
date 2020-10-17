@@ -5,6 +5,7 @@ using Discord.Rest;
 using Discord.WebSocket;
 using rJordanBot.Core.Methods;
 using rJordanBot.Core.Preconditions;
+using rJordanBot.Resources.MySQL;
 using rJordanBot.Resources.Services;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,13 @@ namespace rJordanBot.Core.Commands
         [RequireBotChannel]
         public async Task Suggest([Remainder]string text = null)
         {
+            SocketGuildUser user = (SocketGuildUser) Context.User;
+            if (user.ToUser().SuggestionDenied)
+            {
+                await ReplyAsync(":x: You are not allowed to use suggestions.");
+                return;
+            }
+
             if (text == null)
             {
                 await ReplyAsync(":x: Please enter a suggestion.");
