@@ -26,5 +26,19 @@ namespace rJordanBot.Core.Commands
                 await ReplyAsync(response);
             }
         }
+
+        [Command("start")]
+        [RequireOwner]
+        [MinecraftCommand]
+        public async Task Start()
+        {
+            string status = Multicraft.GetServerStatus().Data.Status;
+            if (status == "online")
+            {
+                await ReplyAsync(":x: Server is already online.");
+                return;
+            }
+            await ReplyAsync(await Multicraft.StartServer());
+        }
     }
 }
