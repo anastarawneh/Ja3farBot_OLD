@@ -14,9 +14,6 @@ namespace rJordanBot.Resources.Services
         private DiscordSocketClient _client;
         private CommandService _cmdService;
         private LavaNode _lavaNode;
-        private ITextChannel _logChannel;
-        private bool _serverLog = false;
-        private bool _hasServer = false;
 
         public LoggerService(DiscordSocketClient client, CommandService cmdService, LavaNode lavaNode)
         {
@@ -31,48 +28,32 @@ namespace rJordanBot.Resources.Services
             _cmdService.Log += GenericLog;
             _lavaNode.OnLog += GenericLog;
 
-            _client.GuildAvailable += InitGuild;
-
             _cmdService.CommandExecuted += ExceptionPing;
 
             return Task.CompletedTask;
         }
 
-        public Task InitGuild(SocketGuild guild)
-        {
-            _logChannel = guild.Channels.First(x => x.Id == Data.GetChnlId("bot-log")) as ITextChannel;
-            _hasServer = true;
-            return Task.CompletedTask;
-        }
-
-        public async Task GenericLog(LogMessage logMessage)
+        public Task GenericLog(LogMessage logMessage)
         {
             SetColor(logMessage.Severity);
             string errormsg = $"[{DateTime.Now} at {logMessage.Source}] {logMessage.Message}";
-            string errormsg_ = $"[{DateTime.Now} at {logMessage.Source}] {logMessage.Message}";
-            if (logMessage.Severity == LogSeverity.Warning) errormsg_ = $"[{DateTime.Now} at {logMessage.Source}] **{logMessage.Message}**";
             if (logMessage.Exception != null)
             {
-                await ExceptionLog(logMessage);
-                return;
+                ExceptionLog(logMessage);
+                return Task.CompletedTask;
             }
 
             Console.WriteLine(errormsg);
-            if (_hasServer && _serverLog) await _logChannel.SendMessageAsync(errormsg_);
             Console.ResetColor();
+            return Task.CompletedTask;
         }
 
-        public async Task ExceptionLog(LogMessage logMessage)
+        public void ExceptionLog(LogMessage logMessage)
         {
             Exception ex = logMessage.Exception;
             string errormsg = $"[{DateTime.Now} at ExecptionHandler] \n{ex}";
-            string errormsg_ = $"[{DateTime.Now} at ExecptionHandler] \n```{ex}```";
-
-            if (ex.ToString().Contains("Server requested a reconnect")) errormsg_ = $"[{DateTime.Now} at ExceptionHandler] Server requested a reconnect";
-            if (ex.ToString().Contains("WebSocket connection was closed")) errormsg_ = $"[{DateTime.Now} at ExceptionHandler] WebSocket connection was closed";
-
+            
             Console.WriteLine(errormsg);
-            if (_hasServer && _serverLog) await _logChannel.SendMessageAsync(errormsg_);
             Console.ResetColor();
         }
 
@@ -94,34 +75,28 @@ namespace rJordanBot.Resources.Services
             {
                 case LogSeverity.Error:
                     Console.ForegroundColor = ConsoleColor.Red;
-                    _serverLog = true;
                     break;
                 case LogSeverity.Debug:
                     if (Environment.GetEnvironmentVariable("SystemType") == "win") Console.ForegroundColor = ConsoleColor.DarkGray;
                     else Console.ForegroundColor = ConsoleColor.White;
-                    _serverLog = false;
                     break;
                 case LogSeverity.Warning:
                     Console.ForegroundColor = ConsoleColor.Yellow;
-                    _serverLog = true;
                     break;
                 case LogSeverity.Info:
                     if (Environment.GetEnvironmentVariable("SystemType") == "win") Console.ForegroundColor = ConsoleColor.White;
                     else Console.ForegroundColor = ConsoleColor.Green;
-                    _serverLog = true;
                     break;
                 case LogSeverity.Verbose:
                     Console.ForegroundColor = ConsoleColor.Blue;
-                    _serverLog = false;
                     break;
                 case LogSeverity.Critical:
                     Console.ForegroundColor = ConsoleColor.DarkRed;
-                    _serverLog = true;
                     break;
             }
         }
 
-        public async Task CommandErrorLog(SocketUserMessage message, IResult result)
+        public Task CommandErrorLog(SocketUserMessage message, IResult result)
         {
             string errormsg = $"[{DateTime.Now} at Commands] Command error: | Command: {message.Content} | User: {message.Author} | Reason: {result.ErrorReason}\nError: {result.Error}";
 
@@ -129,10 +104,7 @@ namespace rJordanBot.Resources.Services
             Console.WriteLine(errormsg);
             Console.ResetColor();
 
-            SocketGuild Guild = Constants.IGuilds.Jordan(_client);
-            SocketTextChannel Channel = Guild.Channels.Where(x => x.Id == Data.GetChnlId("bot-log")).FirstOrDefault() as SocketTextChannel;
-
-            await Channel.SendMessageAsync(errormsg);
+            return Task.CompletedTask;
         }
     }
 }

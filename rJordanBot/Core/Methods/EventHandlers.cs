@@ -207,11 +207,8 @@ namespace rJordanBot.Core.Methods
             _client.Ready -= MuteFixing;
 
             SocketGuild guild = Constants.IGuilds.Jordan(_client);
-            SocketTextChannel botlog = guild.Channels.First(x => x.Id == Data.GetChnlId("bot-log")) as SocketTextChannel;
             SocketTextChannel modlog = guild.Channels.First(x => x.Id == Data.GetChnlId("moderation-log")) as SocketTextChannel;
             IEnumerable<IMessage> messages = modlog.GetMessagesAsync(20).FlattenAsync().Result;
-
-            await botlog.SendMessageAsync($"[{DateTime.Now} at Gateway] First launch");
 
             foreach (IMessage message in messages)
             {
