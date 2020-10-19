@@ -7,10 +7,8 @@ using rJordanBot.Core.Methods;
 using rJordanBot.Core.Preconditions;
 using rJordanBot.Resources.MySQL;
 using rJordanBot.Resources.Services;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace rJordanBot.Core.Commands
@@ -22,9 +20,9 @@ namespace rJordanBot.Core.Commands
 
         [Command("suggest")]
         [RequireBotChannel]
-        public async Task Suggest([Remainder]string text = null)
+        public async Task Suggest([Remainder] string text = null)
         {
-            SocketGuildUser user = (SocketGuildUser) Context.User;
+            SocketGuildUser user = (SocketGuildUser)Context.User;
             if (user.ToUser().SuggestionDenied)
             {
                 await ReplyAsync(":x: You are not allowed to use suggestions.");
@@ -39,7 +37,7 @@ namespace rJordanBot.Core.Commands
 
             SocketTextChannel channel = Context.Guild.Channels.First(x => x.Id == Data.GetChnlId("suggestions")) as SocketTextChannel;
             IEnumerable<IMessage> msgs = channel.GetMessagesAsync(1).FlattenAsync().Result;
-            
+
             int number = 0;
 
             if (msgs.Count() < 1) number = 1;

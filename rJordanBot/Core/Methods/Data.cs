@@ -62,7 +62,7 @@ namespace rJordanBot.Core.Methods
             ESettings.mysql_password = Settings.mysql_password;
             ESettings.mysql_dbname = Settings.mysql_dbname;
             ESettings.Covid = Settings.covid;
-            
+
             return Task.CompletedTask;
         }
 

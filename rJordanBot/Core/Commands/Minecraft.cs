@@ -2,10 +2,7 @@
 using Discord.Commands;
 using MulticraftLib;
 using rJordanBot.Core.Preconditions;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace rJordanBot.Core.Commands
@@ -22,7 +19,7 @@ namespace rJordanBot.Core.Commands
             else
             {
                 string response = $"There are {players.Count()} players online:";
-                foreach (var player in players) response += $"\n- {player.Name}";
+                foreach (getServerStatus.apiData.apiPlayer player in players) response += $"\n- {player.Name}";
                 await ReplyAsync(response);
             }
         }

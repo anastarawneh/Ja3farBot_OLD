@@ -5,8 +5,6 @@ using Discord.WebSocket;
 using rJordanBot.Core.Methods;
 using rJordanBot.Core.Preconditions;
 using rJordanBot.Resources.MySQL;
-using rJordanBot.Resources.Settings;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,7 +17,7 @@ namespace rJordanBot.Core.Moderation
         {
             [Command("verify"), Alias("v")]
             [RequireOwner]
-            public async Task Verify([Remainder]IUser user = null)
+            public async Task Verify([Remainder] IUser user = null)
             {
                 ulong id = user.Id;
 
@@ -49,7 +47,7 @@ namespace rJordanBot.Core.Moderation
 
             [Command("unverify"), Alias("uv", "deny")]
             [RequireOwner]
-            public async Task Unverify([Remainder]IUser user = null)
+            public async Task Unverify([Remainder] IUser user = null)
             {
                 ulong id = user.Id;
 
@@ -79,7 +77,7 @@ namespace rJordanBot.Core.Moderation
 
             [Command("get"), Alias("g", "is")]
             [RequireOwner]
-            public async Task Get([Remainder]IUser user = null)
+            public async Task Get([Remainder] IUser user = null)
             {
                 if (user is null)
                 {
@@ -94,7 +92,7 @@ namespace rJordanBot.Core.Moderation
 
             [Command("delete"), Alias("del", "d")]
             [RequireOwner]
-            public async Task Delete([Remainder]IUser user = null)
+            public async Task Delete([Remainder] IUser user = null)
             {
                 await ReplyAsync(":x: This command doesn't work anymore. See `^eventsmod unverify`.");
                 return;

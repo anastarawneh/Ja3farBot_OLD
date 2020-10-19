@@ -3,8 +3,6 @@ using Discord;
 using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.WebSocket;
-using Microsoft.EntityFrameworkCore.Design;
-using Microsoft.EntityFrameworkCore.Query.Internal;
 using MySql.Data.MySqlClient;
 using rJordanBot.Core.Methods;
 using rJordanBot.Core.Preconditions;
@@ -14,7 +12,6 @@ using rJordanBot.Resources.MySQL;
 using rJordanBot.Resources.Settings;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using static rJordanBot.Resources.Datatypes.Setting;
@@ -29,7 +26,7 @@ namespace rJordanBot.Core.Commands
         public async Task Test()
         {
             // TEST CODE STARTS HERE
-            
+
             // TEST CODE ENDS HERE
             IEmote yes = Constants.IEmojis.Tick;
             await Context.Message.AddReactionAsync(yes);
@@ -189,7 +186,7 @@ namespace rJordanBot.Core.Commands
 
                         IEmote emote = new Emoji("");
                         emote = new Emoji(Methods.Data.GetRoleSetting(role).emoji);
-                        await msg.RemoveReactionAsync(emote, Context.Client.CurrentUser as IUser);
+                        await msg.RemoveReactionAsync(emote, Context.Client.CurrentUser);
                         return;
                     }
                 }
@@ -245,7 +242,7 @@ namespace rJordanBot.Core.Commands
         [Command("setgame"), Alias("sg")]
         [RequireOwner]
         [RequireBotChannel]
-        public async Task SetGame(string state, [Remainder]string game = null)
+        public async Task SetGame(string state, [Remainder] string game = null)
         {
             ActivityType activity = new ActivityType();
             activity = state switch
@@ -281,7 +278,7 @@ namespace rJordanBot.Core.Commands
             IUserMessage testmsg = await ReplyAsync("", false, embed.Build());
             IUserMessage confirmationmessage = await ReplyAsync($"Please type `confirm` within 2 minutes to send this message to <#{Data.GetChnlId("announcements")}>.");
 
-            var reply = await NextMessageAsync(true, true, TimeSpan.FromSeconds(120));
+            SocketMessage reply = await NextMessageAsync(true, true, TimeSpan.FromSeconds(120));
             if (reply == null)
             {
                 await testmsg.DeleteAsync();
@@ -321,7 +318,7 @@ namespace rJordanBot.Core.Commands
             public class UserInfo : InteractiveBase<SocketCommandContext>
             {
                 [Command("add")]
-                public async Task Add([Remainder]SocketGuildUser user)
+                public async Task Add([Remainder] SocketGuildUser user)
                 {
                     using SqliteDbContext DbContext = new SqliteDbContext();
                     user.ToUser();
@@ -356,7 +353,7 @@ namespace rJordanBot.Core.Commands
                 [Command("list"), Alias("l")]
                 public async Task List()
                 {
-                    using var connection = MySQL.getConnection();
+                    using MySqlConnection connection = MySQL.getConnection();
                     await connection.OpenAsync();
                     string list = "";
 
@@ -377,7 +374,7 @@ namespace rJordanBot.Core.Commands
                 }
 
                 [Command("type"), Alias("t")]
-                public async Task Type([Remainder]SocketGuildUser user)
+                public async Task Type([Remainder] SocketGuildUser user)
                 {
                     Moderator mod = user.ToModerator();
                     if (mod == null)
@@ -518,7 +515,7 @@ namespace rJordanBot.Core.Commands
             embed.Fields[index - 1].Value = text;
 
             IUserMessage confirmationmessage = await ReplyAsync($"Please `confirm` this change:\n**{embed.Fields[index - 1].Name}** {embed.Fields[index - 1].Value}");
-            var reply = await NextMessageAsync(true, true, TimeSpan.FromSeconds(120));
+            SocketMessage reply = await NextMessageAsync(true, true, TimeSpan.FromSeconds(120));
             if (reply == null)
             {
                 await confirmationmessage.AddReactionAsync(new Emoji("❌"));

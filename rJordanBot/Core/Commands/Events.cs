@@ -35,7 +35,7 @@ namespace rJordanBot.Core.Commands
             }
 
             [Command("create", RunMode = RunMode.Async)]
-            public async Task Create([Remainder]string args = "")
+            public async Task Create([Remainder] string args = "")
             {
                 //Variables
                 string title;
@@ -118,7 +118,7 @@ namespace rJordanBot.Core.Commands
             }
 
             [Command("edit")]
-            public async Task Edit(int id = 0, string section = "empty", [Remainder]string message = "none")
+            public async Task Edit(int id = 0, string section = "empty", [Remainder] string message = "none")
             {
                 if (ESettings.EventsActive == false)
                 {
@@ -189,7 +189,7 @@ namespace rJordanBot.Core.Commands
             }
 
             [Command("delete")]
-            public async Task Delete(int id = 0, [Remainder]string confirmation = null)
+            public async Task Delete(int id = 0, [Remainder] string confirmation = null)
             {
                 //Checks
 

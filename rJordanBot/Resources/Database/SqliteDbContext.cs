@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
-using System.IO;
 using System.Reflection;
 
 namespace rJordanBot.Resources.Database

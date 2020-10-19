@@ -4,9 +4,6 @@ using Discord.WebSocket;
 using rJordanBot.Core.Preconditions;
 using rJordanBot.Resources.Datatypes;
 using rJordanBot.Resources.Services;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace rJordanBot.Core.Moderation
@@ -62,7 +59,7 @@ namespace rJordanBot.Core.Moderation
 
         [Command("approve")]
         [RequireFuncMod]
-        public async Task Approve(int num, [Remainder]string reason = "No reason given")
+        public async Task Approve(int num, [Remainder] string reason = "No reason given")
         {
             if (num < 7)
             {
@@ -75,7 +72,7 @@ namespace rJordanBot.Core.Moderation
 
         [Command("deny")]
         [RequireFuncMod]
-        public async Task Deny(int num, [Remainder]string reason = "No reason given")
+        public async Task Deny(int num, [Remainder] string reason = "No reason given")
         {
             if (num < 7)
             {
@@ -88,7 +85,7 @@ namespace rJordanBot.Core.Moderation
 
         [Command("implemented")]
         [RequireFuncMod]
-        public async Task Implemented(int num, [Remainder]string reason = "No reason given")
+        public async Task Implemented(int num, [Remainder] string reason = "No reason given")
         {
             if (num < 7)
             {
@@ -101,7 +98,7 @@ namespace rJordanBot.Core.Moderation
 
         [Command("consider")]
         [RequireFuncMod]
-        public async Task Consider(int num, [Remainder]string reason = "No reason given")
+        public async Task Consider(int num, [Remainder] string reason = "No reason given")
         {
             if (num < 7)
             {

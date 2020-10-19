@@ -5,7 +5,6 @@ using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using MulticraftLib;
 using rJordanBot.Core.Methods;
-using rJordanBot.Resources.Database;
 using rJordanBot.Resources.MySQL;
 using rJordanBot.Resources.Services;
 using rJordanBot.Resources.Settings;
@@ -112,7 +111,7 @@ namespace rJordanBot
 
             if (Context.Message == null || Context.Message.Content == "") return;
             if (Context.User.IsBot) return;
-            
+
             if (Environment.GetEnvironmentVariable("SystemType") == "win" && Context.User != Constants.IGuilds.Jordan(Context).Owner) return;
             if (MessageParam.Content.EndsWith('^')) return;
 

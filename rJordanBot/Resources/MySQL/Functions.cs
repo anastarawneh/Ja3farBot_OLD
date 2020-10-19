@@ -5,13 +5,10 @@ using Discord.Rest;
 using Discord.WebSocket;
 using MySql.Data.MySqlClient;
 using rJordanBot.Core.Methods;
-using rJordanBot.Resources.Datatypes;
 using rJordanBot.Resources.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Policy;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace rJordanBot.Resources.MySQL
@@ -20,12 +17,12 @@ namespace rJordanBot.Resources.MySQL
     {
         public static bool IsModerator(this SocketGuildUser user)
         {
-            using var connection = MySQL.getConnection();
+            using MySqlConnection connection = MySQL.getConnection();
             connection.Open();
             string query = $"SELECT COUNT(1) FROM Moderators WHERE ID={user.Id}";
             MySqlCommand command = new MySqlCommand(query, connection);
 
-            long result = (long) command.ExecuteScalar();
+            long result = (long)command.ExecuteScalar();
             connection.Close();
 
             return result > 0;
@@ -40,7 +37,7 @@ namespace rJordanBot.Resources.MySQL
 
         public static Moderator ToModerator(this SocketGuildUser user)
         {
-            using var connection = MySQL.getConnection();
+            using MySqlConnection connection = MySQL.getConnection();
             string query = $"SELECT * FROM Moderators where ID={user.Id}";
             MySqlCommand command = new MySqlCommand(query, connection);
 
@@ -53,7 +50,7 @@ namespace rJordanBot.Resources.MySQL
     {
         public static bool starboardExists(this StarboardMessage message)
         {
-            using var connection = MySQL.getConnection();
+            using MySqlConnection connection = MySQL.getConnection();
             if (connection.State != System.Data.ConnectionState.Open) connection.Open();
             string query = $"SELECT COUNT(1) FROM Starboards WHERE MsgID={message.message.Id}";
             bool result = connection.ExecuteScalar<bool>(query);
@@ -63,7 +60,7 @@ namespace rJordanBot.Resources.MySQL
 
         public static async Task Save(this StarboardMessage message)
         {
-            using var connection = MySQL.getConnection();
+            using MySqlConnection connection = MySQL.getConnection();
             await connection.OpenAsync();
             string query = "";
             if (message.stars >= ESettings.StarboardMin && !message.starboardExists())
@@ -81,7 +78,7 @@ namespace rJordanBot.Resources.MySQL
 
         public static async Task<Starboard> getStarboardByMsgID(ulong msgID)
         {
-            using var connection = MySQL.getConnection();
+            using MySqlConnection connection = MySQL.getConnection();
             await connection.OpenAsync();
             string query = $"SELECT * FROM Starboards WHERE MsgID={msgID}";
             Starboard result = await connection.QueryFirstAsync<Starboard>(query);
@@ -191,7 +188,7 @@ namespace rJordanBot.Resources.MySQL
 
         public static ulong GetMsgId(ulong UserID)
         {
-            using var connection = MySQL.getConnection();
+            using MySqlConnection connection = MySQL.getConnection();
             string query = $"SELECT MsgID FROM Socials WHERE UserID={UserID}";
             return connection.QueryFirst<ulong>(query);
         }
@@ -201,9 +198,9 @@ namespace rJordanBot.Resources.MySQL
     {
         public static bool IsRegistered(this SocketGuildUser user)
         {
-            using var connection = MySQL.getConnection();
+            using MySqlConnection connection = MySQL.getConnection();
             string query = $"SELECT COUNT(1) FROM Users WHERE ID={user.Id}";
-            
+
             long result = connection.ExecuteScalarAsync<long>(query).Result;
 
             return result > 0;
@@ -211,7 +208,7 @@ namespace rJordanBot.Resources.MySQL
 
         private static User Register(this SocketGuildUser user)
         {
-            using var connection = MySQL.getConnection();
+            using MySqlConnection connection = MySQL.getConnection();
             string query = $"INSERT INTO Users (ID) VALUES ({user.Id})";
             connection.ExecuteAsync(query);
 
@@ -221,7 +218,7 @@ namespace rJordanBot.Resources.MySQL
 
         public static User ToUser(this SocketGuildUser user)
         {
-            using var connection = MySQL.getConnection();
+            using MySqlConnection connection = MySQL.getConnection();
             string query = $"SELECT * FROM Users WHERE ID={user.Id}";
 
             if (user.IsRegistered()) return connection.Query<User>(query).FirstOrDefault();
@@ -230,21 +227,21 @@ namespace rJordanBot.Resources.MySQL
 
         public static IEnumerable<User> List()
         {
-            using var connection = MySQL.getConnection();
+            using MySqlConnection connection = MySQL.getConnection();
             string query = $"SELECT * FROM Users";
             return connection.Query<User>(query);
         }
 
         public static async Task Delete(this User user)
         {
-            using var connection = MySQL.getConnection();
+            using MySqlConnection connection = MySQL.getConnection();
             string query = $"DELETE FROM Users WHERE ID={user.ID}";
             await connection.ExecuteAsync(query);
         }
 
         public static async Task SetVerified(this User user, bool verified)
         {
-            using var connection = MySQL.getConnection();
+            using MySqlConnection connection = MySQL.getConnection();
             string query = $"UPDATE Users SET EventVerified={verified} WHERE ID={user.ID}";
             await connection.ExecuteAsync(query);
         }
@@ -254,7 +251,7 @@ namespace rJordanBot.Resources.MySQL
     {
         public static async Task<int> getWarningCount(ulong UserID)
         {
-            using var connection = MySQL.getConnection();
+            using MySqlConnection connection = MySQL.getConnection();
             string query = $"SELECT COUNT(*) FROM Warnings WHERE UserID={UserID}";
             return await connection.ExecuteScalarAsync<int>(query);
         }
@@ -265,7 +262,7 @@ namespace rJordanBot.Resources.MySQL
 
         public static async Task saveWarning(this Warning warning)
         {
-            using var connection = MySQL.getConnection();
+            using MySqlConnection connection = MySQL.getConnection();
             string query = $"INSERT INTO Warnings (UserID, ChannelID, MessageID, Timestamp, Reason, ModID) " +
                 $"VALUES ({warning.UserID}, {warning.ChannelID}, {warning.MessageID}, {warning.Timestamp}, " +
                 $"'{warning.Reason}', {warning.ModID})";
@@ -274,7 +271,7 @@ namespace rJordanBot.Resources.MySQL
 
         public static async Task<IEnumerable<Warning>> getWarnings(ulong UserID)
         {
-            using var connection = MySQL.getConnection();
+            using MySqlConnection connection = MySQL.getConnection();
             string query = $"SELECT * FROM Warnings WHERE UserID={UserID}";
             return await connection.QueryAsync<Warning>(query);
         }

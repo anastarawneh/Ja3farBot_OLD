@@ -1,10 +1,4 @@
 ﻿using Discord;
-using Discord.WebSocket;
-using rJordanBot.Resources.Database;
-using rJordanBot.Resources.Settings;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace rJordanBot.Resources.Datatypes
 {

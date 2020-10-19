@@ -5,10 +5,6 @@ using rJordanBot.Core.Methods;
 using rJordanBot.Resources.MySQL;
 using rJordanBot.Resources.Settings;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace rJordanBot.Core.Preconditions
@@ -40,7 +36,7 @@ namespace rJordanBot.Core.Preconditions
     }
 
     public class RequireBot : PreconditionAttribute
-    { 
+    {
         public override Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context, CommandInfo command, IServiceProvider services)
         {
             if (context.User.Id == context.Client.CurrentUser.Id) return Task.FromResult(PreconditionResult.FromSuccess());

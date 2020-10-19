@@ -1,5 +1,4 @@
 ﻿using Discord;
-using Discord.Rest;
 using Discord.WebSocket;
 using rJordanBot.Resources.Datatypes;
 using rJordanBot.Resources.MySQL;
@@ -38,7 +37,7 @@ namespace rJordanBot.Core.Methods
             if (channel is IDMChannel) return;
 
             SocketGuildUser user = Constants.IGuilds.Jordan(_client).GetUser(reaction.UserId);
-            
+
             SocketTextChannel channel_ = channel as SocketTextChannel;
             SocketGuild guild = channel_.Guild;
             if (channel_.Id == Data.GetChnlId("role-selection") && !user.IsBot)

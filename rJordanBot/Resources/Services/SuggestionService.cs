@@ -1,13 +1,9 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using Microsoft.EntityFrameworkCore.Internal;
 using rJordanBot.Core.Methods;
 using rJordanBot.Resources.Datatypes;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace rJordanBot.Resources.Services
@@ -44,7 +40,7 @@ namespace rJordanBot.Resources.Services
             if (suggestion.state == SuggestionState.Approved) return $":x: Suggestion #{suggestion.number} is already approved.";
             EmbedBuilder embed = suggestion.message.Embeds.First().ToEmbedBuilder();
 
-            if (suggestion.state != SuggestionState.Normal) 
+            if (suggestion.state != SuggestionState.Normal)
             {
                 embed.Fields.Clear();
             }

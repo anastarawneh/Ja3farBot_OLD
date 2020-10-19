@@ -1,5 +1,4 @@
-﻿using Dapper;
-using Discord;
+﻿using Discord;
 using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.Rest;
@@ -7,11 +6,9 @@ using Discord.WebSocket;
 using rJordanBot.Core.Methods;
 using rJordanBot.Core.Preconditions;
 using rJordanBot.Resources.MySQL;
-using rJordanBot.Resources.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata;
 using System.Threading.Tasks;
 
 namespace rJordanBot.Core.Moderation
@@ -38,7 +35,7 @@ namespace rJordanBot.Core.Moderation
                 $"*Commands with asterisks are functional mod only.*"
             );
         }
-        
+
         [Command("userinfo")]
         [Alias("uinfo", "ui")]
         [RequireMod]
@@ -50,7 +47,7 @@ namespace rJordanBot.Core.Moderation
                 return;
             }
 
-            IUser userInfo = param as IUser;
+            IUser userInfo = param;
 
             string roles = "";
             List<SocketRole> roles_ = (userInfo as SocketGuildUser).Roles.ToList();
@@ -84,7 +81,7 @@ namespace rJordanBot.Core.Moderation
 
         [Command("kick")]
         [RequireFuncMod]
-        public async Task Kick(SocketGuildUser user, [Remainder]string reason = "")
+        public async Task Kick(SocketGuildUser user, [Remainder] string reason = "")
         {
             await user.KickAsync();
 
@@ -105,7 +102,7 @@ namespace rJordanBot.Core.Moderation
 
         [Command("ban")]
         [RequireFuncMod]
-        public async Task Ban(SocketGuildUser user, [Remainder]string reason = "")
+        public async Task Ban(SocketGuildUser user, [Remainder] string reason = "")
         {
             await user.BanAsync();
 
@@ -305,7 +302,7 @@ namespace rJordanBot.Core.Moderation
                 {
                     DateTimeOffset timestamp = DateTimeOffset.FromUnixTimeSeconds(warning.Timestamp).AddHours(3);
                     string link = Context.Guild.GetTextChannel(warning.ChannelID).GetMessageAsync(warning.MessageID).Result.GetJumpUrl();
-                    string field = 
+                    string field =
                         $"Mod: <@{warning.ModID}>\n" +
                         $"Reason: {warning.Reason}\n" +
                         $"Timestamp: {timestamp:d/M/yyyy} at {timestamp:h:mm tt}\n" +
@@ -466,7 +463,7 @@ namespace rJordanBot.Core.Moderation
 
             IEnumerable<IMessage> messages = channel.GetMessagesAsync().FlattenAsync().Result;
             int count = messages.Count() - 1;
-            var deletable = channel.GetMessagesAsync(count).FlattenAsync().Result;
+            IEnumerable<IMessage> deletable = channel.GetMessagesAsync(count).FlattenAsync().Result;
 
             // copied code from LogEventHandlers.cs
 

@@ -1,14 +1,11 @@
 ﻿using Discord;
 using Discord.Rest;
 using Discord.WebSocket;
-using Microsoft.EntityFrameworkCore;
 using rJordanBot.Resources.Database;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using Victoria;
 
 namespace rJordanBot.Core.Methods
 {
@@ -61,7 +58,7 @@ namespace rJordanBot.Core.Methods
             if (Blacklist.Contains(channel as SocketTextChannel)) return;
 
             IMessage msgBefore = cacheable.Value;
-            IMessage msgAfter = message as IMessage;
+            IMessage msgAfter = message;
 
             if (msgBefore == null) return;
             if (msgBefore.Content == null || msgAfter.Content == null) return;
@@ -599,9 +596,9 @@ namespace rJordanBot.Core.Methods
 
             ulong id = 0;
 
-            foreach (var oldemote in guild1.Emotes)
+            foreach (GuildEmote oldemote in guild1.Emotes)
             {
-                foreach (var newemote in guild2.Emotes)
+                foreach (GuildEmote newemote in guild2.Emotes)
                 {
                     if (oldemote.Id == newemote.Id && oldemote.Name != newemote.Name) id = oldemote.Id;
                 }

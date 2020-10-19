@@ -4,7 +4,6 @@ using Discord.Commands;
 using Discord.WebSocket;
 using rJordanBot.Core.Methods;
 using rJordanBot.Core.Preconditions;
-using rJordanBot.Resources.Database;
 using rJordanBot.Resources.Services;
 using System.Threading.Tasks;
 
@@ -73,7 +72,7 @@ namespace rJordanBot.Core.Commands
         [Command("play"), Alias("p")]
         [RequireMod]
         [RequireBotChannel]
-        public async Task Play([Remainder]string query = null)
+        public async Task Play([Remainder] string query = null)
         {
             if (Context.Channel is IDMChannel) return;
             SocketGuildUser user = Context.User as SocketGuildUser;
