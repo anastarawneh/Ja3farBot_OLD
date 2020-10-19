@@ -1,7 +1,9 @@
-﻿using Discord;
+﻿using Dapper;
+using Discord;
 using Discord.Commands;
 using Discord.Rest;
 using Discord.WebSocket;
+using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using rJordanBot.Resources.Database;
 using rJordanBot.Resources.Datatypes;
@@ -95,47 +97,33 @@ namespace rJordanBot.Core.Methods
 
         public static ulong GetChnlId(string Name)
         {
-            using (SqliteDbContext DbContext = new SqliteDbContext())
+            using MySqlConnection connection = MySQL.getConnection();
+            string query = $"SELECT * FROM Channels";
+            IEnumerable<Channel> channels = connection.Query<Channel>(query);
+
+            foreach (Channel channel in channels)
             {
-                foreach (Channel channel in DbContext.Channels)
-                {
-                    if (channel.Name == Name) goto cont;
-                }
-
-                return 0;
-
-            cont:
-                ulong id = DbContext.Channels.Where(x => x.Name == Name).FirstOrDefault().ID;
-                return id;
+                if (channel.Name == Name) return channel.ID;
             }
+            return 0;
         }
 
         public static async Task ResetChannels(SocketCommandContext Context)
         {
-            using SqliteDbContext DbContext = new SqliteDbContext();
-            foreach (Channel channel in DbContext.Channels)
+            using MySqlConnection connection = MySQL.getConnection();
+            string query = $"DELETE FROM Channels";
+            await connection.ExecuteAsync(query);
+            IReadOnlyCollection<SocketGuildChannel> channels = Context.Guild.Channels;
+            query = "INSERT INTO Channels (ID, Name, Type) VALUES ";
+            foreach (SocketGuildChannel channel in channels)
             {
-                DbContext.Channels.Remove(channel);
-            }
-
-            foreach (SocketGuildChannel channel in Constants.IGuilds.Jordan(Context).Channels)
-            {
-                if (channel.GetType().ToString() == "Discord.WebSocket.SocketCategoryChannel")
+                if (!(channel is SocketCategoryChannel))
                 {
-
-                }
-                else
-                {
-                    DbContext.Channels.Add(new Channel
-                    {
-                        ID = channel.Id,
-                        Name = channel.Name,
-                        Type = channel.GetType().ToString()
-                    });
+                    query += $"({channel.Id}, '{channel.Name}', '{channel.GetType()}'), ";
                 }
             }
-
-            await DbContext.SaveChangesAsync();
+            query = query.Substring(0, query.Length - 2);
+            await connection.ExecuteAsync(query);
         }
 
         public static RoleSetting GetRoleSetting(string role)

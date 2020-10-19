@@ -8,7 +8,7 @@ namespace rJordanBot.Resources.Database
     {
         // public DbSet<Strike> Strikes { get; set; }
         // public DbSet<Social_OLD> Socials { get; set; }
-        public DbSet<Channel> Channels { get; set; }
+        // public DbSet<Channel_OLD> Channels { get; set; }
         public DbSet<Invite> Invites { get; set; }
         public DbSet<UserInvite> UserInvites { get; set; }
         // public DbSet<Starboard_OLD> Starboards { get; set; }

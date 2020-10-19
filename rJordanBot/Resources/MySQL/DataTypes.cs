@@ -3,6 +3,13 @@ using Discord.WebSocket;
 
 namespace rJordanBot.Resources.MySQL
 {
+    public class Channel
+    {
+        public ulong ID { get; set; }
+        public string Name { get; set; }
+        public string Type { get; set; }
+    }
+    /* --- */
     public class Moderator
     {
         public ulong ID { get; set; }
