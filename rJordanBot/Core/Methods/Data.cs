@@ -22,59 +22,26 @@ namespace rJordanBot.Core.Methods
 {
     public static class Data
     {
-        public static Task InitJSON()
+        public static Task InitYML()
         {
-            string JSON = "";
-            //Assembly.GetEntryAssembly().Location = /home/ubuntu/linux-x64/publish/rJordanBot.dll; (ON AWS)
+            string YML = "";
 
-            string SettingsLocation;
+            string ConfigLocation;
             switch (Assembly.GetEntryAssembly().Location)
             {
                 default:
                     Console.WriteLine("The bot is running locally on Windows.");
-                    SettingsLocation = Assembly.GetEntryAssembly().Location.Replace(@"bin\Debug\netcoreapp3.0\rJordanBot.dll", @"Data\Settings.json");
+                    ConfigLocation = Assembly.GetEntryAssembly().Location.Replace(@"bin\Debug\netcoreapp3.0\rJordanBot.dll", @"Data\config.yml");
                     Environment.SetEnvironmentVariable("SystemType", "win");
                     break;
                 case "/home/ubuntu/rJordanBot/publish/rJordanBot.dll":
                     Console.WriteLine("The bot is running remotely on AWS.");
-                    SettingsLocation = Path.Combine("rJordanBot", "Data", "Settings.json");
+                    ConfigLocation = Path.Combine("rJordanBot", "Data", "config.yml");
                     Environment.SetEnvironmentVariable("SystemType", "aws");
                     break;
             }
-            Environment.SetEnvironmentVariable("SettingsLocation", SettingsLocation);
+            Environment.SetEnvironmentVariable("SettingsLocation", ConfigLocation);
 
-            using (FileStream Stream = new FileStream(SettingsLocation, FileMode.Open, FileAccess.Read))
-            using (StreamReader ReadSettings = new StreamReader(Stream))
-            {
-                JSON = ReadSettings.ReadToEnd();
-            }
-
-            Setting Settings = JsonConvert.DeserializeObject<Setting>(JSON);
-
-            ESettings.Token = Settings.token;
-            ESettings.Owner = Settings.owner;
-            ESettings.ReportBanned = Settings.reportbanned;
-            ESettings.StarboardMin = Settings.starboardmin;
-            ESettings.ModAppsActive = Settings.modappsactive;
-            ESettings.EventsActive = Settings.eventsactive;
-            ESettings.InviteWhitelist = Settings.invitewhitelist;
-            ESettings.VerifyID = Settings.verifyid;
-            ESettings.Announcement = Settings.announcement;
-            ESettings.mysql_server = Settings.mysql_server;
-            ESettings.mysql_username = Settings.mysql_username;
-            ESettings.mysql_password = Settings.mysql_password;
-            ESettings.mysql_dbname = Settings.mysql_dbname;
-            ESettings.Covid = Settings.covid;
-
-            return Task.CompletedTask;
-        }
-
-        public static Task InitYML()
-        {
-            string YML = "";
-            
-            string ConfigLocation = Environment.GetEnvironmentVariable("SettingsLocation").Replace("Settings.json", "config.yml");
-            
             using (FileStream Stream = new FileStream(ConfigLocation, FileMode.Open, FileAccess.Read))
             using (StreamReader ReadSettings = new StreamReader(Stream))
             {
@@ -102,29 +69,34 @@ namespace rJordanBot.Core.Methods
             return Task.CompletedTask;
         }
 
-        public static Task ReloadJSON()
+        public static Task ReloadYML()
         {
-            string JSON = "";
+            string YML = "";
 
             string SettingsLocation = Environment.GetEnvironmentVariable("SettingsLocation");
             using (FileStream Stream = new FileStream(SettingsLocation, FileMode.Open, FileAccess.Read))
             using (StreamReader ReadSettings = new StreamReader(Stream))
             {
-                JSON = ReadSettings.ReadToEnd();
+                YML = ReadSettings.ReadToEnd();
             }
 
-            Setting Settings = JsonConvert.DeserializeObject<Setting>(JSON);
+            IDeserializer deserializer = new DeserializerBuilder().Build();
+            ConfigFile configFile = deserializer.Deserialize<ConfigFile>(YML);
 
-            ESettings.Token = Settings.token;
-            ESettings.Owner = Settings.owner;
-            ESettings.ReportBanned = Settings.reportbanned;
-            ESettings.StarboardMin = Settings.starboardmin;
-            ESettings.ModAppsActive = Settings.modappsactive;
-            ESettings.EventsActive = Settings.eventsactive;
-            ESettings.InviteWhitelist = Settings.invitewhitelist;
-            ESettings.VerifyID = Settings.verifyid;
-            ESettings.Announcement = Settings.announcement;
-            ESettings.Covid = Settings.covid;
+            Config.Token = configFile.token;
+            Config.Owner = configFile.owner;
+            Config.ReportBanned = configFile.reportbanned;
+            Config.StarboardMin = configFile.starboardmin;
+            Config.ModAppsActive = configFile.modappsactive;
+            Config.EventsActive = configFile.eventsactive;
+            Config.InviteWhitelist = configFile.invitewhitelist;
+            Config.VerifyID = configFile.verifyid;
+            Config.Announcement = configFile.announcement;
+            Config.mysql_server = configFile.mysql_server;
+            Config.mysql_username = configFile.mysql_username;
+            Config.mysql_password = configFile.mysql_password;
+            Config.mysql_dbname = configFile.mysql_dbname;
+            Config.Covid = configFile.covid;
 
             return Task.CompletedTask;
         }
@@ -163,7 +135,7 @@ namespace rJordanBot.Core.Methods
         public static RoleSetting GetRoleSetting(string role)
         {
             string ans = Environment.GetEnvironmentVariable("SystemType");
-            string XmlLocation = Environment.GetEnvironmentVariable("SettingsLocation").Replace("Settings.json", "RoleMessages.xml");
+            string XmlLocation = Environment.GetEnvironmentVariable("SettingsLocation").Replace("config.yml", "RoleMessages.xml");
             /*switch (ans)
             {
                 default:
@@ -227,7 +199,7 @@ namespace rJordanBot.Core.Methods
         public static RoleSetting GetEmojiRoleSetting(string emoji)
         {
             string ans = Environment.GetEnvironmentVariable("SystemType");
-            string XmlLocation = Environment.GetEnvironmentVariable("SettingsLocation").Replace("Settings.json", "RoleMessages.xml");
+            string XmlLocation = Environment.GetEnvironmentVariable("SettingsLocation").Replace("config.yml", "RoleMessages.xml");
             /*switch (ans)
             {
                 default:

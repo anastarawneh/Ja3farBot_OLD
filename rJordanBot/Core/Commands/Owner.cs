@@ -36,7 +36,7 @@ namespace rJordanBot.Core.Commands
         [RequireBotChannel]
         public async Task Reload()
         {
-            await Data.ReloadJSON();
+            await Data.ReloadYML();
             await Context.Message.AddReactionAsync(Constants.IEmojis.Tick);
         }
 

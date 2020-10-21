@@ -24,7 +24,7 @@ namespace rJordanBot.Resources.Database
                 default:
                     break;
                 case "aws":
-                    DbLocation = Environment.GetEnvironmentVariable("SettingsLocation").Replace("Settings.json", "Database.sqlite");
+                    DbLocation = Environment.GetEnvironmentVariable("SettingsLocation").Replace("config.yml", "Database.sqlite");
                     Options.UseSqlite($"DataSource={DbLocation}");
                     break;
                 case "win":

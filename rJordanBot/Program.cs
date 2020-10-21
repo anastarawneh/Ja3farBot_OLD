@@ -29,7 +29,6 @@ namespace rJordanBot
 
         private async Task MainAsync()
         {
-            await Data.InitJSON();
             await Data.InitYML();
             await MySQL.Initialize();
             if (!Multicraft.Initialize(Environment.GetEnvironmentVariable("SystemType"), BotType.Ja3farBot))
