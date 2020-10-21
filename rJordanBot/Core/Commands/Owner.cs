@@ -9,7 +9,6 @@ using rJordanBot.Core.Preconditions;
 using rJordanBot.Resources.Database;
 using rJordanBot.Resources.Datatypes;
 using rJordanBot.Resources.MySQL;
-using rJordanBot.Resources.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -74,7 +73,7 @@ namespace rJordanBot.Core.Commands
         [Command("resetchannels"), Alias("rc")]
         public async Task ResetChannels()
         {
-            if (Context.User.Id != ESettings.Owner && Context.User.Id != Context.Client.CurrentUser.Id) return;
+            if (Context.User.Id != Config.Owner && Context.User.Id != Context.Client.CurrentUser.Id) return;
             await Methods.Data.ResetChannels(Context);
 
             IEmote emote = new Emoji("✅");
@@ -263,12 +262,12 @@ namespace rJordanBot.Core.Commands
         [RequireBotChannel]
         public async Task Announce()
         {
-            Announcement ann = ESettings.Announcement;
+            ConfigFile.Announcement ann = Config.Announcement;
 
             EmbedBuilder embed = new EmbedBuilder();
             embed.WithTitle(ann.title);
             embed.WithDescription(ann.desc);
-            foreach (Announcement.Field field in ann.fields)
+            foreach (ConfigFile.Announcement.Field field in ann.fields)
             {
                 embed.AddField(field.title, field.content);
             }
@@ -500,7 +499,7 @@ namespace rJordanBot.Core.Commands
             DiscordSocketClient client = Context.Client;
             await client.StopAsync();
 
-            await client.LoginAsync(TokenType.Bot, ESettings.Token);
+            await client.LoginAsync(TokenType.Bot, Config.Token);
             await client.StartAsync();
         }
 

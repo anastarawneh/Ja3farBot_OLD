@@ -191,7 +191,7 @@ namespace rJordanBot.Core.Methods
         public async Task InviteDeletion(SocketMessage message)
         {
             if (message.Author.IsBot) return;
-            foreach (string whitelist in ESettings.InviteWhitelist)
+            foreach (string whitelist in Config.InviteWhitelist)
             {
                 if (message.Content.Contains(whitelist)) return;
             }

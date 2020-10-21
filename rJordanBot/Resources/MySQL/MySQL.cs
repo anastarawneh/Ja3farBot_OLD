@@ -1,4 +1,5 @@
 ﻿using MySql.Data.MySqlClient;
+using rJordanBot.Resources.Datatypes;
 using rJordanBot.Resources.Settings;
 using System;
 using System.Threading.Tasks;
@@ -7,10 +8,10 @@ namespace rJordanBot.Resources.MySQL
 {
     public class MySQL
     {
-        private static string server = ESettings.mysql_server;
-        private static string username = ESettings.mysql_username;
-        private static string password = ESettings.mysql_password;
-        private static string dbname = ESettings.mysql_dbname;
+        private static string server = Config.mysql_server;
+        private static string username = Config.mysql_username;
+        private static string password = Config.mysql_password;
+        private static string dbname = Config.mysql_dbname;
         private static MySqlConnection connection;
 
 

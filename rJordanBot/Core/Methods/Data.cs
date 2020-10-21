@@ -16,6 +16,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Xml;
+using YamlDotNet.Serialization;
 
 namespace rJordanBot.Core.Methods
 {
@@ -64,6 +65,39 @@ namespace rJordanBot.Core.Methods
             ESettings.mysql_password = Settings.mysql_password;
             ESettings.mysql_dbname = Settings.mysql_dbname;
             ESettings.Covid = Settings.covid;
+
+            return Task.CompletedTask;
+        }
+
+        public static Task InitYML()
+        {
+            string YML = "";
+            
+            string ConfigLocation = Environment.GetEnvironmentVariable("SettingsLocation").Replace("Settings.json", "config.yml");
+            
+            using (FileStream Stream = new FileStream(ConfigLocation, FileMode.Open, FileAccess.Read))
+            using (StreamReader ReadSettings = new StreamReader(Stream))
+            {
+                YML = ReadSettings.ReadToEnd();
+            }
+
+            IDeserializer deserializer = new DeserializerBuilder().Build();
+            ConfigFile configFile = deserializer.Deserialize<ConfigFile>(YML);
+
+            Config.Token = configFile.token;
+            Config.Owner = configFile.owner;
+            Config.ReportBanned = configFile.reportbanned;
+            Config.StarboardMin = configFile.starboardmin;
+            Config.ModAppsActive = configFile.modappsactive;
+            Config.EventsActive = configFile.eventsactive;
+            Config.InviteWhitelist = configFile.invitewhitelist;
+            Config.VerifyID = configFile.verifyid;
+            Config.Announcement = configFile.announcement;
+            Config.mysql_server = configFile.mysql_server;
+            Config.mysql_username = configFile.mysql_username;
+            Config.mysql_password = configFile.mysql_password;
+            Config.mysql_dbname = configFile.mysql_dbname;
+            Config.Covid = configFile.covid;
 
             return Task.CompletedTask;
         }
@@ -428,7 +462,7 @@ namespace rJordanBot.Core.Methods
             SocketTextChannel starboardChannel = guild.Channels.FirstOrDefault(x => x.Id == GetChnlId("starboard")) as SocketTextChannel;
 
             // If starboard message does not exist
-            if (!starboardMessage.starboardExists() && starboardMessage.stars >= ESettings.StarboardMin)
+            if (!starboardMessage.starboardExists() && starboardMessage.stars >= Config.StarboardMin)
             {
                 SocketTextChannel channel = guild.Channels.First(x => x.Id == starboardMessage.channel.Id) as SocketTextChannel;
                 string link = channel.GetMessageAsync(starboardMessage.message.Id).Result.GetJumpUrl();
@@ -447,7 +481,7 @@ namespace rJordanBot.Core.Methods
                 await starboardMessage.Save();
             }
             // If starboard message exists and needs editing
-            else if (starboardMessage.starboardExists() && starboardMessage.stars >= ESettings.StarboardMin)
+            else if (starboardMessage.starboardExists() && starboardMessage.stars >= Config.StarboardMin)
             {
                 Starboard starboard1 = await StarboardFunctions.getStarboardByMsgID(starboardMessage.message.Id);
 
@@ -457,7 +491,7 @@ namespace rJordanBot.Core.Methods
                 await starboardMessage.Save();
             }
             // If starboard message needs removal
-            else if (starboardMessage.starboardExists() && starboardMessage.stars < ESettings.StarboardMin)
+            else if (starboardMessage.starboardExists() && starboardMessage.stars < Config.StarboardMin)
             {
                 Starboard starboard1 = await StarboardFunctions.getStarboardByMsgID(starboardMessage.message.Id);
 

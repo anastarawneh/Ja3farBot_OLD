@@ -5,6 +5,7 @@ using Discord.Rest;
 using Discord.WebSocket;
 using MySql.Data.MySqlClient;
 using rJordanBot.Core.Methods;
+using rJordanBot.Resources.Datatypes;
 using rJordanBot.Resources.Settings;
 using System;
 using System.Collections.Generic;
@@ -63,7 +64,7 @@ namespace rJordanBot.Resources.MySQL
             using MySqlConnection connection = MySQL.getConnection();
             await connection.OpenAsync();
             string query = "";
-            if (message.stars >= ESettings.StarboardMin && !message.starboardExists())
+            if (message.stars >= Config.StarboardMin && !message.starboardExists())
             {
                 query = $"INSERT INTO Starboards (MsgID, ChannelID, UserID, SBMessageID) " +
                    $"VALUES ({message.message.Id}, {message.channel.Id}, {message.author.Id}, {message.starboardid})";

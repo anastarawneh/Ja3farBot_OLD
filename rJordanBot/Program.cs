@@ -5,6 +5,7 @@ using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using MulticraftLib;
 using rJordanBot.Core.Methods;
+using rJordanBot.Resources.Datatypes;
 using rJordanBot.Resources.MySQL;
 using rJordanBot.Resources.Services;
 using rJordanBot.Resources.Settings;
@@ -29,6 +30,7 @@ namespace rJordanBot
         private async Task MainAsync()
         {
             await Data.InitJSON();
+            await Data.InitYML();
             await MySQL.Initialize();
             if (!Multicraft.Initialize(Environment.GetEnvironmentVariable("SystemType"), BotType.Ja3farBot))
             {
@@ -62,7 +64,7 @@ namespace rJordanBot
             _cmdService.CommandExecuted += SocialsExceptionHandler;
             _client.MessageReceived += Bot_CommandHandler;
 
-            await _client.LoginAsync(TokenType.Bot, ESettings.Token);
+            await _client.LoginAsync(TokenType.Bot, Config.Token);
             await _client.StartAsync();
 
             _provider = new ServiceCollection()

@@ -5,7 +5,7 @@ using Discord.Rest;
 using Discord.WebSocket;
 using rJordanBot.Core.Methods;
 using rJordanBot.Core.Preconditions;
-using rJordanBot.Resources.Settings;
+using rJordanBot.Resources.Datatypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,7 +34,7 @@ namespace rJordanBot.Core.Commands
         [Command("report")]
         public async Task Report()
         {
-            if (ESettings.ReportBanned.Contains(Context.User.Id))
+            if (Config.ReportBanned.Contains(Context.User.Id))
             {
                 await ReplyAsync(":x: You have been banned from using the report system.");
                 return;
@@ -162,7 +162,7 @@ namespace rJordanBot.Core.Commands
         [Command("apply")]
         public async Task Apply()
         {
-            if (ESettings.ModAppsActive == false)
+            if (Config.ModAppsActive == false)
             {
                 await ReplyAsync(":x: Thank you, but we closed moderator applications for now.");
                 return;
@@ -283,7 +283,7 @@ namespace rJordanBot.Core.Commands
         [RequireBotChannel]
         public async Task CovidStats()
         {
-            COVID stats = ESettings.Covid;
+            ConfigFile.COVID stats = Config.Covid;
             EmbedBuilder embed = new EmbedBuilder();
             embed.WithTitle($"COVID-19 stats for {DateTime.Today.ToString("dd/MM/yyyy")}");
             embed.WithColor(Constants.IColors.Blurple);

@@ -5,8 +5,8 @@ using Discord.Rest;
 using Discord.WebSocket;
 using rJordanBot.Core.Methods;
 using rJordanBot.Core.Preconditions;
+using rJordanBot.Resources.Datatypes;
 using rJordanBot.Resources.MySQL;
-using rJordanBot.Resources.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,7 +48,7 @@ namespace rJordanBot.Core.Commands
 
                 if (args.Contains("-l")) local = true;
 
-                if (ESettings.EventsActive == false && !local)
+                if (Config.EventsActive == false && !local)
                 {
                     await ReplyAsync(":x: The event system is not available right now.");
                     return;
@@ -120,7 +120,7 @@ namespace rJordanBot.Core.Commands
             [Command("edit")]
             public async Task Edit(int id = 0, string section = "empty", [Remainder] string message = "none")
             {
-                if (ESettings.EventsActive == false)
+                if (Config.EventsActive == false)
                 {
                     await ReplyAsync(":x: The event system is not available right now.");
                     return;
@@ -193,7 +193,7 @@ namespace rJordanBot.Core.Commands
             {
                 //Checks
 
-                if (ESettings.EventsActive == false)
+                if (Config.EventsActive == false)
                 {
                     await ReplyAsync(":x: The event system is not available right now.");
                     return;
