@@ -64,6 +64,7 @@ namespace rJordanBot.Resources.Datatypes
         public bool eventsactive { get; set; }
         public List<string> invitewhitelist { get; set; }
         public ulong verifyid { get; set; }
+        public List<string> bannedwords { get; set; }
         public Announcement announcement { get; set; }
         public string mysql_server { get; set; }
         public string mysql_username { get; set; }
