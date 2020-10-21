@@ -1,6 +1,5 @@
 ﻿using MySql.Data.MySqlClient;
 using rJordanBot.Resources.Datatypes;
-using rJordanBot.Resources.Settings;
 using System;
 using System.Threading.Tasks;
 

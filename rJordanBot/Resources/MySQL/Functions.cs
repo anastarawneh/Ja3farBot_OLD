@@ -6,7 +6,6 @@ using Discord.WebSocket;
 using MySql.Data.MySqlClient;
 using rJordanBot.Core.Methods;
 using rJordanBot.Resources.Datatypes;
-using rJordanBot.Resources.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;

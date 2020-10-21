@@ -1,7 +1,7 @@
 ﻿using Discord;
 using Discord.WebSocket;
 using rJordanBot.Core.Methods;
-using rJordanBot.Resources.Settings;
+using rJordanBot.Resources.Datatypes;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -147,7 +147,7 @@ namespace rJordanBot.Resources.Services
                 return ":x: Queue is empty.";
             }
 
-            if (_player.VoiceChannel.Name == "Private Office" && user.Id != ESettings.Owner) return ":x: The bot is in Anas' private office, so the queue is hidden.";
+            if (_player.VoiceChannel.Name == "Private Office" && user.Id != Config.Owner) return ":x: The bot is in Anas' private office, so the queue is hidden.";
 
             string result = "```stylus\n";
             if (_qloop) result += "[QUEUE LOOPING]";
