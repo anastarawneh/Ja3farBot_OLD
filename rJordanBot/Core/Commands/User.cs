@@ -25,8 +25,8 @@ namespace rJordanBot.Core.Commands
                 "``^event``: Event command system. Enter ``^event help`` for more.\n" +
                 "``^socials``: Socials command system. Enter ``^socials help`` for more.\n" +
                 "``^report``: DM user report system. Only use in DMs.\n" +
-                "``^suggest <suggestion>``: Submit a suggestion."/* +
-                "``^music``: Music command system."*/
+                "``^suggest <suggestion>``: Submit a suggestion." +
+                "``^music``: Music command system."
             );
         }
 

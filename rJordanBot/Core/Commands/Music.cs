@@ -19,7 +19,6 @@ namespace rJordanBot.Core.Commands
         }
 
         [Command("join")]
-        [RequireMod]
         [RequireBotChannel]
         public async Task Join()
         {
@@ -42,7 +41,6 @@ namespace rJordanBot.Core.Commands
         }
 
         [Command("leave"), Alias("dc")]
-        [RequireMod]
         [RequireBotChannel]
         public async Task Leave()
         {
@@ -70,7 +68,6 @@ namespace rJordanBot.Core.Commands
         }
 
         [Command("play"), Alias("p")]
-        [RequireMod]
         [RequireBotChannel]
         public async Task Play([Remainder] string query = null)
         {
@@ -98,7 +95,6 @@ namespace rJordanBot.Core.Commands
         }
 
         [Command("stop")]
-        [RequireMod]
         [RequireBotChannel]
         public async Task Stop()
         {
@@ -126,7 +122,6 @@ namespace rJordanBot.Core.Commands
         }
 
         [Command("skip")]
-        [RequireMod]
         [RequireBotChannel]
         public async Task Skip()
         {
@@ -154,7 +149,6 @@ namespace rJordanBot.Core.Commands
         }
 
         [Command("pause")]
-        [RequireMod]
         [RequireBotChannel]
         public async Task Pause()
         {
@@ -182,7 +176,6 @@ namespace rJordanBot.Core.Commands
         }
 
         [Command("queue"), Alias("q")]
-        [RequireMod]
         [RequireBotChannel]
         public async Task Queue(int page = 1)
         {
@@ -191,7 +184,6 @@ namespace rJordanBot.Core.Commands
         }
 
         [Command("loop"), Alias("l")]
-        [RequireMod]
         [RequireBotChannel]
         public async Task Loop()
         {
@@ -218,7 +210,6 @@ namespace rJordanBot.Core.Commands
         }
 
         [Command("seek")]
-        [RequireMod]
         [RequireBotChannel]
         public async Task Seek(string duration = null)
         {
@@ -251,7 +242,6 @@ namespace rJordanBot.Core.Commands
         }
 
         [Command("remove")]
-        [RequireMod]
         [RequireBotChannel]
         public async Task Remove(int index = 0)
         {
@@ -283,7 +273,6 @@ namespace rJordanBot.Core.Commands
         }
 
         [Command("qloop")]
-        [RequireMod]
         [RequireBotChannel]
         public async Task qLoop()
         {
@@ -310,7 +299,6 @@ namespace rJordanBot.Core.Commands
         }
 
         [Command("shuffle")]
-        [RequireMod]
         [RequireBotChannel]
         public async Task Shuffle()
         {
