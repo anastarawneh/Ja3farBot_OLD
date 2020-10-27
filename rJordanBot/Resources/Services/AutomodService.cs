@@ -24,6 +24,7 @@ namespace rJordanBot.Resources.Services
         public Task Initialize()
         {
             _client.MessageReceived += DeleteBannedWords;
+            _client.MessageReceived += FilterInvites;
             
             return Task.CompletedTask;
         }
@@ -45,6 +46,23 @@ namespace rJordanBot.Resources.Services
                 }
             }
             return;
+        }
+
+        public async Task FilterInvites(SocketMessage message)
+        {
+            if (message.Author.IsBot || message is SocketSystemMessage || !(message.Channel is SocketGuildChannel)) return;
+            foreach (string whitelist in Config.InviteWhitelist)
+            {
+                if (message.Content.Contains(whitelist)) return;
+            }
+            if (message.Content.Contains("discord.gg") || message.Content.Contains("discordapp.com"))
+            {
+                await message.DeleteAsync();
+                await message.Channel.SendMessageAsync(":x: Please don't send Discord server invites in this server.");
+            }
+
+            await LogAutomodAction(new AutomodAction(message, "Invite link"));
+        }
 
 
 

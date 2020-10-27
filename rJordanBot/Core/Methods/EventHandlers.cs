@@ -22,7 +22,6 @@ namespace rJordanBot.Core.Methods
             _client.ReactionAdded += Starboard_ReactionAddedOrRemoved;
             _client.ReactionRemoved += Starboard_ReactionAddedOrRemoved;
             _client.UserLeft += JSON_UserLeft;
-            _client.MessageReceived += InviteDeletion;
             _client.Ready += MuteFixing;
             //_client.UserJoined += JoinVerification;
             _client.GuildMemberUpdated += Greeting_GuildMemberUpdated;
@@ -184,20 +183,6 @@ namespace rJordanBot.Core.Methods
                 {
                     await item.Delete();
                 }
-            }
-        }
-
-        public async Task InviteDeletion(SocketMessage message)
-        {
-            if (message.Author.IsBot) return;
-            foreach (string whitelist in Config.InviteWhitelist)
-            {
-                if (message.Content.Contains(whitelist)) return;
-            }
-            if (message.Content.Contains("discord.gg") || message.Content.Contains("discordapp.com"))
-            {
-                await message.DeleteAsync();
-                await message.Channel.SendMessageAsync(":x: Please don't send Discord server invites in this server.");
             }
         }
 
