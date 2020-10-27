@@ -40,20 +40,35 @@ namespace rJordanBot.Resources.Services
                 if (Message.Content.Contains(phrase))
                 {
                     await Message.DeleteAsync();
-                    goto cont;
+                    await LogAutomodAction(new AutomodAction(message, "Banned word"));
+                    return;
                 }
             }
             return;
 
-        cont:
+
+
+        private class AutomodAction
+        {
+            public SocketMessage Message;
+            public string Reason;
+
+            public AutomodAction(SocketMessage message, string reason)
+            {
+                Message = message;
+                Reason = reason;
+            }
+        }
+        private async Task LogAutomodAction(AutomodAction action)
+        {
             EmbedBuilder embed = new EmbedBuilder();
             embed.WithTitle("Automod Action");
             embed.WithColor(Constants.IColors.Red);
-            embed.WithAuthor(Message.Author);
-            embed.WithDescription($"Message sent in {MentionUtils.MentionChannel(Message.Channel.Id)}");
-            embed.AddField("Message", Message.Content);
-            embed.AddField("Reason", "Banned word");
-            embed.WithFooter($"MessageID: {Message.Id}");
+            embed.WithAuthor(action.Message.Author);
+            embed.WithDescription($"Message sent in {MentionUtils.MentionChannel(action.Message.Channel.Id)}");
+            embed.AddField("Message", action.Message.Content);
+            embed.AddField("Reason", action.Reason);
+            embed.WithFooter($"MessageID: {action.Message.Id}");
             embed.WithCurrentTimestamp();
 
             SocketTextChannel channel = Constants.IGuilds.Jordan(_client).GetTextChannel(Data.GetChnlId("automod-log"));
