@@ -4,8 +4,6 @@ using Discord.Commands;
 using Discord.Rest;
 using Discord.WebSocket;
 using MySql.Data.MySqlClient;
-using Newtonsoft.Json;
-using rJordanBot.Resources.Database;
 using rJordanBot.Resources.Datatypes;
 using rJordanBot.Resources.MySQL;
 using System;
@@ -242,75 +240,65 @@ namespace rJordanBot.Core.Methods
         {
             IReadOnlyCollection<RestInviteMetadata> invites = user.Guild.GetInvitesAsync().Result;
 
-            using SqliteDbContext DbContext = new SqliteDbContext();
-            foreach (Invite invite in DbContext.Invites)
-            {
-                DbContext.Invites.Remove(invite);
-            }
+            using MySqlConnection connection = MySQL.getConnection();
+            string query = "DELETE FROM Invites";
+            await connection.ExecuteAsync(query);
 
+            query = "INSERT INTO Invites (Code, UserID, Uses) VALUES ";
             foreach (RestInviteMetadata invite in invites)
             {
-                DbContext.Invites.Add(new Invite
-                {
-                    UserId = invite.Inviter.Id,
-                    Text = invite.Code,
-                    Uses = invite.Uses.Value
-                });
+                query += $"('{invite.Code}', {invite.Inviter.Id}, {invite.Uses}), ";
             }
-
-            await DbContext.SaveChangesAsync();
+            query = query.Substring(0, query.Length - 2);
+            await connection.ExecuteAsync(query);
         }
 
         public static async Task CompareInvites(SocketGuildUser user)
         {
-            SocketTextChannel logchnl = user.Guild.Channels.FirstOrDefault(x => x.Id == GetChnlId("bot-log")) as SocketTextChannel;
-
             IReadOnlyCollection<RestInviteMetadata> newInvites = user.Guild.GetInvitesAsync().Result;
             Invite sureInvite = new Invite
             {
-                Text = "null",
-                UserId = 1000,
+                Code = "null",
+                UserID = 1000,
                 Uses = 10000
             };
-            using (SqliteDbContext DbContext = new SqliteDbContext())
+            using MySqlConnection connection = MySQL.getConnection();
+            string query = "SELECT * FROM Invites";
+            IEnumerable<Invite> invites = await connection.QueryAsync<Invite>(query);
+            foreach (RestInviteMetadata newInvite in newInvites)
             {
-                foreach (RestInviteMetadata newInvite in newInvites)
+                foreach (Invite DbInvite in invites)
                 {
-                    foreach (Invite DbInvite in DbContext.Invites)
+                    if (DbInvite.Code == newInvite.Code && DbInvite.Uses == (newInvite.Uses.Value - 1))
                     {
-                        if (DbInvite.Text == newInvite.Code && DbInvite.Uses == (newInvite.Uses.Value - 1))
-                        {
-                            sureInvite = DbInvite;
-                            //await logchnl.SendMessageAsync($"[{DateTime.Now} at UserJoined] {user.Mention} joined through {user.Guild.Users.FirstOrDefault(x => x.Id == sureInvite.UserId).Mention}'s invite (`{sureInvite.Text}`).");
-                            UpdateUserInvite(user, sureInvite);
-                            await SetInvitesBefore(user);
-                            return;
-                        }
-                    }
-                }
-                foreach (RestInviteMetadata newInvite in newInvites)
-                {
-                    Invite newInvite_ = new Invite
-                    {
-                        Text = newInvite.Code,
-                        UserId = newInvite.Inviter.Id,
-                        Uses = newInvite.Uses.Value - 1
-                    };
-
-                    if (!DbContext.Invites.Contains(newInvite_) && newInvite.Uses == 1)
-                    {
-                        //await logchnl.SendMessageAsync($"[{DateTime.Now} at UserJoined] {user.Mention} joined through {user.Guild.Users.FirstOrDefault(x => x.Id == newInvite_.UserId).Mention}'s invite (`{newInvite_.Text}`).");
-                        UpdateUserInvite(user, newInvite_);
+                        sureInvite = DbInvite;
+                        UpdateUserInvite(user, sureInvite);
                         await SetInvitesBefore(user);
                         return;
                     }
                 }
             }
+            foreach (RestInviteMetadata newInvite in newInvites)
+            {
+                Invite newInvite_ = new Invite
+                {
+                    Code = newInvite.Code,
+                    UserID = newInvite.Inviter.Id,
+                    Uses = newInvite.Uses.Value - 1
+                };
 
-            //await logchnl.SendMessageAsync($"[{DateTime.Now} at UserJoined] {user.Mention} joined with unknown link.");
-            UpdateUserInvite(user, new Invite { Text = "Unknown", UserId = 1, Uses = 0 }, true);
+                query = $"SELECT COUNT(1) FROM Invites WHERE Code='{newInvite_.Code}'";
+                bool contains = await connection.ExecuteScalarAsync<bool>(query);
+                if (!contains && newInvite.Uses == 1)
+                {
+                    UpdateUserInvite(user, newInvite_);
+                    await SetInvitesBefore(user);
+                    return;
+                }
+            }
+
+            UpdateUserInvite(user, new Invite { Code = "Unknown", UserID = 1, Uses = 0 }, true);
             await SetInvitesBefore(user);
-            return;
         }
 
         public static DateTimeSpan GetDuration(DateTime DT1, DateTime DT2)
@@ -386,26 +374,24 @@ namespace rJordanBot.Core.Methods
 
         public static void UpdateUserInvite(SocketGuildUser user, Invite invite, bool unknown = false)
         {
-            using SqliteDbContext DbContext = new SqliteDbContext();
+            using MySqlConnection connection = MySQL.getConnection();
 
-            if (unknown == true)
+            if (unknown) invite = new Invite
             {
-                invite = new Invite
-                {
-                    Text = "Unknown",
-                    UserId = 1,
-                    Uses = 0
-                };
-            }
+                Code = "Unknown",
+                UserID = 1,
+                Uses = 0
+            };
 
-            foreach (UserInvite UserInvite in DbContext.UserInvites)
+            string query = "SELECT * FROM UserInvites";
+            IEnumerable<UserInvite> userInvites = connection.Query<UserInvite>(query);
+            foreach (UserInvite UserInvite in userInvites)
             {
                 if (UserInvite.UserID == user.Id)
                 {
                     // Remove it if it exists.
-
-                    DbContext.UserInvites.Remove(UserInvite);
-                    DbContext.SaveChanges();
+                    query = $"DELETE FROM UserInvites WHERE Code={UserInvite.Code}";
+                    connection.Execute(query);
                     return;
                 }
             }
@@ -415,11 +401,11 @@ namespace rJordanBot.Core.Methods
             UserInvite userInvite = new UserInvite
             {
                 UserID = user.Id,
-                Code = invite.Text
+                Code = invite.Code
             };
 
-            DbContext.UserInvites.Add(userInvite);
-            DbContext.SaveChanges();
+            query = $"INSERT INTO UserInvites (UserID, Code) VALUES ({userInvite.UserID}, '{userInvite.Code}')";
+            connection.Execute(query);
         }
 
         public static async Task UpdateStarboard(StarboardMessage starboardMessage)

@@ -10,6 +10,13 @@ namespace rJordanBot.Resources.MySQL
         public string Type { get; set; }
     }
     /* --- */
+    public class Invite
+    {
+        public string Code { get; set; }
+        public ulong UserID { get; set; }
+        public int Uses { get; set; }
+    }
+    /* --- */
     public class Moderator
     {
         public ulong ID { get; set; }
@@ -53,6 +60,12 @@ namespace rJordanBot.Resources.MySQL
         public ulong ID { get; set; }
         public bool EventVerified { get; set; }
         public bool SuggestionDenied { get; set; }
+    }
+    /* --- */
+    public class UserInvite
+    {
+        public ulong UserID { get; set; }
+        public string Code { get; set; }
     }
     /* --- */
     public class Warning

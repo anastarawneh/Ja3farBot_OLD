@@ -24,7 +24,7 @@ namespace rJordanBot.Core.Commands
         public async Task Test()
         {
             // TEST CODE STARTS HERE
-
+            
             // TEST CODE ENDS HERE
             IEmote yes = Constants.IEmojis.Tick;
             await Context.Message.AddReactionAsync(yes);
@@ -318,7 +318,6 @@ namespace rJordanBot.Core.Commands
                 [Command("add")]
                 public async Task Add([Remainder] SocketGuildUser user)
                 {
-                    using SqliteDbContext DbContext = new SqliteDbContext();
                     user.ToUser();
 
                     await ReplyAsync($":white_check_mark: User {user.Mention} was added to the database.");

@@ -1,7 +1,10 @@
-﻿using Discord;
+﻿using Dapper;
+using Discord;
 using Discord.Rest;
 using Discord.WebSocket;
+using MySql.Data.MySqlClient;
 using rJordanBot.Resources.Database;
+using rJordanBot.Resources.MySQL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -291,7 +294,11 @@ namespace rJordanBot.Core.Methods
         // User Joined
         public async Task UserJoined(SocketGuildUser user)
         {
-            using SqliteDbContext DbContext = new SqliteDbContext();
+            using MySqlConnection connection = MySQL.getConnection();
+            string query = "SELECT * FROM UserInvites";
+            IEnumerable<UserInvite> userInvites = await connection.QueryAsync<UserInvite>(query);
+            query = "SELECT * FROM Invites";
+            IEnumerable<Invite> invites = await connection.QueryAsync<Invite>(query);
 
             EmbedBuilder embed = new EmbedBuilder();
             string invite = "Unknown";
@@ -300,12 +307,12 @@ namespace rJordanBot.Core.Methods
 
             if (!user.IsBot)
             {
-                foreach (UserInvite UserInvite in DbContext.UserInvites)
+                foreach (UserInvite UserInvite in userInvites)
                 {
                     if (UserInvite.UserID == user.Id)
                     {
                         invite = UserInvite.Code;
-                        inviterID = DbContext.Invites.FirstOrDefault(x => x.Text == UserInvite.Code).UserId;
+                        inviterID = invites.FirstOrDefault(x => x.Code == UserInvite.Code).UserID;
                     }
                 }
 
@@ -371,16 +378,10 @@ namespace rJordanBot.Core.Methods
             SocketTextChannel LogChannel = user.Guild.Channels.FirstOrDefault(x => x.Id == LogID) as SocketTextChannel;
             await LogChannel.SendMessageAsync("", false, embed.Build());
 
-            using SqliteDbContext DbContext = new SqliteDbContext();
-            foreach (UserInvite UserInvite in DbContext.UserInvites)
-            {
-                if (UserInvite.UserID == user.Id)
-                {
-                    DbContext.UserInvites.Remove(UserInvite);
-                    await DbContext.SaveChangesAsync();
-                }
-            }
-            IReadOnlyCollection<Discord.Rest.RestInviteMetadata> Invites = user.Guild.GetInvitesAsync().Result;
+            using MySqlConnection connection = MySQL.getConnection();
+            string query = $"DELETE FROM UserInvites WHERE UserID={user.Id}";
+            await connection.ExecuteAsync(query);
+            IReadOnlyCollection<RestInviteMetadata> Invites = user.Guild.GetInvitesAsync().Result;
             foreach (RestInviteMetadata Invite in Invites)
             {
                 if (Invite.Inviter.Id == user.Id) await Invite.DeleteAsync();
