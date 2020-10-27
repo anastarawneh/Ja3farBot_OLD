@@ -59,9 +59,8 @@ namespace rJordanBot.Resources.Services
             {
                 await message.DeleteAsync();
                 await message.Channel.SendMessageAsync(":x: Please don't send Discord server invites in this server.");
+                await LogAutomodAction(new AutomodAction(message, "Invite link"));
             }
-
-            await LogAutomodAction(new AutomodAction(message, "Invite link"));
         }
 
 
