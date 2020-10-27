@@ -250,6 +250,7 @@ namespace rJordanBot.Core.Methods
                 query += $"('{invite.Code}', {invite.Inviter.Id}, {invite.Uses}), ";
             }
             query = query.Substring(0, query.Length - 2);
+            await connection.OpenAsync();
             await connection.ExecuteAsync(query);
         }
 
