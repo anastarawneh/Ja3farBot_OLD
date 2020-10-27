@@ -500,6 +500,8 @@ namespace rJordanBot.Core.Commands
 
             await client.LoginAsync(TokenType.Bot, Config.Token);
             await client.StartAsync();
+
+            await Context.Message.AddReactionAsync(Constants.IEmojis.Tick);
         }
 
         [Command("modifyrule")]
