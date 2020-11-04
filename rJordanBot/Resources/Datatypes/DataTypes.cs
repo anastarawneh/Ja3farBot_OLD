@@ -98,4 +98,10 @@ namespace rJordanBot.Resources.Datatypes
         Implemented = 2,
         Considered = 3
     }
+
+    public class AnasAPIObject
+    {
+        public int code { get; set; }
+        public object data { get; set; }
+    }
 }

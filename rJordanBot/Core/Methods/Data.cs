@@ -4,12 +4,15 @@ using Discord.Commands;
 using Discord.Rest;
 using Discord.WebSocket;
 using MySql.Data.MySqlClient;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using rJordanBot.Resources.Datatypes;
 using rJordanBot.Resources.MySQL;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Xml;
@@ -460,6 +463,21 @@ namespace rJordanBot.Core.Methods
 
                 await starboardMessage.Save();
             }
+        }
+
+        public static async Task<T> HttpRequest<T>(string URL, string method)
+        {
+            HttpWebRequest request = WebRequest.CreateHttp(URL);
+            request.Method = method;
+            WebResponse response = await request.GetResponseAsync();
+
+            using Stream stream = response.GetResponseStream();
+            StreamReader reader = new StreamReader(stream);
+            string result = await reader.ReadToEndAsync();
+            AnasAPIObject obj = JsonConvert.DeserializeObject<AnasAPIObject>(result);
+            string data = ((JObject) obj.data).ToString();
+            T typereturn = JsonConvert.DeserializeObject<T>(data);
+            return typereturn;
         }
     }
 }
