@@ -14,13 +14,13 @@ namespace rJordanBot.Resources.MySQL
         private static MySqlConnection connection;
 
 
-        public static Task Initialize()
+        public static async Task Initialize()
         {
             connection = new MySqlConnection($"server={server};userid={username};password={password};database={dbname};");
-
-            Console.WriteLine("MySql setup complete.");
-
-            return Task.CompletedTask;
+            await connection.OpenAsync();
+            if (!connection.Ping()) Console.WriteLine("MySql setup error.");
+            else Console.WriteLine("MySql setup complete.");
+            await connection.CloseAsync();
         }
 
         public static MySqlConnection getConnection()
