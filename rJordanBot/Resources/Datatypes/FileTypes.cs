@@ -18,7 +18,6 @@ namespace rJordanBot.Resources.Datatypes
         public string mysql_username { get; set; }
         public string mysql_password { get; set; }
         public string mysql_dbname { get; set; }
-        public COVID covid { get; set; }
 
         public class Announcement
         {
@@ -31,27 +30,6 @@ namespace rJordanBot.Resources.Datatypes
                 public string title { get; set; }
                 public string content { get; set; }
             }
-        }
-
-        public class COVID
-        {
-            public int locals { get; set; }
-            public int amman { get; set; }
-            public int irbid { get; set; }
-            public int zarqa { get; set; }
-            public int mafraq { get; set; }
-            public int ajloun { get; set; }
-            public int jerash { get; set; }
-            public int madaba { get; set; }
-            public int balqa { get; set; }
-            public int karak { get; set; }
-            public int tafileh { get; set; }
-            public int maan { get; set; }
-            public int aqaba { get; set; }
-            public int totalcases { get; set; }
-            public int recoveries { get; set; }
-            public int casualties { get; set; }
-            public int totalcasualties { get; set; }
         }
     }
 

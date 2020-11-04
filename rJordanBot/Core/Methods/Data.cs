@@ -65,7 +65,6 @@ namespace rJordanBot.Core.Methods
             Config.mysql_username = configFile.mysql_username;
             Config.mysql_password = configFile.mysql_password;
             Config.mysql_dbname = configFile.mysql_dbname;
-            Config.Covid = configFile.covid;
 
             return Task.CompletedTask;
         }
@@ -98,7 +97,6 @@ namespace rJordanBot.Core.Methods
             Config.mysql_username = configFile.mysql_username;
             Config.mysql_password = configFile.mysql_password;
             Config.mysql_dbname = configFile.mysql_dbname;
-            Config.Covid = configFile.covid;
 
             return Task.CompletedTask;
         }

@@ -281,32 +281,50 @@ namespace rJordanBot.Core.Commands
 
         [Command("covid")]
         [RequireBotChannel]
-        public async Task CovidStats()
+        public async Task CovidStats(string date = null)
         {
-            ConfigFile.COVID stats = Config.Covid;
+            DateTime dateTime = DateTime.Today;
+            if (DateTime.TryParseExact(date, "d-M-yyyy", null, System.Globalization.DateTimeStyles.None, out DateTime outDateTime)) dateTime = outDateTime;
+            else if (DateTime.TryParseExact(date, "d/M/yyyy", null, System.Globalization.DateTimeStyles.None, out DateTime outDateTime2)) dateTime = outDateTime2;
+            if (dateTime < new DateTime(2020, 10, 30))
+            {
+                await ReplyAsync(":x: The API only contains COVID data from 30/10/2020 and after.");
+                return;
+            }
+            COVID stats = await Data.HttpRequest<COVID>($"https://anastarawneh.live/api/v1/covid-19/{dateTime.Year}/{dateTime.Month}/{dateTime.Day}", "GET");
             EmbedBuilder embed = new EmbedBuilder();
-            embed.WithTitle($"COVID-19 stats for {DateTime.Today.ToString("dd/MM/yyyy")}");
+            embed.WithTitle($"COVID-19 stats for {dateTime:dd/MM/yyyy}");
             embed.WithColor(Constants.IColors.Blurple);
-            embed.WithDescription($"{stats.locals} new local cases, {stats.casualties} casualties and {stats.recoveries} recoveries.");
-            embed.AddField("Amman", stats.amman, true);
-            embed.AddField("Irbid", stats.irbid, true);
-            embed.AddField("Zarqa", stats.zarqa, true);
-            embed.AddField("Mafraq", stats.mafraq, true);
-            embed.AddField("Ajloun", stats.ajloun, true);
-            embed.AddField("Jerash", stats.jerash, true);
-            embed.AddField("Madaba", stats.madaba, true);
-            embed.AddField("Balqa", stats.balqa, true);
-            embed.AddField("Karak", stats.karak, true);
-            embed.AddField("Tafileh", stats.tafileh, true);
-            embed.AddField("Ma'an", stats.maan, true);
-            embed.AddField("Aqaba", stats.aqaba, true);
-            embed.WithFooter($"Total cases: {stats.totalcases} - Total casualties: {stats.totalcasualties}");
-            await ReplyAsync("", false, embed.Build());
-
+            embed.WithDescription($"{stats.localCases} new local cases, {stats.deaths} casualties and {stats.recoveries} recoveries.");
+            embed.AddField("Amman", stats.cities.amman, true);
+            embed.AddField("Irbid", stats.cities.irbid, true);
+            embed.AddField("Zarqa", stats.cities.zarqa, true);
+            embed.AddField("Mafraq", stats.cities.mafraq, true);
+            embed.AddField("Ajloun", stats.cities.ajloun, true);
+            embed.AddField("Jerash", stats.cities.jerash, true);
+            embed.AddField("Madaba", stats.cities.madaba, true);
+            embed.AddField("Balqa", stats.cities.balqa, true);
+            embed.AddField("Karak", stats.cities.karak, true);
+            embed.AddField("Tafileh", stats.cities.tafileh, true);
+            embed.AddField("Ma'an", stats.cities.maan, true);
+            embed.AddField("Aqaba", stats.cities.aqaba, true);
+            string moreStats = 
+                $"Total cases: {stats.totalCases}\n" +
+                $"Total casualties: {stats.totalDeaths}\n" +
+                $"Total recoveries: {stats.totalRecoveries}\n" +
+                $"Foreign cases: {stats.cases - stats.localCases}\n" +
+                $"Hospitalized cases today: {stats.hospitalized}, total: {stats.totalHospitalized}\n" +
+                $"Tests today: {stats.tests}, total: {stats.totalTests}\n" +
+                $"Active cases: {stats.active}\n" +
+                $"Critical cases: {stats.critical}";
+            embed.AddField("More stats", moreStats);
+            
             if (Context.Channel.Name == "news")
             {
+                await ReplyAsync(MentionUtils.MentionRole(773576613605933087), false, embed.Build());
                 await Context.Message.DeleteAsync();
             }
+            else await ReplyAsync("", false, embed.Build());
         }
     }
 }
