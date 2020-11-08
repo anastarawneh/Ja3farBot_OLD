@@ -315,7 +315,6 @@ namespace rJordanBot.Core.Commands
                 $"Foreign cases: {stats.cases - stats.localCases}\n" +
                 $"Hospitalized cases today: {stats.hospitalized}, total: {stats.totalHospitalized}\n" +
                 $"Tests today: {stats.tests}, total: {stats.totalTests}\n" +
-                $"Active cases: {stats.active}\n" +
                 $"Critical cases: {stats.critical}";
             embed.AddField("More stats", moreStats);
             

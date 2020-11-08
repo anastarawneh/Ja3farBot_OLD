@@ -118,7 +118,6 @@ namespace rJordanBot.Resources.Datatypes
         public int totalTests { get; set; }
         public int hospitalized { get; set; }
         public int totalHospitalized { get; set; }
-        public int active { get; set; }
         public int critical { get; set; }
         public COVID_Cities cities { get; set; }
     }
