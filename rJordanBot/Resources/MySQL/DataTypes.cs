@@ -22,6 +22,11 @@ namespace rJordanBot.Resources.MySQL
             return new ChannelType(s);
         }
 
+        public override string ToString()
+        {
+            return Value;
+        }
+
         public static ChannelType TextChannel { get { return new ChannelType("TextChannel"); } }
         public static ChannelType VoiceChannel { get { return new ChannelType("VoiceChannel"); } }
         public static ChannelType NewsChannel { get { return new ChannelType("NewsChannel"); } }
