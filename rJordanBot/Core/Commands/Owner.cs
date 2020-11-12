@@ -536,6 +536,7 @@ namespace rJordanBot.Core.Commands
         {
             MySqlConnection connection = MySQL.getConnection();
             await connection.CloseAsync();
+            await Context.Message.AddReactionAsync(Constants.IEmojis.Tick);
         }
     }
 }
