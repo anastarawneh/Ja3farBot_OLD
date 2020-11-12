@@ -101,10 +101,12 @@ namespace rJordanBot.Core.Methods
             return Task.CompletedTask;
         }
 
-        public static ulong GetChnlId(string Name)
+        public static ulong GetChnlId(string Name, Resources.MySQL.ChannelType Type = null)
         {
             using MySqlConnection connection = MySQL.getConnection();
-            string query = $"SELECT * FROM Channels";
+            string query;
+            if (Type == null) query = $"SELECT * FROM Channels";
+            else query = $"SELECT * FROM Channels WHERE ChannelType='{Type}'";
             IEnumerable<Channel> channels = connection.Query<Channel>(query);
 
             foreach (Channel channel in channels)
@@ -120,13 +122,10 @@ namespace rJordanBot.Core.Methods
             string query = $"DELETE FROM Channels";
             await connection.ExecuteAsync(query);
             IReadOnlyCollection<SocketGuildChannel> channels = Context.Guild.Channels;
-            query = "INSERT INTO Channels (ID, Name, Type) VALUES ";
+            query = "INSERT INTO Channels (ID, Name, ChannelType) VALUES ";
             foreach (SocketGuildChannel channel in channels)
             {
-                if (!(channel is SocketCategoryChannel))
-                {
-                    query += $"({channel.Id}, '{channel.Name}', '{channel.GetType()}'), ";
-                }
+                query += $"({channel.Id}, \"{channel.Name}\", '{channel.GetType().Name.Replace("Socket", "")}'), ";
             }
             query = query.Substring(0, query.Length - 2);
             await connection.ExecuteAsync(query);

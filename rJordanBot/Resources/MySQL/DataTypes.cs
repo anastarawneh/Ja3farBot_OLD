@@ -7,7 +7,42 @@ namespace rJordanBot.Resources.MySQL
     {
         public ulong ID { get; set; }
         public string Name { get; set; }
-        public string Type { get; set; }
+        public ChannelType ChannelType { get; set; }
+    }
+    public class ChannelType
+    {
+        private string Value;
+        private ChannelType(string value)
+        {
+            Value = value;
+        }
+
+        public static implicit operator ChannelType(string s)
+        {
+            return new ChannelType(s);
+        }
+
+        public static ChannelType TextChannel { get { return new ChannelType("TextChannel"); } }
+        public static ChannelType VoiceChannel { get { return new ChannelType("VoiceChannel"); } }
+        public static ChannelType NewsChannel { get { return new ChannelType("NewsChannel"); } }
+        public static ChannelType CategoryChannel { get { return new ChannelType("CategoryChannel"); } }
+    }
+    /* --- */
+    public class CustomVC
+    {
+        public ulong UserID { get; set; }
+        public ulong ChannelID { get; set; }
+        public int Slots { get; set; }
+        public int Bitrate { get; set; }
+
+        public CustomVC() { }
+        public CustomVC(ulong userID)
+        {
+            UserID = userID;
+            ChannelID = 0;
+            Slots = 0;
+            Bitrate = 64000;
+        }
     }
     /* --- */
     public class Invite
