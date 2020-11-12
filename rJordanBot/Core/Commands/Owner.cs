@@ -529,5 +529,13 @@ namespace rJordanBot.Core.Commands
                         return;
                 }
         }
+
+        [Command("mysqlfix")]
+        [RequireOwner]
+        public async Task MySqlFix()
+        {
+            MySqlConnection connection = MySQL.getConnection();
+            await connection.CloseAsync();
+        }
     }
 }

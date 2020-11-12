@@ -18,12 +18,9 @@ namespace rJordanBot.Resources.MySQL
         public static bool IsModerator(this SocketGuildUser user)
         {
             using MySqlConnection connection = MySQL.getConnection();
-            connection.Open();
             string query = $"SELECT COUNT(1) FROM Moderators WHERE ID={user.Id}";
-            MySqlCommand command = new MySqlCommand(query, connection);
-
-            long result = (long)command.ExecuteScalar();
-            connection.Close();
+            
+            long result = connection.ExecuteScalar<long>(query);
 
             return result > 0;
         }
@@ -39,8 +36,7 @@ namespace rJordanBot.Resources.MySQL
         {
             using MySqlConnection connection = MySQL.getConnection();
             string query = $"SELECT * FROM Moderators where ID={user.Id}";
-            MySqlCommand command = new MySqlCommand(query, connection);
-
+            
             if (user.IsModerator()) return connection.Query<Moderator>(query).FirstOrDefault();
             return null;
         }
@@ -54,14 +50,12 @@ namespace rJordanBot.Resources.MySQL
             if (connection.State != System.Data.ConnectionState.Open) connection.Open();
             string query = $"SELECT COUNT(1) FROM Starboards WHERE MsgID={message.message.Id}";
             bool result = connection.ExecuteScalar<bool>(query);
-            connection.Close();
             return result;
         }
 
         public static async Task Save(this StarboardMessage message)
         {
             using MySqlConnection connection = MySQL.getConnection();
-            await connection.OpenAsync();
             string query = "";
             if (message.stars >= Config.StarboardMin && !message.starboardExists())
             {
@@ -73,16 +67,13 @@ namespace rJordanBot.Resources.MySQL
                 query = $"DELETE FROM Starboards WHERE MsgID={message.message.Id}";
             }
             await connection.ExecuteAsync(query);
-            await connection.CloseAsync();
         }
 
         public static async Task<Starboard> getStarboardByMsgID(ulong msgID)
         {
             using MySqlConnection connection = MySQL.getConnection();
-            await connection.OpenAsync();
             string query = $"SELECT * FROM Starboards WHERE MsgID={msgID}";
             Starboard result = await connection.QueryFirstAsync<Starboard>(query);
-            await connection.CloseAsync();
             return result;
         }
     }
@@ -95,7 +86,6 @@ namespace rJordanBot.Resources.MySQL
             if (connection.State != System.Data.ConnectionState.Open) connection.OpenAsync();
             string query = $"SELECT COUNT(1) FROM Socials WHERE UserID={UserID}";
             bool result = connection.ExecuteScalarAsync<bool>(query).Result;
-            connection.CloseAsync();
             return result;
         }
 
@@ -109,7 +99,6 @@ namespace rJordanBot.Resources.MySQL
             }
             string query = $"SELECT * FROM Socials WHERE UserID={UserID}";
             Social result = connection.QueryFirstAsync<Social>(query).Result;
-            connection.Close();
             switch (site)
             {
                 default:
