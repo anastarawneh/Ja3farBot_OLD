@@ -23,7 +23,7 @@ namespace rJordanBot.Core.Commands
         public async Task Test()
         {
             // TEST CODE STARTS HERE
-
+			
             // TEST CODE ENDS HERE
             IEmote yes = Constants.IEmojis.Tick;
             await Context.Message.AddReactionAsync(yes);
