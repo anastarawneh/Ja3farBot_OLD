@@ -23,7 +23,7 @@ namespace rJordanBot.Core.Commands
         public async Task Test()
         {
             // TEST CODE STARTS HERE
-            
+
             // TEST CODE ENDS HERE
             IEmote yes = Constants.IEmojis.Tick;
             await Context.Message.AddReactionAsync(yes);
@@ -72,7 +72,7 @@ namespace rJordanBot.Core.Commands
         public async Task ResetChannels()
         {
             if (Context.User.Id != Config.Owner && Context.User.Id != Context.Client.CurrentUser.Id) return;
-            await Methods.Data.ResetChannels(Context);
+            await Data.ResetChannels(Context);
 
             IEmote emote = new Emoji("✅");
             await Context.Message.AddReactionAsync(emote);
