@@ -77,6 +77,7 @@ namespace rJordanBot
                 .AddSingleton<LogEventHandlers>()
                 .AddSingleton<SuggestionService>()
                 .AddSingleton<AutomodService>()
+                .AddSingleton<CustomVCService>()
                 .BuildServiceProvider();
 
             await _cmdService.AddModulesAsync(Assembly.GetEntryAssembly(), _provider);
@@ -87,6 +88,7 @@ namespace rJordanBot
             await _provider.GetRequiredService<LogEventHandlers>().Initialize();
             await _provider.GetRequiredService<SuggestionService>().Initialize();
             await _provider.GetRequiredService<AutomodService>().Initialize();
+            await _provider.GetRequiredService<CustomVCService>().Initialize();
 
             await Task.Delay(-1);
         }
