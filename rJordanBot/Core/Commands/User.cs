@@ -319,13 +319,16 @@ namespace rJordanBot.Core.Commands
                 $"Active cases: {stats.active}\n" +
                 $"Critical cases: {stats.critical}";
             embed.AddField("More stats", moreStats);
-            
+
+            IUserMessage statmsg;
             if (Context.Channel.Name == "news")
             {
-                await ReplyAsync(MentionUtils.MentionRole(773576613605933087), false, embed.Build());
+                statmsg = await ReplyAsync(MentionUtils.MentionRole(773576613605933087), false, embed.Build());
                 await Context.Message.DeleteAsync();
             }
-            else await ReplyAsync("", false, embed.Build());
+            else statmsg = await ReplyAsync("", false, embed.Build());
+
+            if (Context.Channel.Name == "covid-19-stats") await statmsg.CrosspostAsync();
         }
     }
 }
