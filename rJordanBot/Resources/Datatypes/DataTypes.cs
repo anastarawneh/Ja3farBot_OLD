@@ -113,11 +113,14 @@ namespace rJordanBot.Resources.Datatypes
         public int deaths { get; set; }
         public int totalDeaths { get; set; }
         public int recoveries { get; set; }
+        public int hospitalRecoveries { get; set; }
+        public int homeRecoveries { get; set; }
         public int totalRecoveries { get; set; }
         public int tests { get; set; }
         public int totalTests { get; set; }
         public int hospitalized { get; set; }
         public int totalHospitalized { get; set; }
+        public int active { get; set; }
         public int critical { get; set; }
         public COVID_Cities cities { get; set; }
     }
