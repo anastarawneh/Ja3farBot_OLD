@@ -21,5 +21,6 @@ namespace rJordanBot.Resources.Datatypes
         public static string mysql_username;
         public static string mysql_password;
         public static string mysql_dbname;
+        public static List<ulong> IgnoredVerificationMessages;
     }
 }

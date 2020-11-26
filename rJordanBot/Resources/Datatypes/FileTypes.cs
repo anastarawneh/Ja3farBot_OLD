@@ -18,6 +18,7 @@ namespace rJordanBot.Resources.Datatypes
         public string mysql_username { get; set; }
         public string mysql_password { get; set; }
         public string mysql_dbname { get; set; }
+        public List<ulong> ignoredverfmsgs { get; set; }
 
         public class Announcement
         {

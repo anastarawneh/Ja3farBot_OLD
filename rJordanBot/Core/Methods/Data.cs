@@ -65,6 +65,7 @@ namespace rJordanBot.Core.Methods
             Config.mysql_username = configFile.mysql_username;
             Config.mysql_password = configFile.mysql_password;
             Config.mysql_dbname = configFile.mysql_dbname;
+            Config.IgnoredVerificationMessages = configFile.ignoredverfmsgs;
 
             return Task.CompletedTask;
         }

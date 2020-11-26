@@ -5,6 +5,7 @@ using Discord.Rest;
 using Discord.WebSocket;
 using rJordanBot.Core.Methods;
 using rJordanBot.Core.Preconditions;
+using rJordanBot.Resources.Datatypes;
 using rJordanBot.Resources.MySQL;
 using System;
 using System.Collections.Generic;
@@ -464,6 +465,13 @@ namespace rJordanBot.Core.Moderation
             IEnumerable<IMessage> messages = channel.GetMessagesAsync().FlattenAsync().Result;
             int count = messages.Count() - 1;
             IEnumerable<IMessage> deletable = channel.GetMessagesAsync(count).FlattenAsync().Result;
+            foreach (IMessage msg in deletable) {
+                if (Config.IgnoredVerificationMessages.Contains(msg.Id)) {
+                    var list = deletable.ToList();
+                    list.Remove(msg);
+                    deletable = list;
+                }
+            }
 
             // copied code from LogEventHandlers.cs
 
