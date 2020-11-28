@@ -476,6 +476,7 @@ namespace rJordanBot.Core.Moderation
             // copied code from LogEventHandlers.cs
 
             ulong LogID = Data.GetChnlId("ja3far-logs");
+            SocketTextChannel logChannel = (channel as SocketGuildChannel).Guild.Channels.First(x => x.Id == LogID) as SocketTextChannel;
             string messagestring = "";
 
             EmbedBuilder embed = new EmbedBuilder();
@@ -496,10 +497,28 @@ namespace rJordanBot.Core.Moderation
 
                 await ((channel as SocketGuildChannel).Guild.Channels.First(x => x.Id == LogID) as SocketTextChannel).SendMessageAsync("", false, embed.Build());
             }
-            else
+            else if (messagestring.Count() < 2000)
             {
                 await ((channel as SocketGuildChannel).Guild.Channels.First(x => x.Id == LogID) as SocketTextChannel).SendMessageAsync($"**Messages bulk deleted in {MentionUtils.MentionChannel(channel.Id)}:**\n" +
                     $"{messagestring}\n");
+            }
+            else {
+                string[] messagearray = {};
+                string counter = "";
+                string future = "";
+                foreach (IMessage msg in revcollection) {
+                    future = counter += $"[<@{msg.Author.Id}>]: {msg.Content}\n";
+                    if (future.Count() >= 2000) {
+                        messagearray.Append(counter);
+                        counter = $"[<@{msg.Author.Id}>]: {msg.Content}\n";
+                    }
+                    else counter = future;
+                }
+                if (messagearray.Count() == 0) messagearray.Append(counter);
+                await logChannel.SendMessageAsync($"**Messages bulk deleted in {MentionUtils.MentionChannel(channel.Id)}:**");
+                foreach (string message in messagearray) {
+                    await logChannel.SendMessageAsync(message);
+                }
             }
 
             // end copied code
