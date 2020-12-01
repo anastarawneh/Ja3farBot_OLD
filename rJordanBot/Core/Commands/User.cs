@@ -286,9 +286,9 @@ namespace rJordanBot.Core.Commands
             DateTime dateTime = DateTime.Today;
             if (DateTime.TryParseExact(date, "d-M-yyyy", null, System.Globalization.DateTimeStyles.None, out DateTime outDateTime)) dateTime = outDateTime;
             else if (DateTime.TryParseExact(date, "d/M/yyyy", null, System.Globalization.DateTimeStyles.None, out DateTime outDateTime2)) dateTime = outDateTime2;
-            if (dateTime < new DateTime(2020, 10, 30))
+            if (dateTime < new DateTime(2020, 10, 1))
             {
-                await ReplyAsync(":x: The API only contains COVID data from 30/10/2020 and after.");
+                await ReplyAsync(":x: The API only contains COVID data from 1/10/2020 and after.");
                 return;
             }
             COVID stats = await Data.HttpRequest<COVID>($"https://anastarawneh.live/api/v1/covid-19/{dateTime.Year}/{dateTime.Month}/{dateTime.Day}", "GET");
