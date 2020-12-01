@@ -484,7 +484,7 @@ namespace rJordanBot.Core.Moderation
             embed.WithColor(Constants.IColors.Red);
             embed.WithCurrentTimestamp();
 
-            IEnumerable<IMessage> collection = messages;
+            IEnumerable<IMessage> collection = deletable;
             IEnumerable<IMessage> revcollection = collection.Reverse();
             revcollection = revcollection.Skip(1);
             foreach (IMessage msg in revcollection)
