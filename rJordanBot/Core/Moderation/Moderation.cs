@@ -525,5 +525,31 @@ namespace rJordanBot.Core.Moderation
 
             await channel.DeleteMessagesAsync(deletable);
         }
+
+        [Command("cleanunverified"), Alias("cuv")]
+        public async Task CleanUnverified() {
+            SocketRole verificationRole = Context.Guild.Roles.First(x => x.Id == 705470408522072086);
+            IEnumerable<SocketGuildUser> users = Context.Guild.Users.Where(x => x.Roles.Contains(verificationRole));
+            if (users.Count() == 0) {
+                await ReplyAsync("There are no unverified users.");
+                return;
+            }
+            SocketTextChannel logChannel = (SocketTextChannel)Constants.IGuilds.Jordan(Context).Channels.First(x => x.Id == Methods.Data.GetChnlId("moderation-log"));
+            int count = users.Count();
+            foreach (SocketGuildUser user in users) {
+                await user.KickAsync("Didn't verify.");
+
+                EmbedBuilder embed = new EmbedBuilder();
+                embed.WithTitle("User Kicked");
+                embed.WithAuthor(Context.User);
+                embed.WithColor(255, 0, 0);
+                embed.AddField("User", user);
+                embed.WithFooter($"UserID: {user.Id}");
+                embed.AddField("Reason", "Didn't verify.");
+
+                await logChannel.SendMessageAsync("", false, embed.Build());
+            }
+            await ReplyAsync($"Purged {count} unverified users.");
+        }
     }
 }
