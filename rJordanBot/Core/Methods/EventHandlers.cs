@@ -228,10 +228,6 @@ namespace rJordanBot.Core.Methods
         public async Task Pending_GuildMemberUpdated(SocketGuildUser user1, SocketGuildUser user2)
         {
             if (!(user1.IsPending.Value && !user2.IsPending.Value)) return;
-            
-            SocketGuild guild = user1.Guild;
-            SocketTextChannel commands = guild.GetTextChannel(Data.GetChnlId("commands"));
-            await commands.SendMessageAsync($"{user2.Mention} has passed.");
         }
     }
 }
