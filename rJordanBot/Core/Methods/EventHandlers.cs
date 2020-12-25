@@ -25,6 +25,7 @@ namespace rJordanBot.Core.Methods
             _client.Ready += MuteFixing;
             //_client.UserJoined += JoinVerification;
             _client.GuildMemberUpdated += Greeting_GuildMemberUpdated;
+            _client.GuildMemberUpdated += Pending_GuildMemberUpdated;
 
             return Task.CompletedTask;
         }
@@ -222,6 +223,15 @@ namespace rJordanBot.Core.Methods
 
             SocketTextChannel general = guild.Channels.First(x => x.Id == Data.GetChnlId("general")) as SocketTextChannel;
             await general.SendMessageAsync($"{user2.Mention} has joined! Say hello everyone!");
+        }
+
+        public async Task Pending_GuildMemberUpdated(SocketGuildUser user1, SocketGuildUser user2)
+        {
+            if (!(user1.IsPending.Value && !user2.IsPending.Value)) return;
+            
+            SocketGuild guild = user1.Guild;
+            SocketTextChannel commands = guild.GetTextChannel(Data.GetChnlId("commands"));
+            await commands.SendMessageAsync($"{user2.Mention} has passed.");
         }
     }
 }
