@@ -463,7 +463,7 @@ namespace rJordanBot.Core.Methods
             }
         }
 
-        public static async Task<T> HttpRequest<T>(string URL, string method)
+        public static async Task<T> APIHttpRequest<T>(string URL, string method)
         {
             HttpWebRequest request = WebRequest.CreateHttp(URL);
             request.Method = method;
