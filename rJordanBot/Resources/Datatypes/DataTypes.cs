@@ -1,4 +1,5 @@
-﻿using Discord;
+﻿using System;
+using Discord;
 
 namespace rJordanBot.Resources.Datatypes
 {
@@ -107,6 +108,7 @@ namespace rJordanBot.Resources.Datatypes
 
     public class COVID
     {
+        public DateTime date { get; set; }
         public int cases { get; set; }
         public int localCases { get; set; }
         public int totalCases { get; set; }

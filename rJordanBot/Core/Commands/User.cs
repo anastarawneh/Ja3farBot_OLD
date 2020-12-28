@@ -321,8 +321,14 @@ namespace rJordanBot.Core.Commands
             embed.AddField("More stats", moreStats);
 
             IUserMessage statmsg;
-            if (Context.Channel.Name == "covid-stats")
+            if (Context.Channel.Name == "covid-19-stats")
             {
+                bool statsReady = stats.date == DateTime.Today;
+                if (!statsReady)
+                {
+                    await ReplyAsync(":x: Today's stats aren't ready yet.");
+                    return;
+                }
                 statmsg = await ReplyAsync(MentionUtils.MentionRole(773576613605933087), false, embed.Build());
                 await Context.Message.DeleteAsync();
                 await statmsg.CrosspostAsync();
