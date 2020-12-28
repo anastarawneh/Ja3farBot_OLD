@@ -474,6 +474,9 @@ namespace rJordanBot.Core.Methods
             string result = await reader.ReadToEndAsync();
             AnasAPIObject obj = JsonConvert.DeserializeObject<AnasAPIObject>(result);
             string data = ((JObject) obj.data).ToString();
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.WriteLine($"[{DateTime.Now} at Network] Sent {method} request to {URL}, returned code {obj.code}");
+            Console.ResetColor();
             T typereturn = JsonConvert.DeserializeObject<T>(data);
             return typereturn;
         }
