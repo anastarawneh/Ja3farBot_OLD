@@ -293,6 +293,8 @@ namespace rJordanBot.Core.Commands
             }
             COVID stats = await Data.APIHttpRequest<COVID>($"https://api.anastarawneh.live/v1/covid-19/{dateTime.Year}/{dateTime.Month}/{dateTime.Day}", "GET");
             dateTime = stats.date;
+            DateTime yesterday = dateTime.AddDays(-1);
+            COVID yesterdayStats = await Data.APIHttpRequest<COVID>($"https://api.anastarawneh.live/v1/covid-19/{yesterday.Year}/{yesterday.Month}/{yesterday.Day}", "GET");
             EmbedBuilder embed = new EmbedBuilder();
             embed.WithTitle($"COVID-19 stats for {dateTime:dd/MM/yyyy}");
             embed.WithColor(Constants.IColors.Blurple);
@@ -318,7 +320,7 @@ namespace rJordanBot.Core.Commands
                 $"Recovery distribution: {stats.homeRecoveries} at home, {stats.hospitalRecoveries} from hospitals\n" +
                 $"Tests today: {stats.tests}, total: {stats.totalTests}\n" +
                 $"Active cases: {stats.active}\n" +
-                $"Critical cases: {stats.critical}";
+                $"Yesterday's critical cases: {yesterdayStats.critical}";
             embed.AddField("More stats", moreStats);
 
             IUserMessage statmsg;
