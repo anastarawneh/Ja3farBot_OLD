@@ -292,6 +292,7 @@ namespace rJordanBot.Core.Commands
                 return;
             }
             COVID stats = await Data.APIHttpRequest<COVID>($"https://api.anastarawneh.live/v1/covid-19/{dateTime.Year}/{dateTime.Month}/{dateTime.Day}", "GET");
+            dateTime = stats.date;
             EmbedBuilder embed = new EmbedBuilder();
             embed.WithTitle($"COVID-19 stats for {dateTime:dd/MM/yyyy}");
             embed.WithColor(Constants.IColors.Blurple);
