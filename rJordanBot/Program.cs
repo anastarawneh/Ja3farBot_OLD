@@ -96,12 +96,8 @@ namespace rJordanBot
         private async Task Client_Ready()
         {
             await _client.SetStatusAsync(UserStatus.Online);
-            if (Environment.GetEnvironmentVariable("SystemType") == "aws") await _client.SetGameAsync("^help", null, ActivityType.Listening);
-            else
-            {
-                await _client.SetStatusAsync(UserStatus.DoNotDisturb);
-                await _client.SetGameAsync("In Maintenance! Not listening.", null, ActivityType.Playing);
-            };
+            if (Environment.GetEnvironmentVariable("SystemType") == "aws") await Data.SetListeningStatus(_client, true);
+            else await Data.SetListeningStatus(_client, false);
 
             await Data.SetInvitesBefore(Constants.IGuilds.Jordan(_client).Users.FirstOrDefault(x => x.Id == _client.CurrentUser.Id));
         }
@@ -116,7 +112,7 @@ namespace rJordanBot
             if (Context.Message == null || Context.Message.Content == "") return;
             if (Context.User.IsBot) return;
 
-            if (Environment.GetEnvironmentVariable("SystemType") == "win" && Context.User != Constants.IGuilds.Jordan(Context).Owner) return;
+            if (_client.Status == UserStatus.DoNotDisturb && Context.User != Constants.IGuilds.Jordan(Context).Owner) return;
             if (MessageParam.Content.EndsWith('^')) return;
 
             if (!(Message.HasStringPrefix("^", ref ArgPos)/* || Message.HasMentionPrefix(Client.CurrentUser, ref ArgPos)*/)) return;

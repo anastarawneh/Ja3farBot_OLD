@@ -480,5 +480,19 @@ namespace rJordanBot.Core.Methods
             T typereturn = JsonConvert.DeserializeObject<T>(data);
             return typereturn;
         }
+
+        public static async Task SetListeningStatus(DiscordSocketClient client, bool toListen)
+        {
+            if (toListen)
+            {
+                await client.SetStatusAsync(UserStatus.Online);
+                await client.SetGameAsync("^help", null, ActivityType.Listening);
+            }
+            else
+            {
+                await client.SetStatusAsync(UserStatus.DoNotDisturb);
+                await client.SetGameAsync("In Maintenance! Not listening.", null, ActivityType.Playing);
+            };
+        }
     }
 }

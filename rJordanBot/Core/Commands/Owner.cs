@@ -538,5 +538,14 @@ namespace rJordanBot.Core.Commands
             await connection.CloseAsync();
             await Context.Message.AddReactionAsync(Constants.IEmojis.Tick);
         }
+
+        [Command("toggle")]
+        [RequireOwner]
+        public async Task Toggle()
+        {
+            if (Context.Client.Status == UserStatus.Online) await Data.SetListeningStatus(Context.Client, false);
+            else await Data.SetListeningStatus(Context.Client, true);
+            await ReplyAsync(":white_check_mark: Toggled bot availablilty.");
+        }
     }
 }
