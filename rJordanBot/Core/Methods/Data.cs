@@ -465,6 +465,11 @@ namespace rJordanBot.Core.Methods
 
         public static async Task<T> APIHttpRequest<T>(string URL, string method)
         {
+            if (Environment.GetEnvironmentVariable("SystemType") == "win")
+            {
+                URL = URL.Replace("https://api.anastarawneh.live", "http://localhost:8000");
+            }
+
             HttpWebRequest request = WebRequest.CreateHttp(URL);
             request.Method = method;
             WebResponse response = await request.GetResponseAsync();
