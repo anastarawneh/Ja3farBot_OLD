@@ -229,10 +229,9 @@ namespace rJordanBot.Core.Commands
         {
             SocketTextChannel channel = Constants.IGuilds.Jordan(Context).Channels.FirstOrDefault(x => x.Id == Methods.Data.GetChnlId("bot-log")) as SocketTextChannel;
             await channel.SendMessageAsync($"[{DateTime.Now} at Commands] Stopping [{Environment.GetEnvironmentVariable("SystemType").ToUpper()}] instance...");
-            await Context.Client.LogoutAsync();
-            await Task.Delay(2500);
             IEmote emote = new Emoji("✅");
             await Context.Message.AddReactionAsync(emote);
+            await Context.Client.LogoutAsync();
             Environment.Exit(1);
         }
 
