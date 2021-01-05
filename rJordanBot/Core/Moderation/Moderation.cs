@@ -486,7 +486,7 @@ namespace rJordanBot.Core.Moderation
 
             IEnumerable<IMessage> collection = deletable;
             IEnumerable<IMessage> revcollection = collection.Reverse();
-            revcollection = revcollection.Skip(1);
+            // revcollection = revcollection.Skip(1);
             foreach (IMessage msg in revcollection)
             {
                 if (msg.Content != null) messagestring += $"[<@{msg.Author.Id}>]: {msg.Content}\n";
