@@ -551,5 +551,26 @@ namespace rJordanBot.Core.Moderation
             }
             await ReplyAsync($"Purged {count} unverified users.");
         }
+
+        [Command("emergency")]
+        [RequireMod]
+        public async Task EmergencyCommand()
+        {
+            SocketRole emergencyRole = Context.Guild.Roles.First(x => x.Id == 804766020211572757);
+            SocketGuildUser user = Context.User as SocketGuildUser;
+            bool hasRole = user.Roles.Contains(emergencyRole);
+            string message;
+            if (!hasRole)
+            {
+                await user.AddRoleAsync(emergencyRole);
+                message = ":white_check_mark: Emergency role added.";
+            }
+            else
+            {
+                await user.RemoveRoleAsync(emergencyRole);
+                message = ":white_check_mark: Emergency role removed.";
+            }
+            await ReplyAsync(message);
+        }
     }
 }
