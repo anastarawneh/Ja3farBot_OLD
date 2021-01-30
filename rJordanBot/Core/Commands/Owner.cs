@@ -530,7 +530,7 @@ namespace rJordanBot.Core.Commands
         }
 
         [Command("mysqlfix")]
-        [RequireOwner]
+        [RequireMod]
         public async Task MySqlFix()
         {
             MySqlConnection connection = MySQL.getConnection();
