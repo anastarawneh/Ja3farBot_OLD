@@ -563,7 +563,7 @@ namespace rJordanBot.Core.Moderation
             if (!hasRole)
             {
                 await user.AddRoleAsync(emergencyRole);
-                message = ":white_check_mark: Emergency role added.";
+                message = $":white_check_mark: \"In response to this direct threat to the server, meesa propose: That the server owner give immediately emergency powers, to <@{Context.User.Id}>!\"";
             }
             else
             {
