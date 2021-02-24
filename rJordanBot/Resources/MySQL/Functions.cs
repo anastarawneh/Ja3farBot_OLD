@@ -15,14 +15,19 @@ namespace rJordanBot.Resources.MySQL
 {
     public static class ModeratorFunctions
     {
+        public static List<Moderator> ModeratorList = new List<Moderator>();
+
         public static bool IsModerator(this SocketGuildUser user)
         {
             using MySqlConnection connection = MySQL.getConnection();
-            string query = $"SELECT COUNT(1) FROM Moderators WHERE ID={user.Id}";
+            if (ModeratorList.Count == 0)
+            {
+                string query = $"SELECT * FROM Moderators";
+                IEnumerable<Moderator> result = connection.Query<Moderator>(query);
+                ModeratorList = (List<Moderator>) result;
+            }
             
-            long result = connection.ExecuteScalar<long>(query);
-
-            return result > 0;
+            return ModeratorList.Where(x => x.ID == user.Id).Count() == 1;
         }
 
         public static bool IsFuncModerator(this SocketGuildUser user)
@@ -34,10 +39,7 @@ namespace rJordanBot.Resources.MySQL
 
         public static Moderator ToModerator(this SocketGuildUser user)
         {
-            using MySqlConnection connection = MySQL.getConnection();
-            string query = $"SELECT * FROM Moderators where ID={user.Id}";
-            
-            if (user.IsModerator()) return connection.Query<Moderator>(query).FirstOrDefault();
+            if (user.IsModerator()) return ModeratorList.First(x => x.ID == user.Id);
             return null;
         }
     }
