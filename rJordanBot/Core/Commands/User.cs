@@ -311,6 +311,7 @@ namespace rJordanBot.Core.Commands
             embed.AddField("Tafileh", stats.cities.tafileh, true);
             embed.AddField("Ma'an", stats.cities.maan, true);
             embed.AddField("Aqaba", stats.cities.aqaba, true);
+            decimal percentage = (decimal)stats.cases / (decimal)stats.tests * 100m;
             string moreStats = 
                 $"Total cases: {stats.totalCases}\n" +
                 $"Total casualties: {stats.totalDeaths}\n" +
@@ -319,6 +320,7 @@ namespace rJordanBot.Core.Commands
                 $"Hospitalized cases today: {stats.hospitalized}, total: {stats.totalHospitalized}\n" +
                 $"Recovery distribution: {stats.homeRecoveries} at home, {stats.hospitalRecoveries} from hospitals\n" +
                 $"Tests today: {stats.tests}, total: {stats.totalTests}\n" +
+                $"Positive test percentage: {Math.Round(percentage, 2)}%\n" +
                 $"Active cases: {stats.active}\n" +
                 $"Yesterday's critical cases: {yesterdayStats.critical}";
             embed.AddField("More stats", moreStats);
