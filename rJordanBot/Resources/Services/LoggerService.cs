@@ -33,7 +33,46 @@ namespace rJordanBot.Resources.Services
             return Task.CompletedTask;
         }
 
-        public Task GenericLog(LogMessage logMessage)
+
+        public static void Information(string Source, string Message)
+            => DirectLog(Source, Message, LogSeverity.Info);
+        public static void Warning(string Source, string Message)
+            => DirectLog(Source, Message, LogSeverity.Warning);
+        public static void Error(string Source, string Message)
+            => DirectLog(Source, Message, LogSeverity.Error);
+        public static void Exception(Exception ex)
+        {
+            string errormsg = $"[{DateTime.Now} at ExecptionHandler] \n{ex}";
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(errormsg);
+            Console.ResetColor();
+        }
+        public static void Critical(string Source, string Message)
+            => DirectLog(Source, Message, LogSeverity.Critical);
+        private static Task DirectLog(string Source, string Message, LogSeverity Severity)
+        {
+            switch (Severity)
+            {
+                case LogSeverity.Info:
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    break;
+                case LogSeverity.Warning:
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    break;
+                case LogSeverity.Error:
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    break;
+                case LogSeverity.Critical:
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
+                    break;
+            }
+            Console.WriteLine($"[{DateTime.Now} at {Source}] {Message}");
+            Console.ResetColor();
+            return Task.CompletedTask;
+        }
+
+
+        private Task GenericLog(LogMessage logMessage)
         {
             SetColor(logMessage.Severity);
             string errormsg = $"[{DateTime.Now} at {logMessage.Source}] {logMessage.Message}";
@@ -48,7 +87,7 @@ namespace rJordanBot.Resources.Services
             return Task.CompletedTask;
         }
 
-        public void ExceptionLog(LogMessage logMessage)
+        private void ExceptionLog(LogMessage logMessage)
         {
             Exception ex = logMessage.Exception;
             string errormsg = $"[{DateTime.Now} at ExecptionHandler] \n{ex}";
@@ -57,7 +96,7 @@ namespace rJordanBot.Resources.Services
             Console.ResetColor();
         }
 
-        public async Task ExceptionPing(Optional<CommandInfo> optional, ICommandContext context, IResult result)
+        private async Task ExceptionPing(Optional<CommandInfo> optional, ICommandContext context, IResult result)
         {
             if (result is ExecuteResult result_)
             {
@@ -69,7 +108,7 @@ namespace rJordanBot.Resources.Services
             }
         }
 
-        public void SetColor(LogSeverity severity)
+        private void SetColor(LogSeverity severity)
         {
             switch (severity)
             {
