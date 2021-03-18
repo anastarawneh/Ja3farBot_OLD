@@ -78,6 +78,7 @@ namespace rJordanBot
                 .AddSingleton<SuggestionService>()
                 .AddSingleton<AutomodService>()
                 .AddSingleton<CustomVCService>()
+                .AddSingleton<WebSocketService>()
                 .BuildServiceProvider();
 
             await _cmdService.AddModulesAsync(Assembly.GetEntryAssembly(), _provider);
@@ -89,6 +90,7 @@ namespace rJordanBot
             await _provider.GetRequiredService<SuggestionService>().Initialize();
             await _provider.GetRequiredService<AutomodService>().Initialize();
             await _provider.GetRequiredService<CustomVCService>().Initialize();
+            _provider.GetRequiredService<WebSocketService>().Initialize();
 
             await Task.Delay(-1);
         }

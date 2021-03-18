@@ -1,7 +1,9 @@
 ﻿using Discord;
+using Discord.Rest;
 using Discord.WebSocket;
 using rJordanBot.Resources.Datatypes;
 using rJordanBot.Resources.MySQL;
+using rJordanBot.Resources.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +14,12 @@ namespace rJordanBot.Core.Methods
     public class EventHandlers
     {
         private readonly DiscordSocketClient _client;
-        public EventHandlers(DiscordSocketClient client) => _client = client;
+        private readonly WebSocketService _ws;
+        public EventHandlers(DiscordSocketClient client, WebSocketService ws)
+        {
+            _client = client;
+            _ws = ws;
+        }
 
         public Task Initialize()
         {
@@ -21,11 +28,12 @@ namespace rJordanBot.Core.Methods
             _client.UserJoined += Invites_UserJoined;
             _client.ReactionAdded += Starboard_ReactionAddedOrRemoved;
             _client.ReactionRemoved += Starboard_ReactionAddedOrRemoved;
-            _client.UserLeft += JSON_UserLeft;
+            //_client.UserLeft += JSON_UserLeft;
             _client.Ready += MuteFixing;
             // _client.UserJoined += JoinVerification;
             _client.GuildMemberUpdated += Greeting_GuildMemberUpdated;
             // _client.GuildMemberUpdated += Pending_GuildMemberUpdated;
+            _ws.CovidMessageReceived += WS_CovidStatsReady;
 
             return Task.CompletedTask;
         }
@@ -223,6 +231,48 @@ namespace rJordanBot.Core.Methods
 
             SocketTextChannel general = guild.Channels.First(x => x.Id == Data.GetChnlId("general")) as SocketTextChannel;
             await general.SendMessageAsync($"{user2.Mention} has joined! Say hello everyone!");
+        }
+
+        public void WS_CovidStatsReady(COVID stats)
+        {
+            Task.Run(async () => {
+                DateTime dateTime = stats.date;
+                DateTime yesterday = dateTime.AddDays(-1);
+                COVID yesterdayStats = await Data.APIHttpRequest<COVID>($"https://api.anastarawneh.live/v1/covid-19/{yesterday.Year}/{yesterday.Month}/{yesterday.Day}", "GET");
+                EmbedBuilder embed = new EmbedBuilder();
+                embed.WithTitle($"COVID-19 stats for {dateTime:dd/MM/yyyy}");
+                embed.WithColor(Constants.IColors.Blurple);
+                embed.WithDescription($"{stats.localCases} new local cases, {stats.deaths} casualties and {stats.recoveries} recoveries.");
+                embed.AddField("Amman", stats.cities.amman, true);
+                embed.AddField("Irbid", stats.cities.irbid, true);
+                embed.AddField("Zarqa", stats.cities.zarqa, true);
+                embed.AddField("Mafraq", stats.cities.mafraq, true);
+                embed.AddField("Ajloun", stats.cities.ajloun, true);
+                embed.AddField("Jerash", stats.cities.jerash, true);
+                embed.AddField("Madaba", stats.cities.madaba, true);
+                embed.AddField("Balqa", stats.cities.balqa, true);
+                embed.AddField("Karak", stats.cities.karak, true);
+                embed.AddField("Tafileh", stats.cities.tafileh, true);
+                embed.AddField("Ma'an", stats.cities.maan, true);
+                embed.AddField("Aqaba", stats.cities.aqaba, true);
+                decimal percentage = (decimal)stats.cases / (decimal)stats.tests * 100m;
+                string moreStats = 
+                    $"Total cases: {stats.totalCases}\n" +
+                    $"Total casualties: {stats.totalDeaths}\n" +
+                    $"Total recoveries: {stats.totalRecoveries}\n" +
+                    $"Foreign cases: {stats.cases - stats.localCases}\n" +
+                    $"Hospitalized cases today: {stats.hospitalized}, total: {stats.totalHospitalized}\n" +
+                    $"Recovery distribution: {stats.homeRecoveries} at home, {stats.hospitalRecoveries} from hospitals\n" +
+                    $"Tests today: {stats.tests}, total: {stats.totalTests}\n" +
+                    $"Positive test percentage: {Math.Round(percentage, 2)}%\n" +
+                    $"Active cases: {stats.active}\n" +
+                    $"Yesterday's critical cases: {yesterdayStats.critical}";
+                embed.AddField("More stats", moreStats);
+
+                SocketTextChannel channel = Constants.IGuilds.Jordan(_client).GetTextChannel(Data.GetChnlId("covid-19-stats"));
+                RestUserMessage msg = await channel.SendMessageAsync(null, false, embed.Build());
+                await msg.CrosspostAsync();
+            });
         }
     }
 }
