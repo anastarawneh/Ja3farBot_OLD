@@ -270,7 +270,7 @@ namespace rJordanBot.Core.Methods
                 embed.AddField("More stats", moreStats);
 
                 SocketTextChannel channel = Constants.IGuilds.Jordan(_client).GetTextChannel(Data.GetChnlId("covid-19-stats"));
-                RestUserMessage msg = await channel.SendMessageAsync(null, false, embed.Build());
+                RestUserMessage msg = await channel.SendMessageAsync(MentionUtils.MentionRole(773576613605933087), false, embed.Build());
                 await msg.CrosspostAsync();
             });
         }
