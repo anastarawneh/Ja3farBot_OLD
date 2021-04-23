@@ -42,7 +42,7 @@ namespace rJordanBot.Resources.Services
             => DirectLog(Source, Message, LogSeverity.Error);
         public static void Exception(Exception ex)
         {
-            string errormsg = $"[{DateTime.Now} at ExecptionHandler] \n{ex}";
+            string errormsg = $"[{DateTime.Now} at ExceptionHandler] \n{ex}";
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(errormsg);
             Console.ResetColor();
@@ -87,12 +87,25 @@ namespace rJordanBot.Resources.Services
             return Task.CompletedTask;
         }
 
+        int counter = 0;
         private void ExceptionLog(LogMessage logMessage)
         {
             Exception ex = logMessage.Exception;
-            string errormsg = $"[{DateTime.Now} at ExecptionHandler] \n{ex}";
+            string errormsg = $"[{DateTime.Now} at ExceptionHandler] \n{ex}";
             
-            Console.WriteLine(errormsg);
+            if (ex is System.Net.Http.HttpRequestException)
+            {
+                if (counter == 5)
+                {
+                    Console.WriteLine("Max tries exceeded, logging stopped.");
+                }
+                else if (counter < 5)
+                {
+                    counter++;
+                    Console.WriteLine(errormsg);
+                }
+            }
+            else Console.WriteLine(errormsg);
             Console.ResetColor();
         }
 
