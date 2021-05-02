@@ -79,7 +79,7 @@ namespace rJordanBot.Resources.Services
                         break;
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 LoggerService.Warning("WebSocket", "Received a message in the wrong format. Ignoring.");
             }
