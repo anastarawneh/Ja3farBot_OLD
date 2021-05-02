@@ -34,6 +34,7 @@ namespace rJordanBot.Core.Methods
             _client.GuildMemberUpdated += Greeting_GuildMemberUpdated;
             // _client.GuildMemberUpdated += Pending_GuildMemberUpdated;
             _ws.CovidMessageReceived += WS_CovidStatsReady;
+            _ws.TestMessageReceived += WS_TestReady;
 
             return Task.CompletedTask;
         }
@@ -273,6 +274,11 @@ namespace rJordanBot.Core.Methods
                 RestUserMessage msg = await channel.SendMessageAsync(MentionUtils.MentionRole(773576613605933087), false, embed.Build());
                 await msg.CrosspostAsync();
             });
+        }
+
+        public void WS_TestReady(string message)
+        {
+            LoggerService.Debug("WebSocket", message);
         }
     }
 }

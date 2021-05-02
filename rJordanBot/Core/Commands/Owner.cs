@@ -8,6 +8,7 @@ using rJordanBot.Core.Methods;
 using rJordanBot.Core.Preconditions;
 using rJordanBot.Resources.Datatypes;
 using rJordanBot.Resources.MySQL;
+using rJordanBot.Resources.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -545,6 +546,56 @@ namespace rJordanBot.Core.Commands
             if (Context.Client.Status == UserStatus.Online) await Data.SetListeningStatus(Context.Client, false);
             else await Data.SetListeningStatus(Context.Client, true);
             await ReplyAsync(":white_check_mark: Toggled bot availablilty.");
+        }
+
+        [Group("websocket")]
+        [RequireOwner]
+        public class WebSocket : InteractiveBase<SocketCommandContext>
+        {
+            private readonly WebSocketService _wsService;
+            public WebSocket(WebSocketService wsService)
+            {
+                _wsService = wsService;
+            }
+
+            [Command("status")]
+            public async Task WebSocketStatus()
+            {
+                bool isActive = _wsService.IsActive();
+                if (isActive) await ReplyAsync("The WebSocket is active.");
+                else await ReplyAsync("The WebSocket is inactive.");
+            }
+
+            [Command("connect")]
+            public async Task WebSocketConnect()
+            {
+                if (_wsService.IsActive())
+                {
+                    await ReplyAsync("Already connected to the WebSocket.");
+                    return;
+                }
+                _wsService.Initialize();
+                await ReplyAsync("Connected.");
+            }
+
+            [Command("disconnect")]
+            public async Task WebSocketDisconnect()
+            {
+                if (!_wsService.IsActive())
+                {
+                    await ReplyAsync("Already disconnected from the WebSocket.");
+                    return;
+                }
+                _wsService.Disconnect();
+                await ReplyAsync("Disconnected.");
+            }
+
+            [Command("simulate")]
+            public async Task WebSocketSimulate([Remainder] string message)
+            {
+                _wsService.SimulateMessage(message);
+                await ReplyAsync("Message sent.");
+            }
         }
     }
 }

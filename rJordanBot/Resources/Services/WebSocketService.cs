@@ -45,22 +45,43 @@ namespace rJordanBot.Resources.Services
             });
         }
 
-        public static bool IsActive()
+        public bool IsActive()
         {
             return client.IsRunning;
+        }
+
+        public void Disconnect()
+        {
+            client.Stop(WebSocketCloseStatus.NormalClosure, "Manual disconnection");
+        }
+
+        public void SimulateMessage(string data)
+        {
+            ResponseMessage msg = ResponseMessage.TextMessage(data);
+            client.StreamFakeMessage(msg);
         }
 
         private void HandleMessage(WebsocketClient client, ResponseMessage message)
         {
             LoggerService.Information("WebSocket", "Message received");
             string content = message.Text;
-            Console.WriteLine(content);
-            WebSocketMessage wsm = JsonConvert.DeserializeObject<WebSocketMessage>(content);
-            switch (wsm.code)
+            LoggerService.Debug("WebSocket", content);
+            try
             {
-                case WebSocketMessageCode.Covid:
-                    OnCovidMessageReceived(wsm.data.ToString());
-                    break;
+                WebSocketMessage wsm = JsonConvert.DeserializeObject<WebSocketMessage>(content);
+                switch (wsm.code)
+                {
+                    case WebSocketMessageCode.Covid:
+                        OnCovidMessageReceived(wsm.data.ToString());
+                        break;
+                    case WebSocketMessageCode.Test:
+                        OnTestMessageReceived(wsm.data.ToString());
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                LoggerService.Warning("WebSocket", "Received a message in the wrong format. Ignoring.");
             }
         }
 
@@ -72,6 +93,7 @@ namespace rJordanBot.Resources.Services
 
         private enum WebSocketMessageCode
         {
+            Test = -1,
             Any = 0,
             Covid = 1
         }
@@ -85,6 +107,16 @@ namespace rJordanBot.Resources.Services
                 handler(stats);
             }
         }
+        protected virtual void OnTestMessageReceived(string data)
+        {
+            Action<string> handler = TestMessageReceived;
+            if (handler != null)
+            {
+                handler(data);
+            }
+        }
+
         public event Action<COVID> CovidMessageReceived;
+        public event Action<string> TestMessageReceived;
     }
 }
