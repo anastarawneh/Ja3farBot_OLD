@@ -83,7 +83,7 @@ namespace rJordanBot
 
             await _cmdService.AddModulesAsync(Assembly.GetEntryAssembly(), _provider);
 
-            await _provider.GetRequiredService<MusicService>().Initialize();
+            if (Config.Music) await _provider.GetRequiredService<MusicService>().Initialize();
             await _provider.GetRequiredService<LoggerService>().Initialize();
             await _provider.GetRequiredService<EventHandlers>().Initialize();
             await _provider.GetRequiredService<LogEventHandlers>().Initialize();

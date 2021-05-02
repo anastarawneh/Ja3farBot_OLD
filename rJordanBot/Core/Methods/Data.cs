@@ -60,6 +60,7 @@ namespace rJordanBot.Core.Methods
             Config.InviteWhitelist = configFile.invitewhitelist;
             Config.VerifyID = configFile.verifyid;
             Config.BannedWords = configFile.bannedwords;
+            Config.Music = configFile.music;
             Config.Announcement = configFile.announcement;
             Config.mysql_server = configFile.mysql_server;
             Config.mysql_username = configFile.mysql_username;
@@ -93,6 +94,7 @@ namespace rJordanBot.Core.Methods
             Config.InviteWhitelist = configFile.invitewhitelist;
             Config.VerifyID = configFile.verifyid;
             Config.BannedWords = configFile.bannedwords;
+            Config.Music = configFile.music;
             Config.Announcement = configFile.announcement;
             Config.mysql_server = configFile.mysql_server;
             Config.mysql_username = configFile.mysql_username;

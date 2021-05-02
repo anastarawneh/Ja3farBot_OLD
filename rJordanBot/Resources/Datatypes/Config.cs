@@ -16,6 +16,7 @@ namespace rJordanBot.Resources.Datatypes
         public static List<string> InviteWhitelist;
         public static ulong VerifyID;
         public static List<string> BannedWords;
+        public static bool Music;
         public static Announcement Announcement;
         public static string mysql_server;
         public static string mysql_username;
