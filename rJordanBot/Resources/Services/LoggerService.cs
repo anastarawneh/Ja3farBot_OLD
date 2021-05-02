@@ -40,6 +40,8 @@ namespace rJordanBot.Resources.Services
             => DirectLog(Source, Message, LogSeverity.Warning);
         public static void Error(string Source, string Message)
             => DirectLog(Source, Message, LogSeverity.Error);
+        public static void Debug(string Source, string Message)
+            => DirectLog(Source, Message, LogSeverity.Debug);
         public static void Exception(Exception ex)
         {
             string errormsg = $"[{DateTime.Now} at ExceptionHandler] \n{ex}";
@@ -53,14 +55,19 @@ namespace rJordanBot.Resources.Services
         {
             switch (Severity)
             {
-                case LogSeverity.Info:
-                    Console.ForegroundColor = ConsoleColor.Green;
+                case LogSeverity.Error:
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    break;
+                case LogSeverity.Debug:
+                    if (Environment.GetEnvironmentVariable("SystemType") == "win") Console.ForegroundColor = ConsoleColor.DarkGray;
+                    else Console.ForegroundColor = ConsoleColor.White;
                     break;
                 case LogSeverity.Warning:
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     break;
-                case LogSeverity.Error:
-                    Console.ForegroundColor = ConsoleColor.Red;
+                case LogSeverity.Info:
+                    if (Environment.GetEnvironmentVariable("SystemType") == "win") Console.ForegroundColor = ConsoleColor.White;
+                    else Console.ForegroundColor = ConsoleColor.Green;
                     break;
                 case LogSeverity.Critical:
                     Console.ForegroundColor = ConsoleColor.DarkRed;
