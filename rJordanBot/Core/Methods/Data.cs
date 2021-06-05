@@ -1,4 +1,4 @@
-using Dapper;
+﻿using Dapper;
 using Discord;
 using Discord.Commands;
 using Discord.Rest;
