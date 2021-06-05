@@ -140,5 +140,9 @@ namespace rJordanBot.Resources.Datatypes
         public int tafileh { get; set; }
         public int maan { get; set; }
         public int aqaba { get; set; }
+
+        public int Total() {
+            return amman + irbid + zarqa + mafraq + ajloun + jerash + madaba + balqa + karak + tafileh + maan + aqaba;
+        }
     }
 }

@@ -1,4 +1,4 @@
-using Discord;
+﻿using Discord;
 using Discord.Rest;
 using Discord.WebSocket;
 using rJordanBot.Resources.Datatypes;
@@ -244,18 +244,20 @@ namespace rJordanBot.Core.Methods
                 embed.WithTitle($"COVID-19 stats for {dateTime:dd/MM/yyyy}");
                 embed.WithColor(Constants.IColors.Blurple);
                 embed.WithDescription($"{stats.localCases} new local cases, {stats.deaths} casualties and {stats.recoveries} recoveries.");
-                embed.AddField("Amman", stats.cities.amman, true);
-                embed.AddField("Irbid", stats.cities.irbid, true);
-                embed.AddField("Zarqa", stats.cities.zarqa, true);
-                embed.AddField("Mafraq", stats.cities.mafraq, true);
-                embed.AddField("Ajloun", stats.cities.ajloun, true);
-                embed.AddField("Jerash", stats.cities.jerash, true);
-                embed.AddField("Madaba", stats.cities.madaba, true);
-                embed.AddField("Balqa", stats.cities.balqa, true);
-                embed.AddField("Karak", stats.cities.karak, true);
-                embed.AddField("Tafileh", stats.cities.tafileh, true);
-                embed.AddField("Ma'an", stats.cities.maan, true);
-                embed.AddField("Aqaba", stats.cities.aqaba, true);
+                if (stats.cities.Total() != 0) {
+                    embed.AddField("Amman", stats.cities.amman, true);
+                    embed.AddField("Irbid", stats.cities.irbid, true);
+                    embed.AddField("Zarqa", stats.cities.zarqa, true);
+                    embed.AddField("Mafraq", stats.cities.mafraq, true);
+                    embed.AddField("Ajloun", stats.cities.ajloun, true);
+                    embed.AddField("Jerash", stats.cities.jerash, true);
+                    embed.AddField("Madaba", stats.cities.madaba, true);
+                    embed.AddField("Balqa", stats.cities.balqa, true);
+                    embed.AddField("Karak", stats.cities.karak, true);
+                    embed.AddField("Tafileh", stats.cities.tafileh, true);
+                    embed.AddField("Ma'an", stats.cities.maan, true);
+                    embed.AddField("Aqaba", stats.cities.aqaba, true);
+                }
                 decimal percentage = (decimal)stats.cases / (decimal)stats.tests * 100m;
                 string moreStats = 
                     $"Total cases: {stats.totalCases}\n" +
