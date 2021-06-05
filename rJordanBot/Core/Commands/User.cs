@@ -1,4 +1,4 @@
-﻿using Discord;
+using Discord;
 using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.Rest;
@@ -291,10 +291,10 @@ namespace rJordanBot.Core.Commands
                 await ReplyAsync(":x: The API only contains COVID data from 1/10/2020 and after.");
                 return;
             }
-            COVID stats = await Data.APIHttpRequest<COVID>($"https://api.anastarawneh.live/v1/covid-19/{dateTime.Year}/{dateTime.Month}/{dateTime.Day}", "GET");
+            COVID stats = await Data.APIHttpRequest<COVID>($"https://api.anastarawneh.tech/v1/covid-19/{dateTime.Year}/{dateTime.Month}/{dateTime.Day}", "GET");
             dateTime = stats.date;
             DateTime yesterday = dateTime.AddDays(-1);
-            COVID yesterdayStats = await Data.APIHttpRequest<COVID>($"https://api.anastarawneh.live/v1/covid-19/{yesterday.Year}/{yesterday.Month}/{yesterday.Day}", "GET");
+            COVID yesterdayStats = await Data.APIHttpRequest<COVID>($"https://api.anastarawneh.tech/v1/covid-19/{yesterday.Year}/{yesterday.Month}/{yesterday.Day}", "GET");
             EmbedBuilder embed = new EmbedBuilder();
             embed.WithTitle($"COVID-19 stats for {dateTime:dd/MM/yyyy}");
             embed.WithColor(Constants.IColors.Blurple);

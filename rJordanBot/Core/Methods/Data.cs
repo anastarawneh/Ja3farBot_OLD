@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using Discord;
 using Discord.Commands;
 using Discord.Rest;
@@ -469,7 +469,7 @@ namespace rJordanBot.Core.Methods
         {
             if (Environment.GetEnvironmentVariable("SystemType") == "win")
             {
-                URL = URL.Replace("https://api.anastarawneh.live", "http://localhost:8000");
+                URL = URL.Replace("https://api.anastarawneh.tech", "http://localhost:8000");
             }
 
             HttpWebRequest request = WebRequest.CreateHttp(URL);

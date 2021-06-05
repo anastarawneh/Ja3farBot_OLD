@@ -1,4 +1,4 @@
-﻿using Discord;
+using Discord;
 using Discord.Rest;
 using Discord.WebSocket;
 using rJordanBot.Resources.Datatypes;
@@ -239,7 +239,7 @@ namespace rJordanBot.Core.Methods
             Task.Run(async () => {
                 DateTime dateTime = stats.date;
                 DateTime yesterday = dateTime.AddDays(-1);
-                COVID yesterdayStats = await Data.APIHttpRequest<COVID>($"https://api.anastarawneh.live/v1/covid-19/{yesterday.Year}/{yesterday.Month}/{yesterday.Day}", "GET");
+                COVID yesterdayStats = await Data.APIHttpRequest<COVID>($"https://api.anastarawneh.tech/v1/covid-19/{yesterday.Year}/{yesterday.Month}/{yesterday.Day}", "GET");
                 EmbedBuilder embed = new EmbedBuilder();
                 embed.WithTitle($"COVID-19 stats for {dateTime:dd/MM/yyyy}");
                 embed.WithColor(Constants.IColors.Blurple);

@@ -15,7 +15,7 @@ namespace rJordanBot.Resources.Services
         public void Initialize()
         {
             var exitEvent = new ManualResetEvent(false);
-            var url = new Uri("ws://localhost:8000/v1/covid-19/ws");
+            var url = new Uri("wss://api.anastarawneh.tech/v1/covid-19/ws");
 
             Task.Run(() => {
                 try {
