@@ -124,6 +124,9 @@ namespace rJordanBot.Resources.Datatypes
         public int totalHospitalized { get; set; }
         public int active { get; set; }
         public int critical { get; set; }
+        public int vaxRegistered { get; set; }
+        public int vaxFirstDose { get; set; }
+        public int vaxSecondDose { get; set; }
         public COVID_Cities cities { get; set; }
     }
     public class COVID_Cities

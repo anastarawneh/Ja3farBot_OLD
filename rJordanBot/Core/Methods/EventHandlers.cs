@@ -268,8 +268,15 @@ namespace rJordanBot.Core.Methods
                     $"Recovery distribution: {stats.homeRecoveries} at home, {stats.hospitalRecoveries} from hospitals\n" +
                     $"Tests today: {stats.tests}, total: {stats.totalTests}\n" +
                     $"Positive test percentage: {Math.Round(percentage, 2)}%\n" +
-                    $"Active cases: {stats.active}\n" +
-                    $"Yesterday's critical cases: {yesterdayStats.critical}";
+                    $"Active cases: {stats.active}";
+                if (yesterdayStats.critical != 0) moreStats += $"\nYesterday's critical cases: {yesterdayStats.critical}";
+                if (stats.vaxRegistered != 0)
+                {
+                    moreStats +=
+                        $"\nvaccine.jo registrants: {stats.vaxRegistered}\n" +
+                        $"Vaccinated - First dose: {stats.vaxFirstDose}\n" +
+                        $"Vaccinated - Second dose: {stats.vaxSecondDose}";
+                }
                 embed.AddField("More stats", moreStats);
 
                 SocketTextChannel channel = Constants.IGuilds.Jordan(_client).GetTextChannel(Data.GetChnlId("covid-19-stats"));
