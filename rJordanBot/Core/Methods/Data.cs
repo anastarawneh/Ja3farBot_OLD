@@ -479,13 +479,25 @@ namespace rJordanBot.Core.Methods
             using Stream stream = response.GetResponseStream();
             StreamReader reader = new StreamReader(stream);
             string result = await reader.ReadToEndAsync();
-            AnasAPIObject obj = JsonConvert.DeserializeObject<AnasAPIObject>(result);
-            string data = ((JObject) obj.data).ToString();
-            Console.ForegroundColor = ConsoleColor.Magenta;
-            Console.WriteLine($"[{DateTime.Now} at Network] Sent {method} request to {URL}, returned code {obj.code}");
-            Console.ResetColor();
-            T typereturn = JsonConvert.DeserializeObject<T>(data);
-            return typereturn;
+            try
+            {
+                AnasAPIObject obj = JsonConvert.DeserializeObject<AnasAPIObject>(result);
+                string data = ((JObject)obj.data).ToString();
+                Console.ForegroundColor = ConsoleColor.Magenta;
+                Console.WriteLine($"[{DateTime.Now} at Network] Sent {method} request to {URL}, returned code {obj.code}");
+                Console.ResetColor();
+                T typereturn = JsonConvert.DeserializeObject<T>(data);
+                return typereturn;
+            }
+            catch
+            {
+                T obj = JsonConvert.DeserializeObject<T>(result);
+                Console.ForegroundColor = ConsoleColor.Magenta;
+                int code = (int)((HttpWebResponse)response).StatusCode;
+                Console.WriteLine($"[{DateTime.Now} at Network] Sent {method} request to {URL}, returned code {code}");
+                Console.ResetColor();
+                return obj;
+            }
         }
 
         public static async Task SetListeningStatus(DiscordSocketClient client, bool toListen)
